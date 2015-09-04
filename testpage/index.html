@@ -2,9 +2,17 @@
 <html>
     <head>
         <script type="text/javascript" src="../dist/react-training-1.js"></script>
+        <script type="text/javascript">
+            var React = reactTraining1.react;
+        </script>
     </head>
     <body>
-        <h1>Hello</h1>
-        <script type="text/javascript" src="main.js"></script>
+        <div id="example"></div>
+        <script type="text/jsx">
+            React.render(
+                <h1>Hello, World!</h1>,
+                document.getElementById('example')
+            );
+        </script>
     </body>
 </html>

@@ -1,3 +1,3 @@
 "use script";
 
-console.log('reactTraining1:', reactTraining1);
+var React = reactTraining1.react;
