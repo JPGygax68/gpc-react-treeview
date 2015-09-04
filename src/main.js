@@ -3,13 +3,15 @@
 //var insertCss = require('insert-css'); // JUST AN EXAMPLE
 var React = require('react');
 //require('react/dist/JSXTransformer');
+var marked = require('marked');
 
 var Comment = React.createClass({
   displayName: 'Comment',
   render: function() {
+    var rawHtml = marked(this.props.children.toString(), {sanitize: true});
     return React.createElement('div', {className: 'comment'},
       React.createElement('h2', {className: 'commentAuthor'}, this.props.author),
-      this.props.children      
+      React.createElement("span", {dangerouslySetInnerHTML: {__html: rawHtml}})
     );
   }
 });
@@ -34,7 +36,6 @@ var CommentForm = React.createClass({
 var CommentBox = React.createClass({
   displayName: 'CommentBox',
   render: function() {
-    console.log('here');
     return React.createElement('div', null,
       React.createElement('h1', null, 'Comments'),
       React.createElement(CommentList, null),
@@ -50,8 +51,6 @@ module.exports = {
   },
 
   CommentBox: CommentBox,
-  //CommentList: CommentList,
-  //CommentForm: CommentForm,
   
   React: React
   

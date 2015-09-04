@@ -9,7 +9,9 @@
     "prepublish": "gulp build"
   },
   "keywords": [
-    "gpc", "react.js", "training"
+    "gpc",
+    "react.js",
+    "training"
   ],
   "author": "Jean-Pierre Gygax",
   "license": "GPL3",
@@ -35,6 +37,7 @@
     "watchify": "^3.2"
   },
   "dependencies": {
+    "marked": "^0.3.5"
   },
   "browserify": {
     "transform": [
@@ -43,6 +46,5 @@
       "browserify-shim"
     ]
   },
-  "browserify-shim": {
-  }
+  "browserify-shim": {}
 }
