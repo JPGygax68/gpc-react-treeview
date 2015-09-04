@@ -1,0 +1,48 @@
+{
+  "name": "gpc-react-training-1",
+  "version": "0.0.0",
+  "description": "React training project",
+  "repository": "git@codeplane.com:jpgygax68/react-training-1.git",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "gulp build"
+  },
+  "keywords": [
+    "gpc", "react.js", "training"
+  ],
+  "author": "Jean-Pierre Gygax",
+  "license": "GPL3",
+  "devDependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^11",
+    "browserify-shim": "^3.8.9",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "gulp-jade": "^1.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-stylus": "^2.0.2",
+    "gulp-util": "^3.0.4",
+    "insert-css": "^0.2.0",
+    "jade": "^1.9.2",
+    "stylify": "^1.2.0",
+    "underscore": "^1.8.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0",
+    "watchify": "^3.2"
+  },
+  "dependencies": {
+  },
+  "browserify": {
+    "transform": [
+      "stylify",
+      "babelify",
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+  }
+}
