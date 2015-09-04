@@ -3,14 +3,15 @@
     <head>
         <script type="text/javascript" src="../dist/react-training-1.js"></script>
         <script type="text/javascript">
-            var React = reactTraining1.react;
+            var React = reactTraining1.React;
+            var CommentBox = reactTraining1.CommentBox;
         </script>
     </head>
     <body>
         <div id="example"></div>
         <script type="text/javascript">
             React.render(
-                React.createElement('h1', null, 'Hello, world!'),
+                React.createElement(CommentBox, null, { name: 'Gygax' }),
                 document.getElementById('example')
             );
         </script>
