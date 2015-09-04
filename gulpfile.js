@@ -64,16 +64,28 @@ gulp.task("copy", [], function() {
     .pipe( notify("Copy task complete") );
 });
 
-// Overall build tasks ------------------------------------
+// Complete build task ------------------------------------
 
 gulp.task('build', ['jade', 'browserify', 'css']);
 
+// Test ---------------------------------------------------
+
+gulp.task("test", ['build'], function() {
+  // Copy stuff to test directory
+  
+  return gulp.src('dist/*.js', {base: 'dist/'})
+    .pipe( gulp.dest('testpage/scripts/') )
+    .pipe( notify("Test setup task complete") );
+});
+
+// Watch and default --------------------------------------
+
 gulp.task('watch', function() {
  
-  gulp.watch('src/**/*.jade', ['jade']);
-  gulp.watch('src/**/*.js', ['browserify']);  
-  gulp.watch('src/**/*.styl', ['css']);
+  gulp.watch('src/**/*.jade', ['test']);
+  gulp.watch('src/**/*.js', ['test']);  
+  gulp.watch('src/**/*.styl', ['test']);
   //gulp.watch('src/**/*.css', ['copy']); // TODO: get rid 
 });
 
-gulp.task("default", ['build', 'watch']);
+gulp.task("default", ['test', 'watch']);

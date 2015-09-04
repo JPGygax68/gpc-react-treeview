@@ -4,6 +4,7 @@
 var React = require('react');
 //require('react/dist/JSXTransformer');
 var marked = require('marked');
+var $ = require('jquery');
 
 var Comment = React.createClass({
   displayName: 'Comment',
@@ -35,11 +36,29 @@ var CommentForm = React.createClass({
 
 var CommentBox = React.createClass({
   displayName: 'CommentBox',
+  getInitialState: function() {
+    return {comments: []};
+  },
+  componentDidMount: function() {
+    console.log('url:', this.props.url);
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        console.log('data:', data);
+        this.setState({comments: data})
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
   render: function() {
-    console.log('this.props:', this.props);
+    console.log('this.state:', this.state);
     return React.createElement('div', null,
       React.createElement('h1', null, 'Comments'),
-      React.createElement(CommentList, {comments: this.props.children.comments}),
+      React.createElement(CommentList, {comments: this.state.comments}),
       React.createElement(CommentForm, null) 
     );
   }

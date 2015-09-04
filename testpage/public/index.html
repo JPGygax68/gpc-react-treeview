@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript" src="../dist/react-training-1.js"></script>
+        <script type="text/javascript" src="scripts/react-training-1.js"></script>
         <script type="text/javascript">
             var React = reactTraining1.React;
             var CommentBox = reactTraining1.CommentBox;
@@ -11,13 +11,8 @@
         <div id="example"></div>
         <script type="text/javascript">
         
-            var comments = [
-              {author: "Pete Hunt", text: "This is one comment"},
-              {author: "Jordan Walke", text: "This is *another* comment"}
-            ];
-            
             React.render(
-                React.createElement(CommentBox, null, { comments: comments }),
+                React.createElement(CommentBox, {url: "comments.json"}),
                 document.getElementById('example')
             );
         </script>
