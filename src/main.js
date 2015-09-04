@@ -8,7 +8,7 @@ var marked = require('marked');
 var Comment = React.createClass({
   displayName: 'Comment',
   render: function() {
-    var rawHtml = marked(this.props.children.toString(), {sanitize: true});
+    var rawHtml = marked(this.props.text.toString(), {sanitize: true});
     return React.createElement('div', {className: 'comment'},
       React.createElement('h2', {className: 'commentAuthor'}, this.props.author),
       React.createElement("span", {dangerouslySetInnerHTML: {__html: rawHtml}})
@@ -19,10 +19,10 @@ var Comment = React.createClass({
 var CommentList = React.createClass({
   displayName: 'CommentList',
   render: function() {
-    return React.createElement('div', {className: 'commentList'}, 
-      React.createElement(Comment, {author: 'Pete Hunt'}, 'This is one comment'),
-      React.createElement(Comment, {author: 'Jordan Walke'}, 'This is *another* comment')
-    );
+    var comment_nodes = this.props.comments.map( function(comment) {
+      return React.createElement(Comment, {author: comment.author, text: comment.text});
+    });
+    return React.createElement('div', {className: 'commentList'}, comment_nodes);
   }
 });
 
@@ -36,9 +36,10 @@ var CommentForm = React.createClass({
 var CommentBox = React.createClass({
   displayName: 'CommentBox',
   render: function() {
+    console.log('this.props:', this.props);
     return React.createElement('div', null,
       React.createElement('h1', null, 'Comments'),
-      React.createElement(CommentList, null),
+      React.createElement(CommentList, {comments: this.props.children.comments}),
       React.createElement(CommentForm, null) 
     );
   }

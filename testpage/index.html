@@ -10,8 +10,14 @@
     <body>
         <div id="example"></div>
         <script type="text/javascript">
+        
+            var comments = [
+              {author: "Pete Hunt", text: "This is one comment"},
+              {author: "Jordan Walke", text: "This is *another* comment"}
+            ];
+            
             React.render(
-                React.createElement(CommentBox, null, { name: 'Gygax' }),
+                React.createElement(CommentBox, null, { comments: comments }),
                 document.getElementById('example')
             );
         </script>
