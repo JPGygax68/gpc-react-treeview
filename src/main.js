@@ -29,8 +29,21 @@ var CommentList = React.createClass({
 
 var CommentForm = React.createClass({
   displayName: 'CommentForm',
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var author = React.findDOMNode(this.refs.author).value.trim();
+    var text = React.findDOMNode(this.refs.text).value.trim();
+    if (!text || !author) return;
+    this.props.onCommentSubmit({author: author, text: text});
+    React.findDOMNode(this.refs.author).value = '';
+    React.findDOMNode(this.refs.text  ).value = '';
+  },
   render: function() {
-    return React.createElement('div', {className: 'commentForm'}, 'Hello, World! I\'m a comment form');
+    return React.createElement('form', {className: 'commentForm', onSubmit: this.handleSubmit},
+      React.createElement('p', null, React.createElement('input', {type: 'text', ref: 'author', placeholder: 'Your name'}) ),
+      React.createElement('p', null, React.createElement('input', {type: 'text', ref: 'text'  , placeholder: 'Say something...'}) ),
+      React.createElement('p', null, React.createElement('input', {type: 'submit', value: 'Post'}) )
+    );
   }
 });
 
@@ -45,7 +58,6 @@ var CommentBox = React.createClass({
       dataType: 'json',
       cache: false,
       success: function(data) {
-        console.log('data:', data);
         this.setState({comments: data})
       }.bind(this),
       error: function(xhr, status, err) {
@@ -53,16 +65,29 @@ var CommentBox = React.createClass({
       }.bind(this)
     });
   },
+  handleCommentSubmit: function(comment) {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: comment,
+      success: function(data) {
+        this.setState({data: data});
+      },
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }
+    });
+  },
   componentDidMount: function() {
     this.loadCommentsFromServer();
     setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
   },
   render: function() {
-    console.log('this.state:', this.state);
     return React.createElement('div', null,
       React.createElement('h1', null, 'Comments'),
       React.createElement(CommentList, {comments: this.state.comments}),
-      React.createElement(CommentForm, null) 
+      React.createElement(CommentForm, {onCommentSubmit: this.handleCommentSubmit}, null) 
     );
   }
 });

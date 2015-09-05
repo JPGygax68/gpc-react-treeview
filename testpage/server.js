@@ -23,14 +23,14 @@ app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.get('/comments.json', function(req, res) {
+app.get('/comments', function(req, res) {
   fs.readFile('comments.json', function(err, data) {
     res.setHeader('Cache-Control', 'no-cache');
     res.json(JSON.parse(data));
   });
 });
 
-app.post('/comments.json', function(req, res) {
+app.post('/comments', function(req, res) {
   fs.readFile('comments.json', function(err, data) {
     var comments = JSON.parse(data);
     comments.push(req.body);
@@ -40,7 +40,6 @@ app.post('/comments.json', function(req, res) {
     });
   });
 });
-
 
 app.listen(app.get('port'), function() {
   console.log('Server started: http://localhost:' + app.get('port') + '/');
