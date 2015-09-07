@@ -29,7 +29,8 @@ gulp.task('jade', [], function() {
 gulp.task("browserify", function() {
 
   var b = browserify({ standalone: 'gpc.treeview' });
-  b.add('./src/main.js');
+  b.add('./src/main.jsx');
+  b.transform('reactify');
 
   return b.bundle()
     .on('error', notify.onError('Error: <%= error.message %>') )
@@ -83,7 +84,7 @@ gulp.task("test", ['build'], function() {
 gulp.task('watch', function() {
  
   gulp.watch('src/**/*.jade', ['test']);
-  gulp.watch('src/**/*.js', ['test']);  
+  gulp.watch(['src/**/*.js', 'src/**/*.jsx'], ['test']);  
   gulp.watch('src/**/*.styl', ['test']);
   //gulp.watch('src/**/*.css', ['copy']); // TODO: get rid 
 });

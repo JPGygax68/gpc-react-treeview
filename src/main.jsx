@@ -6,24 +6,21 @@ var React = require('react');
 var marked = require('marked');
 var $ = require('jquery');
 
-var Comment = React.createClass({
-  displayName: 'Comment',
+var TreeNode = React.createClass({
+  displayName: 'TreeNode',
   render: function() {
-    var rawHtml = marked(this.props.text.toString(), {sanitize: true});
-    return React.createElement('div', {className: 'comment'},
-      React.createElement('h2', {className: 'commentAuthor'}, this.props.author),
-      React.createElement("span", {dangerouslySetInnerHTML: {__html: rawHtml}})
+    var children = React.Children.map(
+      this.props.children,
+      function(child) {
+        return <li>{child}</li>;
+      }
     );
-  }
-});
-
-var CommentList = React.createClass({
-  displayName: 'CommentList',
-  render: function() {
-    var comment_nodes = this.props.comments.map( function(comment) {
-      return React.createElement(Comment, {author: comment.author, text: comment.text});
-    });
-    return React.createElement('div', {className: 'commentList'}, comment_nodes);
+    return <div>
+      <span>{this.props.label}</span>
+      <ul>
+        {children}
+      </ul>
+    </div>
   }
 });
 
@@ -50,7 +47,8 @@ var CommentForm = React.createClass({
 var TreeView = React.createClass({
   displayName: 'TreeView',
   getInitialState: function() {
-    return {comments: []};
+    return {
+    }
   },
   loadCommentsFromServer: function() {
     $.ajax({
@@ -80,21 +78,29 @@ var TreeView = React.createClass({
     });
   },
   componentDidMount: function() {
-    this.loadCommentsFromServer();
-    setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
+    console.log('componentDidMount');
+    if (this.props.url) {
+      this.loadCommentsFromServer();
+      setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
+    }
   },
   render: function() {
-    return React.createElement('div', null,
-      React.createElement('h1', null, 'Comments'),
-      React.createElement(CommentList, {comments: this.state.comments}),
-      React.createElement(CommentForm, {onCommentSubmit: this.handleCommentSubmit}, null) 
-    );
+    return <TreeNode label="ROOT">
+        {this.props.children}
+      </TreeNode>
+    // return React.createElement('div', null, React.createElement(TreeNode, {label: 'ROOT'}, this.props.children) );
+    // React.createElement('div', null
+      //React.createElement('h1', null, 'Comments')
+      //React.createElement(CommentList, {comments: this.state.comments}),
+      //React.createElement(CommentForm, {onCommentSubmit: this.handleCommentSubmit}, null) 
+    //);
   }
 });
 
 module.exports = {
   
   TreeView: TreeView,
+  TreeNode: TreeNode,
   
   React: React
   

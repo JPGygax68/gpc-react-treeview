@@ -5,6 +5,7 @@
         <script type="text/javascript">
             var React = gpc.treeview.React;
             var TreeView = gpc.treeview.TreeView; // TODO: better semantics ?
+            var TreeNode = gpc.treeview.TreeNode;
         </script>
     </head>
     <body>
@@ -12,7 +13,10 @@
         <script type="text/javascript">
         
             React.render(
-                React.createElement(TreeView, {url: "comments", pollInterval: 4000}),
+                React.createElement(TreeView, {label: 'Root'},
+                    React.createElement(TreeNode, {label: 'Child 1'}),
+                    React.createElement(TreeNode, {label: 'Child 1'}) ),
+                    
                 document.getElementById('myTreeview')
             );
         </script>
