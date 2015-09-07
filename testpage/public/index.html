@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript" src="scripts/react-training-1.js"></script>
+        <script type="text/javascript" src="scripts/gpc-treeview.js"></script>
         <script type="text/javascript">
-            var React = reactTraining1.React;
-            var CommentBox = reactTraining1.CommentBox;
+            var React = gpc.treeview.React;
+            var TreeView = gpc.treeview.TreeView; // TODO: better semantics ?
         </script>
     </head>
     <body>
-        <div id="example"></div>
+        <div id="myTreeview"></div>
         <script type="text/javascript">
         
             React.render(
-                React.createElement(CommentBox, {url: "comments", pollInterval: 4000}),
-                document.getElementById('example')
+                React.createElement(TreeView, {url: "comments", pollInterval: 4000}),
+                document.getElementById('myTreeview')
             );
         </script>
     </body>

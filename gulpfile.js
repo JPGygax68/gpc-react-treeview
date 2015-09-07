@@ -28,12 +28,12 @@ gulp.task('jade', [], function() {
 
 gulp.task("browserify", function() {
 
-  var b = browserify({ standalone: 'reactTraining1' });
+  var b = browserify({ standalone: 'gpc.treeview' });
   b.add('./src/main.js');
 
   return b.bundle()
     .on('error', notify.onError('Error: <%= error.message %>') )
-    .pipe(source('react-training-1.js'))
+    .pipe(source('gpc-treeview.js')) // TODO: define at top of gulpfile ?
     .pipe(buffer())
     //.pipe(babel())
     .pipe(sourcemaps.init({loadMaps: true}))

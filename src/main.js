@@ -47,8 +47,8 @@ var CommentForm = React.createClass({
   }
 });
 
-var CommentBox = React.createClass({
-  displayName: 'CommentBox',
+var TreeView = React.createClass({
+  displayName: 'TreeView',
   getInitialState: function() {
     return {comments: []};
   },
@@ -94,11 +94,7 @@ var CommentBox = React.createClass({
 
 module.exports = {
   
-  init: function() {
-    //insertCss( require("./org-unnamed.styl") );
-  },
-
-  CommentBox: CommentBox,
+  TreeView: TreeView,
   
   React: React
   
