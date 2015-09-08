@@ -29064,7 +29064,11 @@ var TreeNode = React.createClass({
         return React.createElement("li", null, child);
       }
     );
-    return React.createElement("div", {className: "node"}, 
+    var classes = 'node';
+    if (!this.props.children || this.props.children.length === 0) {
+      classes += ' childless';
+    }
+    return React.createElement("div", {className: classes}, 
       React.createElement("span", {className: "handle"}), 
       React.createElement("span", {className: "label"}, this.props.label), 
       React.createElement("ul", null, 
@@ -29157,7 +29161,7 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n  margin-right: 0.1em;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n  margin-right: 0.2em;\n  position: relative;\n  bottom: 0.05em;\n}\n.gpc.treeview .node > .label:hover {\n  background-color: #faa;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.childless > .handle {\n  background: none;\n}\n"
 },{}]},{},[159])(159)
 });
 //# sourceMappingURL=gpc-treeview.js.map

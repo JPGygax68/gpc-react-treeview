@@ -3,17 +3,33 @@
   font-family: Arial; // TODO: remove/replace
   
   .node {
+  
     > .handle {
       display: inline-block;
       width: 11px;
       height: 11px;
       background-image: url(plus.png);
-      margin-right: 0.1em;
+      margin-right: 0.2em;
+      position: relative;
+      bottom: 0.05em;
+    }
+
+    > .label {
+      &:hover {
+        background-color: #FAA;
+      }      
     }
     
     > ul {
       list-style-type: none;
       padding-left: 1em;
+      margin: 0.1em 0;
+    }
+    
+    &.childless {
+      > .handle {
+        background: none;
+      }
     }
   }  
 }
