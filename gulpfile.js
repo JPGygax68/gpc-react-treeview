@@ -52,7 +52,7 @@ gulp.task("test", ['build'], function() {
 
 gulp.task('watch', function() {
  
-  gulp.watch(['src/**/*.jsx', 'src/**/*.styl'], ['test']);  
+  gulp.watch('src/**/*.*', ['test']);  
 });
 
 gulp.task("default", ['test', 'watch']);

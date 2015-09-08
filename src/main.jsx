@@ -17,8 +17,9 @@ var TreeNode = React.createClass({
         return <li>{child}</li>;
       }
     );
-    return <div>
-      <span>{this.props.label}</span>
+    return <div className="node">
+      <span className="handle"/>
+      <span className="label">{this.props.label}</span>
       <ul>
         {children}
       </ul>
