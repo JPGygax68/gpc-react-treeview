@@ -18,8 +18,8 @@ var nib = require("nib");
 gulp.task("browserify", function() {
 
   var b = browserify({ standalone: 'gpc.treeview' });
-  b.transform('stylify', { use: [ nib() ] });
-  b.transform('reactify', { extension: 'jsx' });
+  //b.transform('stylify', { use: [ nib() ] });
+  //b.transform('reactify', { extension: 'jsx' });
   b.add('./src/main.jsx');
 
   return b.bundle()

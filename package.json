@@ -54,7 +54,7 @@
     "stylify": "^1.3.1"
   },
   "browserify": {
-    "transform": []
+    "transform": ["reactify", "stylify"]
   },
   "browserify-shim": {}
 }
