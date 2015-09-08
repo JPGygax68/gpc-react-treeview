@@ -10,11 +10,15 @@
     </head>
     <body>
         <div id="myTreeview"></div>
+        <div id="component_library"></div>
         <script type="text/javascript">
         
             React.render(
                 React.createElement(TreeView, {label: 'Root'},
-                    React.createElement(TreeNode, {label: 'Child 1'}),
+                    React.createElement(TreeNode, {label: 'Child 1'},
+                        React.createElement(TreeNode, {label: 'Grandchild 1'}),
+                        React.createElement(TreeNode, {label: 'Grandchild 2'})
+                    ),
                     React.createElement(TreeNode, {label: 'Child 1'}) ),
                     
                 document.getElementById('myTreeview')

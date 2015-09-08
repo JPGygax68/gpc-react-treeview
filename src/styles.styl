@@ -8,7 +8,7 @@
       display: inline-block;
       width: 11px;
       height: 11px;
-      background-image: url(plus.png);
+      background-image: url(minus.png);
       margin-right: 0.2em;
       position: relative;
       bottom: 0.05em;
@@ -25,10 +25,21 @@
       padding-left: 1em;
       margin: 0.1em 0;
     }
+
+    &.closed {
+      > .label {
+        background-image: url(plus.png);
+      }
+      > ul {
+        //display: none;
+      }
+    }
     
     &.childless {
       > .handle {
-        background: none;
+        //background: none;
+        width: 0;
+        margin-right: 0;
       }
     }
   }  

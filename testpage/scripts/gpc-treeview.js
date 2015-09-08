@@ -29052,11 +29052,22 @@ var React = require('react');
 var $ = require('jquery');
 var insertCss = require('insert-css');
 
+// TODO: CSS injection should not be set in stone like this, provide variety of bundler modules ?
 var css = require('./styles.styl');
 insertCss(css);
 
 var TreeNode = React.createClass({
   displayName: 'TreeNode',
+  getInitialState: function() {
+    return {
+      closed: false
+    }
+  },
+  handleClickOnHandle: function(e) {
+    console.log('handleClickOnHandle', this.state.closed);
+    e.preventDefault();
+    this.setState({ closed: !this.state.closed });
+  },
   render: function() {
     var children = React.Children.map(
       this.props.children,
@@ -29068,12 +29079,14 @@ var TreeNode = React.createClass({
     if (!this.props.children || this.props.children.length === 0) {
       classes += ' childless';
     }
+    var children_list;
+    if (this.props.children && this.props.children.length > 0 && !this.state.closed) {
+      children_list = (React.createElement("ul", null, children));
+    }
     return React.createElement("div", {className: classes}, 
-      React.createElement("span", {className: "handle"}), 
+      React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
       React.createElement("span", {className: "label"}, this.props.label), 
-      React.createElement("ul", null, 
-        children
-      )
+      children_list
     )
   }
 });
@@ -29161,7 +29174,7 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n  margin-right: 0.2em;\n  position: relative;\n  bottom: 0.05em;\n}\n.gpc.treeview .node > .label:hover {\n  background-color: #faa;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.childless > .handle {\n  background: none;\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.2em;\n  position: relative;\n  bottom: 0.05em;\n}\n.gpc.treeview .node > .label:hover {\n  background-color: #faa;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
 },{}]},{},[159])(159)
 });
 //# sourceMappingURL=gpc-treeview.js.map
