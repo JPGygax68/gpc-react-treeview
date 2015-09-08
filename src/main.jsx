@@ -1,10 +1,12 @@
 "use strict";
 
-//var insertCss = require('insert-css'); // JUST AN EXAMPLE
 var React = require('react');
 //require('react/dist/JSXTransformer');
-var marked = require('marked');
 var $ = require('jquery');
+var insertCss = require('insert-css');
+
+var css = require('./styles.styl');
+insertCss(css);
 
 var TreeNode = React.createClass({
   displayName: 'TreeNode',
@@ -85,15 +87,11 @@ var TreeView = React.createClass({
     }
   },
   render: function() {
-    return <TreeNode label="ROOT">
-        {this.props.children}
-      </TreeNode>
-    // return React.createElement('div', null, React.createElement(TreeNode, {label: 'ROOT'}, this.props.children) );
-    // React.createElement('div', null
-      //React.createElement('h1', null, 'Comments')
-      //React.createElement(CommentList, {comments: this.state.comments}),
-      //React.createElement(CommentForm, {onCommentSubmit: this.handleCommentSubmit}, null) 
-    //);
+    return <div className="gpc treeview">
+        <TreeNode label="ROOT">
+          {this.props.children}
+        </TreeNode>
+      </div>
   }
 });
 

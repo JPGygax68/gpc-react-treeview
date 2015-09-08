@@ -4,8 +4,6 @@ var gulp = require("gulp");
 var gutil = require("gulp-util");
 //var plumber = require("gulp-plumber");
 var sourcemaps = require('gulp-sourcemaps');
-var jade = require("gulp-jade");
-var stylus = require("gulp-stylus");
 var browserify = require('browserify');
 var watchify = require('watchify');
 var transform = require("vinyl-transform");
@@ -13,61 +11,32 @@ var source = require("vinyl-source-stream");
 var buffer = require('vinyl-buffer');
 var notify = require("gulp-notify");
 var babel = require("gulp-babel");
-
-// Jade ---------------------------------------------------
-
-gulp.task('jade', [], function() {
-  
-  return gulp.src('src/**/*.jade', {base: 'src/'})
-    .pipe( jade({pretty: true}) )
-    .pipe( gulp.dest('./dist') )
-    .pipe( notify("Jade task complete") );
-});
+var nib = require("nib");
 
 // Browserify ---------------------------------------------
 
 gulp.task("browserify", function() {
 
   var b = browserify({ standalone: 'gpc.treeview' });
+  b.transform('stylify', { use: [ nib() ] });
+  b.transform('reactify', { extension: 'jsx' });
   b.add('./src/main.jsx');
-  b.transform('reactify');
 
   return b.bundle()
-    .on('error', notify.onError('Error: <%= error.message %>') )
-    .pipe(source('gpc-treeview.js')) // TODO: define at top of gulpfile ?
-    .pipe(buffer())
-    //.pipe(babel())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist'))
-    .pipe(notify({ message: 'Browserify bundling completed', onLast: true }))
-    .on('log', gutil.log)
-});
-
-// CSS ----------------------------------------------------
-
-gulp.task('css', function() {
-
-  return gulp.src('./src/**/*.styl')
-    .pipe( stylus( { whitespace: true } ) )
-    //.pipe( csso() )
-    .pipe( gulp.dest('./dist/') )
-    //.pipe( livereload( server ))
-    .pipe( notify('CSS task complete') )
-});
-
-// Copy ---------------------------------------------------
-
-gulp.task("copy", [], function() {
-  
-  return gulp.src('src/**/*.css', {base: 'src/'})
+    .on( 'error', notify.onError('Error: <%= error.message %>') )
+    .pipe( source('gpc-treeview.js') ) // TODO: define at top of gulpfile ?
+    .pipe( buffer() )
+    //.pipe(babel() )
+    .pipe( sourcemaps.init({loadMaps: true}) )
+    .pipe( sourcemaps.write('./') )
     .pipe( gulp.dest('./dist') )
-    .pipe( notify("Copy task complete") );
+    .pipe( notify({ message: 'Browserify bundling completed', onLast: true }) )
+    .on('log', gutil.log)
 });
 
 // Complete build task ------------------------------------
 
-gulp.task('build', ['jade', 'browserify', 'css']);
+gulp.task('build', ['browserify']);
 
 // Test ---------------------------------------------------
 
@@ -76,17 +45,14 @@ gulp.task("test", ['build'], function() {
   
   return gulp.src('dist/*.js', {base: 'dist/'})
     .pipe( gulp.dest('testpage/scripts/') )
-    .pipe( notify("Test setup task complete") );
+    .pipe( notify({ message: "Test setup task complete", onLast: true }) );
 });
 
 // Watch and default --------------------------------------
 
 gulp.task('watch', function() {
  
-  gulp.watch('src/**/*.jade', ['test']);
-  gulp.watch(['src/**/*.js', 'src/**/*.jsx'], ['test']);  
-  gulp.watch('src/**/*.styl', ['test']);
-  //gulp.watch('src/**/*.css', ['copy']); // TODO: get rid 
+  gulp.watch(['src/**/*.jsx', 'src/**/*.styl'], ['test']);  
 });
 
 gulp.task("default", ['test', 'watch']);
