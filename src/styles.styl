@@ -14,10 +14,8 @@
       bottom: 0.05em;
     }
 
-    > .label {
-      &:hover {
-        background-color: #FAA;
-      }      
+    > span.label {
+      cursor: default;
     }
     
     > ul {
@@ -32,6 +30,12 @@
       }
       > ul {
         //display: none;
+      }
+    }
+    
+    &.drag-hover {
+      > .label {
+        background-color: #FAA;
       }
     }
     

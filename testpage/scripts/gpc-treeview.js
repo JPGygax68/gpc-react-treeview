@@ -29060,13 +29060,24 @@ var TreeNode = React.createClass({
   displayName: 'TreeNode',
   getInitialState: function() {
     return {
-      closed: false
+      closed: false,
+      drag_hover: false
     }
   },
   handleClickOnHandle: function(e) {
     console.log('handleClickOnHandle', this.state.closed);
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
+  },
+  handleDragEnter: function(e) {
+    console.log('handleDragEnter');
+    this.setState({ drag_hover: true });
+    e.preventDefault();
+  },
+  handleDragLeave: function(e) {
+    console.log('handleDragLeave');
+    this.setState({ drag_hover: false });
+    e.preventDefault();
   },
   render: function() {
     var children = React.Children.map(
@@ -29076,38 +29087,17 @@ var TreeNode = React.createClass({
       }
     );
     var classes = 'node';
-    if (!this.props.children || this.props.children.length === 0) {
-      classes += ' childless';
-    }
+    if (!this.props.children || this.props.children.length === 0) classes += ' childless';
+    if (this.state.drag_hover) classes += ' drag-hover';
     var children_list;
     if (this.props.children && this.props.children.length > 0 && !this.state.closed) {
       children_list = (React.createElement("ul", null, children));
     }
     return React.createElement("div", {className: classes}, 
       React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
-      React.createElement("span", {className: "label"}, this.props.label), 
+      React.createElement("span", {className: "label", onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave}, this.props.label), 
       children_list
     )
-  }
-});
-
-var CommentForm = React.createClass({
-  displayName: 'CommentForm',
-  handleSubmit: function(e) {
-    e.preventDefault();
-    var author = React.findDOMNode(this.refs.author).value.trim();
-    var text = React.findDOMNode(this.refs.text).value.trim();
-    if (!text || !author) return;
-    this.props.onCommentSubmit({author: author, text: text});
-    React.findDOMNode(this.refs.author).value = '';
-    React.findDOMNode(this.refs.text  ).value = '';
-  },
-  render: function() {
-    return React.createElement('form', {className: 'commentForm', onSubmit: this.handleSubmit},
-      React.createElement('p', null, React.createElement('input', {type: 'text', ref: 'author', placeholder: 'Your name'}) ),
-      React.createElement('p', null, React.createElement('input', {type: 'text', ref: 'text'  , placeholder: 'Say something...'}) ),
-      React.createElement('p', null, React.createElement('input', {type: 'submit', value: 'Post'}) )
-    );
   }
 });
 
@@ -29174,7 +29164,7 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.2em;\n  position: relative;\n  bottom: 0.05em;\n}\n.gpc.treeview .node > .label:hover {\n  background-color: #faa;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.2em;\n  position: relative;\n  bottom: 0.05em;\n}\n.gpc.treeview .node > span.label {\n  cursor: default;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.drag-hover > .label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
 },{}]},{},[159])(159)
 });
 //# sourceMappingURL=gpc-treeview.js.map

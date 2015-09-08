@@ -13,13 +13,24 @@ var TreeNode = React.createClass({
   displayName: 'TreeNode',
   getInitialState: function() {
     return {
-      closed: false
+      closed: false,
+      drag_hover: false
     }
   },
   handleClickOnHandle: function(e) {
     console.log('handleClickOnHandle', this.state.closed);
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
+  },
+  handleDragEnter: function(e) {
+    console.log('handleDragEnter');
+    this.setState({ drag_hover: true });
+    e.preventDefault();
+  },
+  handleDragLeave: function(e) {
+    console.log('handleDragLeave');
+    this.setState({ drag_hover: false });
+    e.preventDefault();
   },
   render: function() {
     var children = React.Children.map(
@@ -29,38 +40,17 @@ var TreeNode = React.createClass({
       }
     );
     var classes = 'node';
-    if (!this.props.children || this.props.children.length === 0) {
-      classes += ' childless';
-    }
+    if (!this.props.children || this.props.children.length === 0) classes += ' childless';
+    if (this.state.drag_hover) classes += ' drag-hover';
     var children_list;
     if (this.props.children && this.props.children.length > 0 && !this.state.closed) {
       children_list = (<ul>{children}</ul>);
     }
     return <div className={classes}>
       <span className="handle" onClick={this.handleClickOnHandle}/>
-      <span className="label">{this.props.label}</span>
+      <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave}>{this.props.label}</span>
       {children_list}
     </div>
-  }
-});
-
-var CommentForm = React.createClass({
-  displayName: 'CommentForm',
-  handleSubmit: function(e) {
-    e.preventDefault();
-    var author = React.findDOMNode(this.refs.author).value.trim();
-    var text = React.findDOMNode(this.refs.text).value.trim();
-    if (!text || !author) return;
-    this.props.onCommentSubmit({author: author, text: text});
-    React.findDOMNode(this.refs.author).value = '';
-    React.findDOMNode(this.refs.text  ).value = '';
-  },
-  render: function() {
-    return React.createElement('form', {className: 'commentForm', onSubmit: this.handleSubmit},
-      React.createElement('p', null, React.createElement('input', {type: 'text', ref: 'author', placeholder: 'Your name'}) ),
-      React.createElement('p', null, React.createElement('input', {type: 'text', ref: 'text'  , placeholder: 'Say something...'}) ),
-      React.createElement('p', null, React.createElement('input', {type: 'submit', value: 'Post'}) )
-    );
   }
 });
 

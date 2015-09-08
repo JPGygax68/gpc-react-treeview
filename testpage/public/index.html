@@ -7,10 +7,21 @@
             var TreeView = gpc.treeview.TreeView; // TODO: better semantics ?
             var TreeNode = gpc.treeview.TreeNode;
         </script>
+        <style>
+            #myTreeview {
+                float: left;
+            }
+            #component_library {
+                float: right;
+            }
+        </style>
     </head>
     <body>
         <div id="myTreeview"></div>
-        <div id="component_library"></div>
+        <div id="component_library">
+            <p draggable="true">P</p>
+            <p draggable="true">DIV</div>
+        </div>
         <script type="text/javascript">
         
             React.render(
