@@ -1,9 +1,14 @@
+selection_border = hsla(215, 100%, 50%, 1);
+selection_background = lighten(selection_border, 50%);
+
 .gpc.treeview {
 
   font-family: Arial; // TODO: remove/replace
   
   .node {
   
+    display: block;
+    
     > .handle {
       display: inline-block;
       width: 11px;
@@ -11,11 +16,17 @@
       background-image: url(minus.png);
       margin-right: 0.2em;
       position: relative;
-      bottom: 0.05em;
     }
 
     > span.label {
       cursor: default;
+      padding: 0.15em;
+      border: solid 0.1em transparent;
+      border-radius: 0.25em;
+      &:hover {
+        background-color: alpha(selection_background, 0.5);
+        border-color: alpha(selection_border, 0.5);
+      }
     }
     
     > ul {

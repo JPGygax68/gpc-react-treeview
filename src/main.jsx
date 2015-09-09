@@ -9,50 +9,7 @@ var insertCss = require('insert-css');
 var css = require('./styles.styl');
 insertCss(css);
 
-var TreeNode = React.createClass({
-  displayName: 'TreeNode',
-  getInitialState: function() {
-    return {
-      closed: false,
-      drag_hover: false
-    }
-  },
-  handleClickOnHandle: function(e) {
-    console.log('handleClickOnHandle', this.state.closed);
-    e.preventDefault();
-    this.setState({ closed: !this.state.closed });
-  },
-  handleDragEnter: function(e) {
-    console.log('handleDragEnter');
-    this.setState({ drag_hover: true });
-    e.preventDefault();
-  },
-  handleDragLeave: function(e) {
-    console.log('handleDragLeave');
-    this.setState({ drag_hover: false });
-    e.preventDefault();
-  },
-  render: function() {
-    var children = React.Children.map(
-      this.props.children,
-      function(child) {
-        return <li>{child}</li>;
-      }
-    );
-    var classes = 'node';
-    if (!this.props.children || this.props.children.length === 0) classes += ' childless';
-    if (this.state.drag_hover) classes += ' drag-hover';
-    var children_list;
-    if (this.props.children && this.props.children.length > 0 && !this.state.closed) {
-      children_list = (<ul>{children}</ul>);
-    }
-    return <div className={classes}>
-      <span className="handle" onClick={this.handleClickOnHandle}/>
-      <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave}>{this.props.label}</span>
-      {children_list}
-    </div>
-  }
-});
+var TreeNode = require('./treenode.jsx');
 
 var TreeView = React.createClass({
   displayName: 'TreeView',
@@ -88,7 +45,7 @@ var TreeView = React.createClass({
     });
   },
   componentDidMount: function() {
-    console.log('componentDidMount');
+    console.log('TreeView::componentDidMount');
     if (this.props.url) {
       this.loadCommentsFromServer();
       setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);

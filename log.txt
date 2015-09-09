@@ -1,0 +1,8 @@
+2015-09-08
+==========
+
+Looking good so far.
+
+Started working on drag & drop. This could prove to be a lot of work to get right. For example, how do I ensure that there will always be a margin between to children of a node, knowing that such a margin is the only way for the user to indicate that he wants to insert an object between two siblings ?
+
+Even worse, how to make this work on a mobile device, where pixel precision with the pointer is just not possible ?
