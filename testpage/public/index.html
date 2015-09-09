@@ -24,14 +24,17 @@
         </div>
         <script type="text/javascript">
         
+            var top_nodes = [
+                {   label: 'Child 1', children: [
+                        { label: 'Grandchild 1.1' },
+                        { label: 'Grandchild 1.2' }
+                    ]
+                },
+                { label: 'Child 2' }
+            ];
+            
             React.render(
-                React.createElement(TreeView, {label: 'Root'},
-                    React.createElement(TreeNode, {label: 'Child 1'},
-                        React.createElement(TreeNode, {label: 'Grandchild 1'}),
-                        React.createElement(TreeNode, {label: 'Grandchild 2'})
-                    ),
-                    React.createElement(TreeNode, {label: 'Child 1'}) ),
-                    
+                React.createElement(TreeView, {top_nodes: top_nodes}),
                 document.getElementById('myTreeview')
             );
         </script>

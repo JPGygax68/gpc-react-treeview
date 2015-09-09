@@ -1,3 +1,20 @@
+2015-09-09
+==========
+
+So far, I've described my tree structure using nested React component tags. According to React rules though, that makes the structure immutable.
+
+I need to find out whether or not it is ok to use React components independently from the predefined this.props.children array, more specifically as part of the (parent) React component's *state*.
+
+I see no reason why that should't work. I have to expose a method from TreeView that will give me access to the root node, then expose a TreeNode method that allows me to add child nodes.
+
+Those nodes will not, however, be identical with the TreeNode React component: the former represents the node's content, while the latter is used to display the node and make it interactive.
+
+This leads to a fair bit of code duplication (events raising up from DOM elements to TreeNode React components, from there to node objects, and from there to user code callbacks. Maybe it would be more expedient to remove the TreeNode React component, and replace it with recursively generated DOM elements. However, this would mean that the whole tree view consists of a single React object, which might seriously impair React's ability to optimize the rendering of large constructs.
+
+-----------
+
+I really need to assign keys to my TreeNode components!
+
 2015-09-08
 ==========
 

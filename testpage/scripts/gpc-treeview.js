@@ -29060,10 +29060,6 @@ var TreeNode = require('./treenode.jsx');
 
 var TreeView = React.createClass({
   displayName: 'TreeView',
-  getInitialState: function() {
-    return {
-    }
-  },
   loadCommentsFromServer: function() {
     $.ajax({
       url: this.props.url,
@@ -29099,11 +29095,10 @@ var TreeView = React.createClass({
     }
   },
   render: function() {
-    return React.createElement("div", {className: "gpc treeview"}, 
-        React.createElement(TreeNode, {label: "ROOT"}, 
-          this.props.children
-        )
-      )
+    //console.log('this.props.top_nodes:', this.props.top_nodes);
+    return ( React.createElement("div", {className: "gpc treeview"}, 
+        React.createElement(TreeNode, {label: "ROOT", children: this.props.top_nodes})
+      ) );
   }
 });
 
@@ -29121,24 +29116,129 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"./treenode.jsx":161,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  display: block;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.2em;\n  position: relative;\n}\n.gpc.treeview .node > span.label {\n  cursor: default;\n  padding: 0.15em;\n  border: solid 0.1em transparent;\n  border-radius: 0.25em;\n}\n.gpc.treeview .node > span.label:hover {\n  background-color: rgba(128,181,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.drag-hover > .label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0.15em;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node > span.label {\n  padding: 0.15em;\n  cursor: default;\n  border: solid 0.1em transparent;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label:hover {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0.1em 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.selected > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > .label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
 },{}],161:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
 
+/*
+
+function Node(def) {
+  
+  def = def || {};
+  
+  this.label = def.label || '(no label)';
+}
+
+Node.prototype = {
+  
+  handleClickOnHandle: function(e) {
+    console.log('handleClickOnHandle', this.closed);
+    e.preventDefault();
+    this.closed = ! this.closed;
+  },
+
+  render: function() {
+    var children;
+    if (this.children && this.children.length > 0) {
+      children = this.children.map(
+        this.children,
+        function(child) {
+          return node.render();
+        },
+        this
+      );
+    }
+    var classes = 'node';
+    if (children) classes += ' childless';
+    if (this.state.selected) classes += ' selected';
+    if (this.state.drag_hover) classes += ' drag-hover';
+    var children_list;
+    if (children && !this.closed) {
+      children_list = (<ul>{children}</ul>);
+    }
+    return <div tabIndex="0" className={classes}>
+      <span className="handle" onClick={this.handleClickOnHandle}/>
+      <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onClick={this.handleClickOnLabel}>
+        {this.label}
+      </span>
+      {children_list}
+    </div>
+  },
+  
+  handleClickOnLabel: function(e) {
+    console.log('handleClickOnLabel', this.state.selected);
+    e.preventDefault();
+    if (!this.state.selected) {
+      this.setState({ selected: true });
+    }
+  },
+  
+  handleDragEnter: function(e) {
+    console.log('handleDragEnter');
+    this.drag_hover = true;
+    e.preventDefault();
+  },
+  
+  handleDragLeave: function(e) {
+    console.log('handleDragLeave');
+    this.drag_hover = false;
+    e.preventDefault();
+  },
+  
+  handleKeyDown: function(e) {
+    if (e.which === 38) {
+      // TODO: tell parent to move to previous sibling
+    }
+  }
+  
+} // Node.prototype
+
+*/
+
+function Node(label, children) {
+  
+  def = def || {};
+  
+  this.label = def.label || '(no label)';
+  this.children = [];  
+  if (children) children.forEach( this.appendChild.bind(this) );
+}
+
+Node.prototype = {
+  
+  appendChild: function(label, children) {
+    this.children.push( new Node(label, children) );
+  }
+};
+
+
 var TreeNode = React.createClass({
   displayName: 'TreeNode',
   getInitialState: function() {
+    console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      drag_hover: false
+      selected: false,
+      drag_hover: false,
+      children: this.props.children && this.props.children.length > 0 ? this.props.children.map( function(child) {
+        //console.log('child:', child, typeof child);
+        return ( React.createElement(TreeNode, {label: child.label, children: child.children}) )
+      }) : null
     }
   },
   handleClickOnHandle: function(e) {
     console.log('handleClickOnHandle', this.state.closed);
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
+  },
+  handleClickOnLabel: function(e) {
+    console.log('handleClickOnLabel', this.state.selected);
+    e.preventDefault();
+    if (!this.state.selected) {
+      this.setState({ selected: true });
+    }
   },
   handleDragEnter: function(e) {
     console.log('handleDragEnter');
@@ -29156,22 +29256,29 @@ var TreeNode = React.createClass({
     }
   },
   render: function() {
-    var children = React.Children.map(
-      this.props.children,
-      function(child) {
-        return React.createElement("li", null, child);
-      }
-    );
+    var children;
+    console.log('this.state.children:', this.state.children);
+    if (this.state.children && this.state.children.length > 0) {
+      children = React.Children.map(
+        this.state.children,
+        function(child) {
+          return React.createElement("li", null, child);
+        }
+      );
+    }
     var classes = 'node';
-    if (!this.props.children || this.props.children.length === 0) classes += ' childless';
+    if (!children) classes += ' childless';
+    if (this.state.selected) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
     var children_list;
-    if (this.props.children && this.props.children.length > 0 && !this.state.closed) {
+    if (children && !this.state.closed) {
       children_list = (React.createElement("ul", null, children));
     }
     return React.createElement("div", {tabIndex: "0", className: classes}, 
       React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
-      React.createElement("span", {className: "label", onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave}, this.props.label), 
+      React.createElement("span", {className: "label", onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave, onClick: this.handleClickOnLabel}, 
+        this.props.label
+      ), 
       children_list
     )
   }

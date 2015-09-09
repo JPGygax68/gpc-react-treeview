@@ -13,10 +13,6 @@ var TreeNode = require('./treenode.jsx');
 
 var TreeView = React.createClass({
   displayName: 'TreeView',
-  getInitialState: function() {
-    return {
-    }
-  },
   loadCommentsFromServer: function() {
     $.ajax({
       url: this.props.url,
@@ -52,11 +48,10 @@ var TreeView = React.createClass({
     }
   },
   render: function() {
-    return <div className="gpc treeview">
-        <TreeNode label="ROOT">
-          {this.props.children}
-        </TreeNode>
-      </div>
+    //console.log('this.props.top_nodes:', this.props.top_nodes);
+    return ( <div className="gpc treeview">
+        <TreeNode label="ROOT" children={this.props.top_nodes} />
+      </div> );
   }
 });
 
