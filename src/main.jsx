@@ -12,6 +12,7 @@ insertCss(css);
 var TreeNode = require('./treenode.jsx');
 
 var TreeView = React.createClass({
+  
   displayName: 'TreeView',
   loadCommentsFromServer: function() {
     $.ajax({
@@ -47,18 +48,36 @@ var TreeView = React.createClass({
       setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
     }
   },
-  handleDescendantSelected: function(comp) {
-    console.log('TreeView::handleDescendantSelected');
-    if (this.selected_node) this.selected_node.setState({selected: false});
-    this.selected_node = comp;
-  },
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
     return ( <div className="gpc treeview">
-        <TreeNode label="ROOT" child_nodes={this.props.top_nodes} onDescendantSelected={this.handleDescendantSelected} />
+        <TreeNode label="ROOT" child_nodes={this.props.root_node.child_nodes} />
       </div> );
   }
 });
+
+// Class method that wrap existing tree structure
+
+TreeView.wrapExistingTree = function(root_node) {
+    
+  var key = 'ROOT';
+  
+  return root_node = wrap(root_node, key);
+  
+  //---
+  
+  function wrap(node, key) {
+    console.log('wrap:', node, key);
+    return {
+      original_node: node,
+      key: key,
+      label: node.label || '(no label)',
+      child_nodes: node.children && node.children.length > 0 ? 
+        node.children.map( (child, i) => wrap(child, key + '.' + (i + 1).toString() ) )
+        : null
+    }
+  }
+}
 
 module.exports = {
   

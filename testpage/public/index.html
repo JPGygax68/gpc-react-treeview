@@ -24,17 +24,19 @@
         </div>
         <script type="text/javascript">
         
-            var top_nodes = [
-                {   label: 'Child 1', child_nodes: [
-                        { label: 'Grandchild 1.1' },
-                        { label: 'Grandchild 1.2' }
-                    ]
-                },
-                { label: 'Child 2' }
-            ];
+            var my_tree = {
+                children: [
+                    {   label: 'Child 1', children: [
+                            { label: 'Grandchild 1.1' },
+                            { label: 'Grandchild 1.2' }
+                        ]
+                    },
+                    { label: 'Child 2' }
+                ]
+            };
             
             React.render(
-                React.createElement(TreeView, {top_nodes: top_nodes}),
+                React.createElement(TreeView, { root_node: TreeView.wrapExistingTree(my_tree) }),
                 document.getElementById('myTreeview')
             );
         </script>

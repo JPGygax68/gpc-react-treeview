@@ -29059,6 +29059,7 @@ insertCss(css);
 var TreeNode = require('./treenode.jsx');
 
 var TreeView = React.createClass({
+  
   displayName: 'TreeView',
   loadCommentsFromServer: function() {
     $.ajax({
@@ -29094,18 +29095,36 @@ var TreeView = React.createClass({
       setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
     }
   },
-  handleDescendantSelected: function(comp) {
-    console.log('TreeView::handleDescendantSelected');
-    if (this.selected_node) this.selected_node.setState({selected: false});
-    this.selected_node = comp;
-  },
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
     return ( React.createElement("div", {className: "gpc treeview"}, 
-        React.createElement(TreeNode, {label: "ROOT", child_nodes: this.props.top_nodes, onDescendantSelected: this.handleDescendantSelected})
+        React.createElement(TreeNode, {label: "ROOT", child_nodes: this.props.root_node.child_nodes})
       ) );
   }
 });
+
+// Class method that wrap existing tree structure
+
+TreeView.wrapExistingTree = function(root_node) {
+    
+  var key = 'ROOT';
+  
+  return root_node = wrap(root_node, key);
+  
+  //---
+  
+  function wrap(node, key) {
+    console.log('wrap:', node, key);
+    return {
+      original_node: node,
+      key: key,
+      label: node.label || '(no label)',
+      child_nodes: node.children && node.children.length > 0 ? 
+        node.children.map( (child, i) => wrap(child, key + '.' + (i + 1).toString() ) )
+        : null
+    }
+  }
+}
 
 module.exports = {
   
@@ -29135,8 +29154,7 @@ var TreeNode = React.createClass({
     return {
       closed: false,
       selected: false,
-      drag_hover: false,
-      children: this.props.child_nodes
+      drag_hover: false
     }
   },
   handleClickOnHandle: function(e) {
@@ -29145,11 +29163,10 @@ var TreeNode = React.createClass({
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
-    console.log('handleClickOnLabel', 'state.selected:', this.state.selected, '_comp:', this._comp);
+    console.log('handleClickOnLabel');
     e.preventDefault();
     if (!this.state.selected) {
       this.setState({ selected: true });
-      if (this.props.onSelected) this.props.onSelected(this._comp);
     }
   },
   handleDragEnter: function(e) {
@@ -29167,21 +29184,13 @@ var TreeNode = React.createClass({
       // TODO: tell parent to move to previous sibling
     }
   },
-  handleDescendantSelected: function(comp) {
-    console.log('handleDescendantSelected', 'comp:', comp);
-    if (this.props.onDescendantSelected) this.props.onDescendantSelected(comp);
-  },
   render: function() {
     var children;
-    //console.log('this.state.children:', this.state.children);
-    if (this.state.children && this.state.children.length > 0) {
+    console.log('this.props.child_nodes:', this.props.child_nodes);
+    if (this.props.child_nodes && this.props.child_nodes.length > 0) {
       var self = this;
-      children = this.state.children.map( function(child, i) {
-          return ( React.createElement("li", null, React.createElement(TreeNode, {label: child.label, 
-            child_nodes: child.child_nodes, 
-            onSelected: this.handleDescendantSelected, 
-            onDescendantSelected: this.handleDescendantSelected}
-          )) );
+      children = this.props.child_nodes.map( function(child, i) {
+          return ( React.createElement("li", null, React.createElement(TreeNode, {label: child.label, child_nodes: child.child_nodes})) );
         }, this);
     }
     var classes = 'node';
@@ -29189,7 +29198,7 @@ var TreeNode = React.createClass({
     if (this.state.selected) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
     var children_list = children && !this.state.closed ? ( React.createElement("ul", null, children) ) : null;
-    return React.createElement("div", {tabIndex: "0", className: classes, ref:  (comp) => this._comp = comp}, 
+    return React.createElement("div", {tabIndex: "0", className: classes}, 
       React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
       React.createElement("span", {className: "label", onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave, onClick: this.handleClickOnLabel}, 
         this.props.label

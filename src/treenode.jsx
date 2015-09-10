@@ -10,8 +10,7 @@ var TreeNode = React.createClass({
     return {
       closed: false,
       selected: false,
-      drag_hover: false,
-      children: this.props.child_nodes
+      drag_hover: false
     }
   },
   handleClickOnHandle: function(e) {
@@ -20,11 +19,10 @@ var TreeNode = React.createClass({
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
-    console.log('handleClickOnLabel', 'state.selected:', this.state.selected, '_comp:', this._comp);
+    console.log('handleClickOnLabel');
     e.preventDefault();
     if (!this.state.selected) {
       this.setState({ selected: true });
-      if (this.props.onSelected) this.props.onSelected(this._comp);
     }
   },
   handleDragEnter: function(e) {
@@ -42,21 +40,13 @@ var TreeNode = React.createClass({
       // TODO: tell parent to move to previous sibling
     }
   },
-  handleDescendantSelected: function(comp) {
-    console.log('handleDescendantSelected', 'comp:', comp);
-    if (this.props.onDescendantSelected) this.props.onDescendantSelected(comp);
-  },
   render: function() {
     var children;
-    //console.log('this.state.children:', this.state.children);
-    if (this.state.children && this.state.children.length > 0) {
+    console.log('this.props.child_nodes:', this.props.child_nodes);
+    if (this.props.child_nodes && this.props.child_nodes.length > 0) {
       var self = this;
-      children = this.state.children.map( function(child, i) {
-          return ( <li><TreeNode label={child.label} 
-            child_nodes={child.child_nodes} 
-            onSelected={this.handleDescendantSelected}
-            onDescendantSelected={this.handleDescendantSelected}
-          /></li> );
+      children = this.props.child_nodes.map( function(child, i) {
+          return ( <li><TreeNode label={child.label} child_nodes={child.child_nodes} /></li> );
         }, this);
     }
     var classes = 'node';
@@ -64,7 +54,7 @@ var TreeNode = React.createClass({
     if (this.state.selected) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
     var children_list = children && !this.state.closed ? ( <ul>{children}</ul> ) : null;
-    return <div tabIndex="0" className={classes} ref={ (comp) => this._comp = comp } >
+    return <div tabIndex="0" className={classes}>
       <span className="handle" onClick={this.handleClickOnHandle} />
       <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onClick={this.handleClickOnLabel}>
         {this.props.label}
