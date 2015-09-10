@@ -85,9 +85,9 @@ var TreeNode = React.createClass({
       closed: false,
       selected: false,
       drag_hover: false,
-      children: this.props.children ? 
+      children: this.props.child_nodes /* this.props.children ? 
         this.props.children.map( function(child) { return { label: child.label, children: child.children }; } ) 
-        : null
+        : null */
     }
   },
   handleClickOnHandle: function(e) {
@@ -96,10 +96,11 @@ var TreeNode = React.createClass({
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
-    console.log('handleClickOnLabel', this.state.selected);
+    console.log('handleClickOnLabel', this.state.selected, this._comp);
     e.preventDefault();
     if (!this.state.selected) {
       this.setState({ selected: true });
+      if (this.props.onChildSelected) this.props.onChildSelected(this._comp);
     }
   },
   handleDragEnter: function(e) {
@@ -117,22 +118,26 @@ var TreeNode = React.createClass({
       // TODO: tell parent to move to previous sibling
     }
   },
+  handleChildSelected: function(index) {
+    console.log('handleChildSelected', index);
+  },
   render: function() {
     var children;
-    console.log('this.state.children:', this.state.children);
+    //console.log('this.state.children:', this.state.children);
     if (this.state.children && this.state.children.length > 0) {
-      children = this.state.children.map( function(child) {
-          return ( <li><TreeNode label={child.label} children={child.children} /></li> );
-        });
+      children = this.state.children.map( function(child, i) {
+          return ( <li><TreeNode label={child.label} 
+            child_nodes={child.child_nodes} 
+            ref={i}
+            onChildSelected={this.handleChildSelected.bind(this, i)} 
+          /></li> );
+        }, this);
     }
     var classes = 'node';
     if (!children) classes += ' childless';
     if (this.state.selected) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
-    var children_list;
-    if (children && !this.state.closed) {
-      children_list = (<ul>{children}</ul>);
-    }
+    var children_list = children && !this.state.closed ? ( <ul>{children}</ul> ) : null;
     return <div tabIndex="0" className={classes}>
       <span className="handle" onClick={this.handleClickOnHandle} />
       <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onClick={this.handleClickOnLabel}>
