@@ -51,7 +51,7 @@ var TreeView = React.createClass({
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
     return ( <div className="gpc treeview">
-        <TreeNode label="ROOT" child_nodes={this.props.root_node.child_nodes} />
+        <TreeNode label="ROOT" data={this.props.root_node} />
       </div> );
   }
 });

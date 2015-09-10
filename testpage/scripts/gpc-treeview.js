@@ -29098,7 +29098,7 @@ var TreeView = React.createClass({
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
     return ( React.createElement("div", {className: "gpc treeview"}, 
-        React.createElement(TreeNode, {label: "ROOT", child_nodes: this.props.root_node.child_nodes})
+        React.createElement(TreeNode, {label: "ROOT", data: this.props.root_node})
       ) );
   }
 });
@@ -29153,7 +29153,7 @@ var TreeNode = React.createClass({
     console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      selected: false,
+      selected: this.props.data.selected,
       drag_hover: false
     }
   },
@@ -29186,11 +29186,11 @@ var TreeNode = React.createClass({
   },
   render: function() {
     var children;
-    console.log('this.props.child_nodes:', this.props.child_nodes);
-    if (this.props.child_nodes && this.props.child_nodes.length > 0) {
+    console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
+    if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
       var self = this;
-      children = this.props.child_nodes.map( function(child, i) {
-          return ( React.createElement("li", null, React.createElement(TreeNode, {label: child.label, child_nodes: child.child_nodes})) );
+      children = this.props.data.child_nodes.map( function(child, i) {
+          return ( React.createElement("li", null, React.createElement(TreeNode, {data: child})) );
         }, this);
     }
     var classes = 'node';
@@ -29201,7 +29201,7 @@ var TreeNode = React.createClass({
     return React.createElement("div", {tabIndex: "0", className: classes}, 
       React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
       React.createElement("span", {className: "label", onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave, onClick: this.handleClickOnLabel}, 
-        this.props.label
+        this.props.data.label
       ), 
       children_list
     )

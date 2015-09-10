@@ -9,7 +9,7 @@ var TreeNode = React.createClass({
     console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      selected: false,
+      selected: this.props.data.selected,
       drag_hover: false
     }
   },
@@ -42,11 +42,11 @@ var TreeNode = React.createClass({
   },
   render: function() {
     var children;
-    console.log('this.props.child_nodes:', this.props.child_nodes);
-    if (this.props.child_nodes && this.props.child_nodes.length > 0) {
+    console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
+    if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
       var self = this;
-      children = this.props.child_nodes.map( function(child, i) {
-          return ( <li><TreeNode label={child.label} child_nodes={child.child_nodes} /></li> );
+      children = this.props.data.child_nodes.map( function(child, i) {
+          return ( <li><TreeNode data={child} /></li> );
         }, this);
     }
     var classes = 'node';
@@ -57,7 +57,7 @@ var TreeNode = React.createClass({
     return <div tabIndex="0" className={classes}>
       <span className="handle" onClick={this.handleClickOnHandle} />
       <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onClick={this.handleClickOnLabel}>
-        {this.props.label}
+        {this.props.data.label}
       </span>
       {children_list}
     </div>
