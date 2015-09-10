@@ -47,11 +47,11 @@ var TreeView = React.createClass({
     this.selected_node = proxy;
   },
   componentWillMount: function() {
-    console.log('TreeView::componentWillMount', 'props:', this.props);
+    //console.log('TreeView::componentWillMount', 'props:', this.props);
     this.props.root_node.init();
   },
   componentDidMount: function() {
-    console.log('TreeView::componentDidMount');
+    //console.log('TreeView::componentDidMount');
     if (this.props.url) {
       this.loadCommentsFromServer();
       setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
@@ -96,8 +96,8 @@ NodeProxy.prototype = {
   },
   
   setComponent: function(comp) {
+    //console.log('NodeProxy::setComponent():', comp);
     this.component = comp;
-    console.log('NodeProxy::setComponent():', comp);
   },
   
   // Only on root node
@@ -124,7 +124,7 @@ TreeView.wrapExistingTree = function(root_node) {
   //---
   
   function wrap(node, key) {
-    console.log('wrap:', node, key);
+    //console.log('wrap:', node, key);
     return new NodeProxy({
       original_node: node,
       key: key,

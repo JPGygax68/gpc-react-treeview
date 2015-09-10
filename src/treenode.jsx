@@ -6,7 +6,7 @@ var TreeNode = React.createClass({
   
   displayName: 'TreeNode',
   getInitialState: function() {
-    console.log('TreeNode::getInitialState', 'this.props:', this.props);
+    //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
       selected: false,
@@ -14,24 +14,34 @@ var TreeNode = React.createClass({
     }
   },
   handleClickOnHandle: function(e) {
-    console.log('handleClickOnHandle', this.state.closed);
+    //console.log('handleClickOnHandle', this.state.closed);
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
-    console.log('handleClickOnLabel');
+    //console.log('handleClickOnLabel');
     e.preventDefault();
     if (!this.state.selected) this.props.data.setSelected(true);
   },
   handleDragEnter: function(e) {
-    console.log('handleDragEnter');
+    //console.log('handleDragEnter', e.clientX, e.clientY);
     this.setState({ drag_hover: true });
     e.preventDefault();
   },
   handleDragLeave: function(e) {
-    console.log('handleDragLeave');
+    //console.log('handleDragLeave');
     this.setState({ drag_hover: false });
     e.preventDefault();
+  },
+  handleDragOver: function(e) {
+    console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    e.preventDefault();
+  },
+  handleMouseOver: function(e) {
+    //console.log('handleMouseOver', e.x, e.y);
+  },
+  handleMouseMove: function(e) {
+    //console.log('handleMouseMove', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
   },
   handleKeyDown: function(e) {
     if (e.which === 38) {
@@ -39,8 +49,8 @@ var TreeNode = React.createClass({
     }
   },
   render: function() {
+    //console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
     var children;
-    console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
     if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
       var self = this;
       children = this.props.data.child_nodes.map( function(child, i) {
@@ -54,7 +64,13 @@ var TreeNode = React.createClass({
     var children_list = children && !this.state.closed ? ( <ul>{children}</ul> ) : null;
     return <div tabIndex="0" className={classes}>
       <span className="handle" onClick={this.handleClickOnHandle} />
-      <span className="label" onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onClick={this.handleClickOnLabel}>
+      <span className="label" 
+          onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
+          onMouseOver={this.handleMouseOver} onMouseMove={this.handleMouseMove}
+          onClick={this.handleClickOnLabel}>
+            <div className="top" />
+            <div className="center" />
+            <div className="bottom" />
         {this.props.data.label}
       </span>
       {children_list}

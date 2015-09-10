@@ -1,3 +1,15 @@
+2015-09-10
+==========
+
+I have finally discovered how to manage item selection in my tree view in a way that works with React. Unfortunately, it requires adding a data structure that runs parallel to the component hierarchy used by React, which means that data is represented by (at least) 4 more or less parallel data structures: the one I introduced: node "proxies" (actually this implies a fifth data tree, the one being proxied); the component tree provided to React; the virtual DOM maintained by React; and the real DOM in the browser.
+
+The node proxy hierarchy is needed because component instances in React are not persistent. React generates and re-generates them as it sees fit, using its diff'ing heuristics to update the DOM efficiently. This means that other data objects are needed to work as persistent representatives of the data nodes.
+
+Fortunately, React provides the "ref as callback" feature that makes it possible to create and update a two-way binding between the node proxies and their currently active React component instances.
+
+Note: assigning distinct and immutable keys to each TreeNode component might help minimize the turnover of React component instances. I'll have to gain more experience with React to find out if that is really the case, and whether it's worth further investigation.
+
+
 2015-09-09
 ==========
 

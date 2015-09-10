@@ -7,7 +7,8 @@ selection_background = lighten(selection_border, 75%);
   
   .node {
   
-    padding: 0.15em;
+    //padding: 0.15em;
+    padding: 0;
     outline: 0;
     
     > .handle {
@@ -28,12 +29,24 @@ selection_background = lighten(selection_border, 75%);
         background-color: alpha(selection_background, 0.5);
         border-color: alpha(selection_border, 0.5);
       }
+      
+      display: inline-block;
+      //margin-bottom: -0.5em; // too much, but gets rid of spacing between li's
+      position: relative;
+      
+      > div {
+        position: absolute;
+        left: 0; right: 0;
+        &.top    { top   :   0; height: 33%; background-color: rgba(255, 0, 0, 0.2) }
+        &.center { top   : 33%; bottom: 33%; background-color: rgba(0, 255, 0, 0.2) }
+        &.bottom { bottom:   0; height: 33%; background-color: rgba(0, 0, 255, 0.2) }
+      }
     }
     
     > ul {
       list-style-type: none;
       padding-left: 1em;
-      margin: 0.1em 0;
+      margin: 0; //0.1em 0;
     }
 
     &.closed {
