@@ -9,7 +9,7 @@ var TreeNode = React.createClass({
     console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      selected: this.props.data.selected,
+      selected: false,
       drag_hover: false
     }
   },
@@ -21,9 +21,7 @@ var TreeNode = React.createClass({
   handleClickOnLabel: function(e) {
     console.log('handleClickOnLabel');
     e.preventDefault();
-    if (!this.state.selected) {
-      this.setState({ selected: true });
-    }
+    if (!this.state.selected) this.props.data.setSelected(true);
   },
   handleDragEnter: function(e) {
     console.log('handleDragEnter');
@@ -46,7 +44,7 @@ var TreeNode = React.createClass({
     if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
       var self = this;
       children = this.props.data.child_nodes.map( function(child, i) {
-          return ( <li><TreeNode data={child} /></li> );
+          return ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } /></li> );
         }, this);
     }
     var classes = 'node';
