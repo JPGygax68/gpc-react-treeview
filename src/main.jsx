@@ -47,10 +47,15 @@ var TreeView = React.createClass({
       setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
     }
   },
+  handleDescendantSelected: function(comp) {
+    console.log('TreeView::handleDescendantSelected');
+    if (this.selected_node) this.selected_node.setState({selected: false});
+    this.selected_node = comp;
+  },
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
     return ( <div className="gpc treeview">
-        <TreeNode label="ROOT" child_nodes={this.props.top_nodes} />
+        <TreeNode label="ROOT" child_nodes={this.props.top_nodes} onDescendantSelected={this.handleDescendantSelected} />
       </div> );
   }
 });
