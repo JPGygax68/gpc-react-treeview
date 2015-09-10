@@ -64,14 +64,14 @@ var TreeNode = React.createClass({
     var children_list = children && !this.state.closed ? ( <ul>{children}</ul> ) : null;
     return <div tabIndex="0" className={classes}>
       <span className="handle" onClick={this.handleClickOnHandle} />
-      <span className="label" 
+      <span className="label-box" 
           onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
           onMouseOver={this.handleMouseOver} onMouseMove={this.handleMouseMove}
           onClick={this.handleClickOnLabel}>
+            <span className="label">{this.props.data.label}</span>
             <div className="top" />
             <div className="center" />
             <div className="bottom" />
-        {this.props.data.label}
       </span>
       {children_list}
     </div>

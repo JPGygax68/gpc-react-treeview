@@ -29197,7 +29197,7 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"./treenode.jsx":161,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node > span.label {\n  padding: 0.15em;\n  cursor: default;\n  border: solid 0.1em transparent;\n  border-radius: 0.15em;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label:hover {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label > div {\n  position: absolute;\n  left: 0;\n  right: 0;\n}\n.gpc.treeview .node > span.label > div.top {\n  top: 0;\n  height: 33%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label > div.center {\n  top: 33%;\n  bottom: 33%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label > div.bottom {\n  bottom: 0;\n  height: 33%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.selected > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > .label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  position: absolute;\n  left: 0;\n  right: 0;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n"
 },{}],161:[function(require,module,exports){
 "use strict";
 
@@ -29265,14 +29265,14 @@ var TreeNode = React.createClass({
     var children_list = children && !this.state.closed ? ( React.createElement("ul", null, children) ) : null;
     return React.createElement("div", {tabIndex: "0", className: classes}, 
       React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
-      React.createElement("span", {className: "label", 
+      React.createElement("span", {className: "label-box", 
           onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave, onDragOver: this.handleDragOver, 
           onMouseOver: this.handleMouseOver, onMouseMove: this.handleMouseMove, 
           onClick: this.handleClickOnLabel}, 
+            React.createElement("span", {className: "label"}, this.props.data.label), 
             React.createElement("div", {className: "top"}), 
             React.createElement("div", {className: "center"}), 
-            React.createElement("div", {className: "bottom"}), 
-        this.props.data.label
+            React.createElement("div", {className: "bottom"})
       ), 
       children_list
     )
