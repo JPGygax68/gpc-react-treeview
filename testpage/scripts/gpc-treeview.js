@@ -29197,23 +29197,6 @@ Node.prototype = {
 
 */
 
-function Node(label, children) {
-  
-  def = def || {};
-  
-  this.label = def.label || '(no label)';
-  this.children = [];  
-  if (children) children.forEach( this.appendChild.bind(this) );
-}
-
-Node.prototype = {
-  
-  appendChild: function(label, children) {
-    this.children.push( new Node(label, children) );
-  }
-};
-
-
 var TreeNode = React.createClass({
   displayName: 'TreeNode',
   getInitialState: function() {
@@ -29222,10 +29205,9 @@ var TreeNode = React.createClass({
       closed: false,
       selected: false,
       drag_hover: false,
-      children: this.props.children && this.props.children.length > 0 ? this.props.children.map( function(child) {
-        //console.log('child:', child, typeof child);
-        return ( React.createElement(TreeNode, {label: child.label, children: child.children}) )
-      }) : null
+      children: this.props.children ? 
+        this.props.children.map( function(child) { return { label: child.label, children: child.children }; } ) 
+        : null
     }
   },
   handleClickOnHandle: function(e) {
@@ -29259,12 +29241,9 @@ var TreeNode = React.createClass({
     var children;
     console.log('this.state.children:', this.state.children);
     if (this.state.children && this.state.children.length > 0) {
-      children = React.Children.map(
-        this.state.children,
-        function(child) {
-          return React.createElement("li", null, child);
-        }
-      );
+      children = this.state.children.map( function(child) {
+          return ( React.createElement("li", null, React.createElement(TreeNode, {label: child.label, children: child.children})) );
+        });
     }
     var classes = 'node';
     if (!children) classes += ' childless';
