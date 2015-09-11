@@ -98,6 +98,7 @@ var TreeNode = React.createClass({
     if (!children            ) classes += ' childless';
     if (this.state.selected  ) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
+    if (this.state.closed    ) classes += ' closed';
     var children_list = children && !this.state.closed ? ( <ul className="child-nodes">{children}</ul> ) : null;
     return (
       <div tabIndex="0" className={classes} 
