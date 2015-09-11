@@ -9,6 +9,13 @@ Fortunately, React provides the "ref as callback" feature that makes it possible
 
 Note: assigning distinct and immutable keys to each TreeNode component might help minimize the turnover of React component instances. I'll have to gain more experience with React to find out if that is really the case, and whether it's worth further investigation.
 
+-----------------
+
+The next challenge will be to come up with a good way to support drag and drop insertion. This could be tricky, because the system should support inserting new nodes anywhere in the visible part of the tree (and, later on, perhaps even in as yet invisible ones by automatically bringing possible "insertion points" into view). The most promising approach is probably to listen to the DragOver event on the UL element, as well as the (newly-introduced) label-box. This will be tricky though, because there are cases when the UL should have priority over the label-box - even though the label-box is further down the hierarchy.
+
+UNLESS - and this is a real possibility - one chooses to visually translate "insertability" by explicitly creating spacing between child nodes (and before and after the first and last). It would even be possible to do this dynamically whenever a drag starts - and even go as far as only creating the insertion spaces where a drop-insertion would actually succeed!
+
+Another idea might be simpler though: alternating child nodes with "insertion markers" that are normally invisible but turn visible when dragged over. These markers could have zero height and use absolutely positioned children to display themselves without interfering with layout.
 
 2015-09-09
 ==========

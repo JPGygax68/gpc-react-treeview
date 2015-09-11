@@ -2,9 +2,24 @@
 
 var React = require('react');
 
+var InsertionMark = React.createClass({
+  
+  displayName: 'InsertionMark',
+  
+  getInitialState: function() {
+    return {};
+  },
+  
+  render: function() {
+    return ( <div className="insertion-mark" /> );
+  }
+  
+});
+
 var TreeNode = React.createClass({
   
   displayName: 'TreeNode',
+  
   getInitialState: function() {
     //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
@@ -13,6 +28,7 @@ var TreeNode = React.createClass({
       drag_hover: false
     }
   },
+  
   handleClickOnHandle: function(e) {
     //console.log('handleClickOnHandle', this.state.closed);
     e.preventDefault();
@@ -53,8 +69,11 @@ var TreeNode = React.createClass({
     var children;
     if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
       var self = this;
-      children = this.props.data.child_nodes.map( function(child, i) {
-          return ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } /></li> );
+      children = [];
+      children.push( <li><InsertionMark/></li> );
+      this.props.data.child_nodes.forEach( function(child, i) {
+          children.push( ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } /></li> ) );
+          children.push( ( <li><InsertionMark/></li>) );
         }, this);
     }
     var classes = 'node';
