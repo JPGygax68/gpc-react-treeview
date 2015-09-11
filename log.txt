@@ -15,6 +15,32 @@ Both of the above approaches require precise mouse movement. Another idea would 
 
 Inserting via drop zones in the label still seems practicable, but special care is needed when a node has (visible) children. In that case, the lower insertion zone should be disregarded. Inserting before the next sibling could then be done on the insertion zone of that sibling, and if there is none, a drop zone should appear. As an alternative, the user could also onto the parent - but that doesn't work at the top level if the root node is hidden.
 
+----------
+
+Ok, it's time to take a look back and then to plan the next moves.
+
+At this point, though I don't have any implementation of drag & drop yet, I have a fairly satisfying starting point, in the sense that I'm confident that I can create a visually and haptically appealing treeview component. A key point is that I feel I will be able to implement insertion by drag and drop, which IMO is the best way for non-programmers to work on the hierarchical structure of web pages (and whole sites). I have implemented a kind of preview based on insertion marks that appear when hovering (of course in a real implementation, they would only appear when a drag operation is in progress).
+
+There are however quite a few details to work out at this point. I'm gonna try to braindump the questions that have popped up in my mind, in no particular order:
+
+- Is it desirable to have a "targetting aid" feature, i.e. to visually highlight every possible drop point whenever any drag operation starts ? It appears that this would be possible, as a component can subscribe to "dragstart" and "dragend" on the document level. I have tested this, and it appears to work. However, there is a possibility that this might lead to intolerable sluggishness when a drag starts, if too many components are doing too many checks and updates [note: checks can imply asynchronous operations in some cases].
+
+- How useful is a "cannot insert here" feedback, seeing as the browser already shows a "stop" sign when hovering over any target that cannot be dropped onto? Perhaps displaying the insertion mark at half opacity is the way to go ?
+
+- What is the "right way" to implement icons? Should this be done via CSS alone, or is there a better way to inject them ? How to create the association between a node type and the icon(s) representing it? How to make it possible for icons to follow the state of the node (typically, open vs closed) ?
+
+- How to properly highlight the label of a node that is willing to accept a drop ?
+
+- How to give the user additional feedback about an imminent drop ?
+
+- How about flyouts, giving the user options about how the dropped data should be interpreted ?
+
+[Unrelated note: selection state is not preserved when closing and reopening a parent node. I believe I should be keeping that state in the NodeProxy objects, and pass it down to the TreeNode elements as properties, NOT state. .... WRONG. Found another way to fix this. Not sure it's the best way though.$
+...
+Did some research. One blog post states it as clear as can be: "React only gives you the view". So, just as I thought, I'll probably have to implement some module supporting the creation of view models.
+
+Another note: there is a package call react-templates that does not use JSX, but separates the declarative part (the template) and the code into separate files again. Worth a good look.
+]
 
 2015-09-10
 ==========

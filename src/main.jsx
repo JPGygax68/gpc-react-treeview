@@ -15,6 +15,10 @@ var TreeView = React.createClass({
   
   displayName: 'TreeView',
   
+  getInitialState: function() {
+    return { dragging: false };
+  },
+  
   loadCommentsFromServer: function() {
     $.ajax({
       url: this.props.url,
@@ -56,11 +60,25 @@ var TreeView = React.createClass({
       this.loadCommentsFromServer();
       setInterval(this.loadCommentsFromServer, this.props.pollInterval || 2000);
     }
+    // Listen to drag events
+    self = this;
+    document.addEventListener('dragstart', function(e) {
+      console.log('dragstart');
+      self.setState({ dragging: true });
+    });
+    document.addEventListener('dragend', function(e) {
+      console.log('dragend');
+      self.setState({ dragging: false });
+    });
   },
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
     return ( <div className="gpc treeview">
-        <TreeNode label="ROOT" data={this.props.root_node} ref={(c) => this.props.root_node.setComponent(c)}/>
+        <TreeNode label="ROOT" 
+          data={this.props.root_node} 
+          ref={(c) => this.props.root_node.setComponent(c)}
+          dragging={this.state.dragging}
+        />
       </div> );
   }
 });
@@ -77,8 +95,12 @@ function NodeProxy(data) {
   
   this.parent = null;
   this.root = null;
+  this.selected = false;
 }
 
+/* This class is, in effect, a view-model for the TreeNode element defined in treenode.jsx.
+  This type of tight coupling is rather undesirable, but I don't really see an alternative.
+*/
 NodeProxy.prototype = {
   
   init: function() {
@@ -95,20 +117,32 @@ NodeProxy.prototype = {
     this.root.setSelectedNode(this);
   },
   
+  select: function() {
+    this.component.setState({ selected: true });
+    this.selected = true;
+  },
+  
+  deselect: function() {
+    this.component.setState({ selected: false });
+    this.selected = false;
+  },
+  
   setComponent: function(comp) {
     //console.log('NodeProxy::setComponent():', comp);
+    console.assert(comp !== this.component);
     this.component = comp;
+    if (comp) this.component.setState({ selected: this.selected });
   },
   
   // Only on root node
   
   setSelectedNode: function(node) {
     if (this.selected_node) {
-      this.selected_node.component.setState({ selected: false });
+      this.selected_node.deselect();
     }
     this.selected_node = node;
     if (node) {
-      this.selected_node.component.setState({ selected: true });
+      this.selected_node.select();
     }
   }
 }
