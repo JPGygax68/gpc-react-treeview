@@ -11,7 +11,12 @@ var InsertionMark = React.createClass({
   },
   
   render: function() {
-    return ( <div className="insertion-mark" /> );
+    return ( <div className="insertion-mark"> 
+        <div className="brace left" />
+        <div className="bar" />
+        <div className="brace right" />
+      </div>
+    );
   }
   
 });
