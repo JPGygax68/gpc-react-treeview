@@ -29197,7 +29197,7 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"./treenode.jsx":161,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: -1;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > span.label-box > div:hover {\n  background-color: #f00;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n.gpc.treeview div.insertion-mark {\n  width: 100%;\n  height: 0.5em;\n  position: relative;\n  overflow: hidden;\n}\n.gpc.treeview div.insertion-mark:hover {\n  background-color: #f00;\n}\n.gpc.treeview div.insertion-mark > div {\n  border: 0;\n  margin: 0;\n  padding: 0;\n}\n.gpc.treeview div.insertion-mark > div.brace {\n  background-color: #000;\n  position: absolute;\n  width: 0.5em;\n  top: 0;\n  bottom: 0;\n  transform-origin: 50% 50%;\n  transform: rotate(45deg);\n}\n.gpc.treeview div.insertion-mark > div.brace.left {\n  left: -0.25em;\n}\n.gpc.treeview div.insertion-mark > div.brace.right {\n  right: -0.25em;\n}\n.gpc.treeview div.insertion-mark > div.bar {\n  background-color: #000;\n  position: absolute;\n  top: 50%;\n  height: 0.1em;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n/*\n        height: 2px;\n        width: 100%;\n        display: inline-block;\n        vertical-align: middle;\n        */\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  display: none;\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 1;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > span.label-box > div:hover {\n  background-color: #f00;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark {\n  width: 100%;\n  height: 0;\n  position: relative;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark.active {\n  display: block;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div {\n  border: 0;\n  margin: 0;\n  padding: 0;\n  height: 0.5em;\n  position: absolute;\n  left: 0;\n  right: 0;\n  overflow: hidden;\n  transform: translateY(-50%);\n  z-index: 1;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div {\n  background-color: transparent;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace {\n  position: absolute;\n  width: 0.5em;\n  top: 0;\n  bottom: 0;\n  transform-origin: 50% 50%;\n  transform: rotate(45deg);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.left {\n  left: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.right {\n  right: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.bar {\n  position: absolute;\n  top: 50%;\n  height: 0.1em;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div:hover > div {\n  background-color: #000;\n}\n.gpc.treeview ul.child-nodes > li:last-child > div.insertion-mark {\n  height: 0.5em;\n}\n"
 },{}],161:[function(require,module,exports){
 "use strict";
 
@@ -29212,10 +29212,14 @@ var InsertionMark = React.createClass({
   },
   
   render: function() {
-    return ( React.createElement("div", {className: "insertion-mark"}, 
-        React.createElement("div", {className: "brace left"}), 
-        React.createElement("div", {className: "bar"}), 
-        React.createElement("div", {className: "brace right"})
+    var className = 'insertion-mark';
+    if (this.props.active) className += ' active';
+    return ( React.createElement("div", {className: className}, 
+        React.createElement("div", null, 
+          React.createElement("div", {className: "brace left"}), 
+          React.createElement("div", {className: "bar"}), 
+          React.createElement("div", {className: "brace right"})
+        )
       )
     );
   }
@@ -29246,17 +29250,19 @@ var TreeNode = React.createClass({
     if (!this.state.selected) this.props.data.setSelected(true);
   },
   handleDragEnter: function(e) {
-    //console.log('handleDragEnter', e.clientX, e.clientY);
+    console.log('handleDragEnter', e.clientX, e.clientY);
     this.setState({ drag_hover: true });
     e.preventDefault();
+    e.stopPropagation();
   },
   handleDragLeave: function(e) {
-    //console.log('handleDragLeave');
+    console.log('handleDragLeave');
     this.setState({ drag_hover: false });
     e.preventDefault();
+    e.stopPropagation();
   },
   handleDragOver: function(e) {
-    console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    //console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     e.preventDefault();
   },
   handleMouseOver: function(e) {
@@ -29270,6 +29276,13 @@ var TreeNode = React.createClass({
       // TODO: tell parent to move to previous sibling
     }
   },
+  handleDragBefore: function(index, e) {
+    console.log('handleDragBefore:', index, e);
+  },
+  handleDragOnto: function(e) {
+  },
+  handleDragAfter: function(e) {
+  },
   render: function() {
     //console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
     var children;
@@ -29278,28 +29291,31 @@ var TreeNode = React.createClass({
       children = [];
       children.push( React.createElement("li", null, React.createElement(InsertionMark, null)) );
       this.props.data.child_nodes.forEach( function(child, i) {
-          children.push( ( React.createElement("li", null, React.createElement(TreeNode, {data: child, ref:  (c) => child.setComponent(c)})) ) );
-          children.push( ( React.createElement("li", null, React.createElement(InsertionMark, null))) );
+          children.push( ( React.createElement("li", null, React.createElement(TreeNode, {data: child, ref:  (c) => child.setComponent(c), parentIndex: i})) ) );
+          children.push( ( React.createElement("li", null, React.createElement(InsertionMark, {active: this.state.drag_hover}))) );
         }, this);
     }
     var classes = 'node';
-    if (!children) classes += ' childless';
-    if (this.state.selected) classes += ' selected';
+    if (!children            ) classes += ' childless';
+    if (this.state.selected  ) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
-    var children_list = children && !this.state.closed ? ( React.createElement("ul", null, children) ) : null;
-    return React.createElement("div", {tabIndex: "0", className: classes}, 
-      React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
-      React.createElement("span", {className: "label-box", 
-          onDragEnter: this.handleDragEnter, onDragLeave: this.handleDragLeave, onDragOver: this.handleDragOver, 
+    var children_list = children && !this.state.closed ? ( React.createElement("ul", {className: "child-nodes"}, children) ) : null;
+    return (
+      React.createElement("div", {tabIndex: "0", className: classes
+        // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
+      }, 
+        React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
+        React.createElement("span", {className: "label-box", 
           onMouseOver: this.handleMouseOver, onMouseMove: this.handleMouseMove, 
           onClick: this.handleClickOnLabel}, 
             React.createElement("span", {className: "label"}, this.props.data.label), 
-            React.createElement("div", {className: "top"}), 
+            React.createElement("div", {className: "top", onDragEnter: this.handleDragBefore.bind(this, this.props.parentIndex)}), 
             React.createElement("div", {className: "center"}), 
             React.createElement("div", {className: "bottom"})
-      ), 
-      children_list
-    )
+        ), 
+        children_list
+      ) 
+    );
   }
 });
 

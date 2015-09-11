@@ -1,3 +1,21 @@
+2015-09-11
+==========
+
+Interesting thing learned: dragenter and dragleave do not bubble - that much was pretty much a given, but on top of that, moving the pointer over a descendant element will actually generate a dragleave on the previously entered ancestor.
+
+Correction: MDN says dragenter DOES bubble. Hm.
+
+----------
+
+There are several ways to support drag and drop, and I'm still undecided. Perhaps the simplest would be to leave spaces between child nodes, which become visible as insertion marks when dragged over. Advantage: simple; drawback: takes more space than necessary.
+
+Another way is to vertically divide node labels, and to interpret the top zone as "insert before" and the bottom zone as "insert after". This implies that an empty drop space must provided in lieu of children when a node that could have children doesn't have any yet.
+
+Both of the above approaches require precise mouse movement. Another idea would be to provide a vertical "band" to the right of the tree that normally stays invisible, but shows possible insertion points when a drag is in progress. Those insertion markers should look like pointed labels (point to the left), meaning that they could overlap at the end of a level (insert at end of this level, insert before next node of parent level). This could perhaps be solved by temporarily increasing the Z index of a hovered insertion label.
+
+Inserting via drop zones in the label still seems practicable, but special care is needed when a node has (visible) children. In that case, the lower insertion zone should be disregarded. Inserting before the next sibling could then be done on the insertion zone of that sibling, and if there is none, a drop zone should appear. As an alternative, the user could also onto the parent - but that doesn't work at the top level if the root node is hidden.
+
+
 2015-09-10
 ==========
 
