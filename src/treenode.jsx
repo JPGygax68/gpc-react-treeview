@@ -29,11 +29,14 @@ var TreeNode = React.createClass({
   
   displayName: 'TreeNode',
   
+  propTypes: {
+    parent: React.PropTypes.object
+  },
+  
   getInitialState: function() {
     //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      selected: false,
       drag_hover: false
     }
   },
@@ -46,7 +49,9 @@ var TreeNode = React.createClass({
   handleClickOnLabel: function(e) {
     //console.log('handleClickOnLabel');
     e.preventDefault();
-    if (!this.state.selected) this.props.data.setSelected(true);
+    if (!this.props.treeview.state.selected_node !== this) {
+      this.props.treeview.setSelectedNode(this);
+    }
   },
   handleDragEnter: function(e) {
     console.log('handleDragEnter', e.clientX, e.clientY);
@@ -90,16 +95,18 @@ var TreeNode = React.createClass({
       children = [];
       children.push( <li><InsertionMark/></li> );
       this.props.data.child_nodes.forEach( function(child, i) {
-          children.push( ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } parentIndex={i} /></li> ) );
+          // The following introduces tight coupling between the component and its "view-model":
+          //children.push( ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } parentIndex={i} /></li> ) );
+          children.push( ( <li><TreeNode data={child} parent={this} treeview={this.props.treeview} /></li> ) );
           children.push( ( <li><InsertionMark active={this.state.drag_hover}/></li>) );
         }, this);
     }
+    var selected = this.props.treeview.state.selected_node === this;
     var classes = 'node';
     if (!children            ) classes += ' childless';
-    if (this.state.selected  ) classes += ' selected';
+    if (selected             ) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
     if (this.state.closed    ) classes += ' closed';
-    var children_list = children && !this.state.closed ? ( <ul className="child-nodes">{children}</ul> ) : null;
     return (
       <div tabIndex="0" className={classes} 
         // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
@@ -113,7 +120,7 @@ var TreeNode = React.createClass({
             <div className="center" />
             <div className="bottom" />
         </span>
-        {children_list}
+        <ul className="child-nodes">{children}</ul>
       </div> 
     );
   }

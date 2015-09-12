@@ -29063,7 +29063,10 @@ var TreeView = React.createClass({
   displayName: 'TreeView',
   
   getInitialState: function() {
-    return { dragging: false };
+    return { 
+      selected_node: null,
+      dragging: false 
+    };
   },
   
   loadCommentsFromServer: function() {
@@ -29093,9 +29096,11 @@ var TreeView = React.createClass({
       }
     });
   },
-  setSelectedNode: function(proxy) {
-    if (this.selected_node) this.selected_node.setProps({ selected: false });
-    this.selected_node = proxy;
+  setSelectedNode: function(node) {
+    if (this.state.selected_node) {
+      this.state.selected_node.setState({ selected: false });
+    }
+    this.setState({ selected_node: node });
   },
   componentWillMount: function() {
     //console.log('TreeView::componentWillMount', 'props:', this.props);
@@ -29123,7 +29128,7 @@ var TreeView = React.createClass({
     return ( React.createElement("div", {className: "gpc treeview"}, 
         React.createElement(TreeNode, {label: "ROOT", 
           data: this.props.root_node, 
-          ref: (c) => this.props.root_node.setComponent(c), 
+          treeview: this, 
           dragging: this.state.dragging}
         )
       ) );
@@ -29145,8 +29150,13 @@ function NodeProxy(data) {
   this.selected = false;
 }
 
-/* This class is, in effect, a view-model for the TreeNode element defined in treenode.jsx.
-  This type of tight coupling is rather undesirable, but I don't really see an alternative.
+/* This class is the data model for a tree view, plus the "adaptation layer" allowing
+  the treeview to access the data.
+  In a mature implementation, event handlers could (should?) be used by the treeview
+  to access data indirectly.
+  For the other direction, i.e. updating the view when the data has changed, user code
+  could obtain a ref (the callback type) to the treeview component, and use keys to
+  inform the view of updates without having to re-generate the whole view.
 */
 NodeProxy.prototype = {
   
@@ -29157,39 +29167,11 @@ NodeProxy.prototype = {
   setParentAndRoot: function(parent, root) {
     this.parent = parent;
     this.root = root;
-    if (this.child_nodes) this.child_nodes.forEach( function(child) { child.setParentAndRoot(this, root) }.bind(this) );
-  },
-  
-  setSelected: function() {
-    this.root.setSelectedNode(this);
-  },
-  
-  select: function() {
-    this.component.setState({ selected: true });
-    this.selected = true;
-  },
-  
-  deselect: function() {
-    this.component.setState({ selected: false });
-    this.selected = false;
-  },
-  
-  setComponent: function(comp) {
-    //console.log('NodeProxy::setComponent():', comp);
-    console.assert(comp !== this.component);
-    this.component = comp;
-    if (comp) this.component.setState({ selected: this.selected });
-  },
-  
-  // Only on root node
-  
-  setSelectedNode: function(node) {
-    if (this.selected_node) {
-      this.selected_node.deselect();
-    }
-    this.selected_node = node;
-    if (node) {
-      this.selected_node.select();
+    if (this.child_nodes) {
+      this.child_nodes.forEach( function(child) { 
+          child.setParentAndRoot(this, root) 
+        }.bind(this) 
+      );
     }
   }
 }
@@ -29231,7 +29213,7 @@ module.exports = {
 }
 
 },{"./styles.styl":160,"./treenode.jsx":161,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node.closed > .handle {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  display: none;\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 1;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > span.label-box > div:hover {\n  background-color: #f00;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark {\n  width: 100%;\n  height: 0;\n  position: relative;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark.active {\n  display: block;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div {\n  border: 0;\n  margin: 0;\n  padding: 0;\n  height: 0.5em;\n  position: absolute;\n  left: 0;\n  right: 0;\n  overflow: hidden;\n  transform: translateY(-50%);\n  z-index: 1;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div {\n  background-color: transparent;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace {\n  position: absolute;\n  width: 0.5em;\n  top: 0;\n  bottom: 0;\n  transform-origin: 50% 50%;\n  transform: rotate(45deg);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.left {\n  left: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.right {\n  right: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.bar {\n  position: absolute;\n  top: 50%;\n  height: 0.1em;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div:hover > div {\n  background-color: #000;\n}\n.gpc.treeview ul.child-nodes > li:last-child > div.insertion-mark {\n  height: 0.5em;\n}\n"
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node.closed > .handle {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  display: none;\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 1;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > span.label-box > div:hover {\n  background-color: #f00;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.closed > ul {\n  display: none;\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark {\n  width: 100%;\n  height: 0;\n  position: relative;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark.active {\n  display: block;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div {\n  border: 0;\n  margin: 0;\n  padding: 0;\n  height: 0.5em;\n  position: absolute;\n  left: 0;\n  right: 0;\n  overflow: hidden;\n  transform: translateY(-50%);\n  z-index: 1;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div {\n  background-color: transparent;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace {\n  position: absolute;\n  width: 0.5em;\n  top: 0;\n  bottom: 0;\n  transform-origin: 50% 50%;\n  transform: rotate(45deg);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.left {\n  left: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.right {\n  right: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.bar {\n  position: absolute;\n  top: 50%;\n  height: 0.1em;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div:hover > div {\n  background-color: #000;\n}\n.gpc.treeview ul.child-nodes > li:last-child > div.insertion-mark {\n  height: 0.5em;\n}\n"
 },{}],161:[function(require,module,exports){
 "use strict";
 
@@ -29264,11 +29246,14 @@ var TreeNode = React.createClass({
   
   displayName: 'TreeNode',
   
+  propTypes: {
+    parent: React.PropTypes.object
+  },
+  
   getInitialState: function() {
     //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      selected: false,
       drag_hover: false
     }
   },
@@ -29281,7 +29266,9 @@ var TreeNode = React.createClass({
   handleClickOnLabel: function(e) {
     //console.log('handleClickOnLabel');
     e.preventDefault();
-    if (!this.state.selected) this.props.data.setSelected(true);
+    if (!this.props.treeview.state.selected_node !== this) {
+      this.props.treeview.setSelectedNode(this);
+    }
   },
   handleDragEnter: function(e) {
     console.log('handleDragEnter', e.clientX, e.clientY);
@@ -29325,16 +29312,18 @@ var TreeNode = React.createClass({
       children = [];
       children.push( React.createElement("li", null, React.createElement(InsertionMark, null)) );
       this.props.data.child_nodes.forEach( function(child, i) {
-          children.push( ( React.createElement("li", null, React.createElement(TreeNode, {data: child, ref:  (c) => child.setComponent(c), parentIndex: i})) ) );
+          // The following introduces tight coupling between the component and its "view-model":
+          //children.push( ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } parentIndex={i} /></li> ) );
+          children.push( ( React.createElement("li", null, React.createElement(TreeNode, {data: child, parent: this, treeview: this.props.treeview})) ) );
           children.push( ( React.createElement("li", null, React.createElement(InsertionMark, {active: this.state.drag_hover}))) );
         }, this);
     }
+    var selected = this.props.treeview.state.selected_node === this;
     var classes = 'node';
     if (!children            ) classes += ' childless';
-    if (this.state.selected  ) classes += ' selected';
+    if (selected             ) classes += ' selected';
     if (this.state.drag_hover) classes += ' drag-hover';
     if (this.state.closed    ) classes += ' closed';
-    var children_list = children && !this.state.closed ? ( React.createElement("ul", {className: "child-nodes"}, children) ) : null;
     return (
       React.createElement("div", {tabIndex: "0", className: classes
         // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
@@ -29348,7 +29337,7 @@ var TreeNode = React.createClass({
             React.createElement("div", {className: "center"}), 
             React.createElement("div", {className: "bottom"})
         ), 
-        children_list
+        React.createElement("ul", {className: "child-nodes"}, children)
       ) 
     );
   }

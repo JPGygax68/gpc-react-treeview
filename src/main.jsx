@@ -16,7 +16,10 @@ var TreeView = React.createClass({
   displayName: 'TreeView',
   
   getInitialState: function() {
-    return { dragging: false };
+    return { 
+      selected_node: null,
+      dragging: false 
+    };
   },
   
   loadCommentsFromServer: function() {
@@ -46,9 +49,11 @@ var TreeView = React.createClass({
       }
     });
   },
-  setSelectedNode: function(proxy) {
-    if (this.selected_node) this.selected_node.setProps({ selected: false });
-    this.selected_node = proxy;
+  setSelectedNode: function(node) {
+    if (this.state.selected_node) {
+      this.state.selected_node.setState({ selected: false });
+    }
+    this.setState({ selected_node: node });
   },
   componentWillMount: function() {
     //console.log('TreeView::componentWillMount', 'props:', this.props);
@@ -76,7 +81,7 @@ var TreeView = React.createClass({
     return ( <div className="gpc treeview">
         <TreeNode label="ROOT" 
           data={this.props.root_node} 
-          ref={(c) => this.props.root_node.setComponent(c)}
+          treeview={this}
           dragging={this.state.dragging}
         />
       </div> );
@@ -98,8 +103,13 @@ function NodeProxy(data) {
   this.selected = false;
 }
 
-/* This class is, in effect, a view-model for the TreeNode element defined in treenode.jsx.
-  This type of tight coupling is rather undesirable, but I don't really see an alternative.
+/* This class is the data model for a tree view, plus the "adaptation layer" allowing
+  the treeview to access the data.
+  In a mature implementation, event handlers could (should?) be used by the treeview
+  to access data indirectly.
+  For the other direction, i.e. updating the view when the data has changed, user code
+  could obtain a ref (the callback type) to the treeview component, and use keys to
+  inform the view of updates without having to re-generate the whole view.
 */
 NodeProxy.prototype = {
   
@@ -110,39 +120,11 @@ NodeProxy.prototype = {
   setParentAndRoot: function(parent, root) {
     this.parent = parent;
     this.root = root;
-    if (this.child_nodes) this.child_nodes.forEach( function(child) { child.setParentAndRoot(this, root) }.bind(this) );
-  },
-  
-  setSelected: function() {
-    this.root.setSelectedNode(this);
-  },
-  
-  select: function() {
-    this.component.setState({ selected: true });
-    this.selected = true;
-  },
-  
-  deselect: function() {
-    this.component.setState({ selected: false });
-    this.selected = false;
-  },
-  
-  setComponent: function(comp) {
-    //console.log('NodeProxy::setComponent():', comp);
-    console.assert(comp !== this.component);
-    this.component = comp;
-    if (comp) this.component.setState({ selected: this.selected });
-  },
-  
-  // Only on root node
-  
-  setSelectedNode: function(node) {
-    if (this.selected_node) {
-      this.selected_node.deselect();
-    }
-    this.selected_node = node;
-    if (node) {
-      this.selected_node.select();
+    if (this.child_nodes) {
+      this.child_nodes.forEach( function(child) { 
+          child.setParentAndRoot(this, root) 
+        }.bind(this) 
+      );
     }
   }
 }
