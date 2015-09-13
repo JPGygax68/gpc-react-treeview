@@ -87,8 +87,11 @@ var TreeNode = React.createClass({
     //console.log('handleMouseMove', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
   },
   handleKeyDown: function(e) {
-    if      (e.which === 38) {
+    if      (e.which === 38) /* UP */ {
       // TODO: tell parent to move to previous sibling
+    }
+    else if (e.which === 40) /* DOWN */ {
+      // TODO: tell parent to move to next sibling
     }
     else if (e.which === 37) /* LEFT */ {
       if (!this.state.closed) { stopEvent(e); this.close(); }
@@ -99,8 +102,8 @@ var TreeNode = React.createClass({
   },
   handleFocusOnLabel: function(e) {
     console.log('handleFocusOnLabel');
-    if (!this.props.treeView.state.selectedNode !== this) {
-      this.props.treeView.setSelectedNode(this);
+    if (!this.isSelected()) {
+      this.select();
       e.stopPropagation();
     }
   },
@@ -112,7 +115,17 @@ var TreeNode = React.createClass({
   handleDragAfter: function(e) {
   },
   
+  /* QUERIES ------------------------*/
+  
+  isSelected: function() {
+    return this.props.treeView.state.selectedNode === this;
+  },
+  
   /* ACTIONS ------------------------*/
+  
+  select: function() {
+    this.props.treeView.setSelectedNode(this);
+  },
   
   close: function() {
     this.setState({ closed: true });
