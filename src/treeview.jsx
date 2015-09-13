@@ -17,7 +17,7 @@ var TreeView = React.createClass({
   
   propTypes: {
     rootNode: React.PropTypes.object.isRequired,
-    nodesHaveKeys: React.PropTypes.boolean
+    nodesHaveKeys: React.PropTypes.bool
   },
   
   getInitialState: function() {
