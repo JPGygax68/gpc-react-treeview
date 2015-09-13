@@ -12,6 +12,7 @@ var buffer = require('vinyl-buffer');
 var notify = require("gulp-notify");
 var babel = require("gulp-babel");
 var nib = require("nib");
+var react = require("gulp-react");
 
 // Browserify ---------------------------------------------
 
@@ -40,19 +41,29 @@ gulp.task('build', ['browserify']);
 
 // Test ---------------------------------------------------
 
-gulp.task("test", ['build'], function() {
+gulp.task('test-jsx', function () {
+  
+  return gulp.src('testpage/src/main.jsx')
+    .pipe(react())
+    //.pipe(source('main.js'))
+    .pipe(gulp.dest('testpage/stage/scripts'));
+});
+
+gulp.task("test", ['build', 'test-jsx']);
+
+/*, function() {
   // Copy stuff to test directory
   
   return gulp.src('dist/*.js', {base: 'dist/'})
     .pipe( gulp.dest('testpage/scripts/') )
     .pipe( notify({ message: "Test setup task complete", onLast: true }) );
-});
+}); */
 
 // Watch and default --------------------------------------
 
 gulp.task('watch', function() {
  
-  gulp.watch('src/**/*.*', ['test']);  
+  gulp.watch(['src/**/*.*', 'testpage/src/**/*.*'], ['test']);  
 });
 
 gulp.task("default", ['test', 'watch']);

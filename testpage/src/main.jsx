@@ -29,10 +29,5 @@ class NodeProxy {
   }
 }
 
-
-React.render(
-  React.createElement(TreeView, {
-    rootNode: new NodeProxy(my_tree)
-  }),
-  document.getElementById('myTreeview')
-);
+React.render( ( <TreeView rootNode={new NodeProxy(my_tree)} /> ), 
+  document.getElementById('myTreeview') );

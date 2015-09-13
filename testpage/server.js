@@ -18,8 +18,11 @@ var app = express();
 
 app.set('port', (process.env.PORT || 3000));
 
-app.use('/', express.static(path.join(__dirname, 'public')));
-app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
+app.use('/', express.static('public'));
+app.use('/', express.static('stage'));
+//app.use('/scripts', express.static('scripts')); // express.static(path.join(__dirname, 'scripts')));
+app.use('/scripts', express.static('../dist/')); // express.static(path.join(__dirname, 'scripts')));
+//app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
