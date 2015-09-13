@@ -274,7 +274,7 @@ var TreeNode = React.createClass({
     else if (e.which === 39) /* RIGHT */ {
       //console.log('RIGHT');
       stopEvent(e);
-      if (this.state.closed) { stopEvent(e); }
+      if (this.state.closed) { this.open(); }
     }
   },
   handleFocusOnLabel: function(e) {
