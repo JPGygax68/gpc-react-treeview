@@ -54,7 +54,7 @@ var TreeNode = React.createClass({
   },
   
   componentWillMount: function() {
-    console.log('TreeNode::componentWillMount');
+    //console.log('TreeNode::componentWillMount');
   },
     
   /* INTERNAL METHODS ---------------*/
@@ -74,7 +74,7 @@ var TreeNode = React.createClass({
             child_elements.push( ( 
               <li>
                 <TreeNode data={child} 
-                  ref={(child_inst) => { this.childInstances[i] = child_inst; console.log('child_inst:', child_inst); } }
+                  ref={(child_inst) => this.childInstances[i] = child_inst }
                   firstChild={i === 0} lastChild={i === children.length -1}
                   parent={this} index={i} treeView={this.props.treeView}
                   key={key}
@@ -167,7 +167,7 @@ var TreeNode = React.createClass({
   /* ACTIONS ------------------------*/
   
   select: function() {
-    console.log('select');
+    //console.log('select');
     this.refs["label"].getDOMNode().focus();
   },
   
@@ -215,7 +215,7 @@ var TreeNode = React.createClass({
   },
   
   selectNextSibling: function() {
-    console.log('selectNextSibling:', 'index:', this.props.index, 'parent:', this.props.parent);
+    //console.log('selectNextSibling:', 'index:', this.props.index, 'parent:', this.props.parent);
     if (this.props.parent && this.props.index < (this.props.parent.childInstances.length - 1)) {
       this.props.parent.selectNextChild(this.props.index);
     }
@@ -229,18 +229,18 @@ var TreeNode = React.createClass({
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
-    console.log('handleClickOnLabel');
+    //console.log('handleClickOnLabel');
     this.setSelected();
     stopEvent(e);
   },
   handleDragEnter: function(e) {
-    console.log('handleDragEnter', e.clientX, e.clientY);
+    //console.log('handleDragEnter', e.clientX, e.clientY);
     this.setState({ dragHover: true });
     e.preventDefault();
     e.stopPropagation();
   },
   handleDragLeave: function(e) {
-    console.log('handleDragLeave');
+    //console.log('handleDragLeave');
     this.setState({ dragHover: false });
     e.preventDefault();
     e.stopPropagation();
@@ -257,33 +257,35 @@ var TreeNode = React.createClass({
   },
   handleKeyDown: function(e) {
     if      (e.which === 38) /* UP */ {
-      console.log('UP');
+      //console.log('UP');
       this.selectPrevious();
       stopEvent(e);
     }
     else if (e.which === 40) /* DOWN */ {
-      console.log('DOWN');
+      //console.log('DOWN');
       this.selectNext();
       stopEvent(e);
     }
     else if (e.which === 37) /* LEFT */ {
-      console.log('LEFT');
-      if (!this.state.closed) { stopEvent(e); this.close(); }
+      //console.log('LEFT');
+      stopEvent(e);
+      if (!this.state.closed) { this.close(); }
     }
     else if (e.which === 39) /* RIGHT */ {
-      console.log('RIGHT');
-      if (this.state.closed) { stopEvent(e); this.open(); }
+      //console.log('RIGHT');
+      stopEvent(e);
+      if (this.state.closed) { stopEvent(e); }
     }
   },
   handleFocusOnLabel: function(e) {
-    console.log('handleFocusOnLabel');
+    //console.log('handleFocusOnLabel');
     if (!this.isSelected()) {
       this.setSelected();
       e.stopPropagation();
     }
   },
   handleDragBefore: function(index, e) {
-    console.log('handleDragBefore:', index, e);
+    //console.log('handleDragBefore:', index, e);
   },
   handleDragOnto: function(e) {
   },
@@ -293,7 +295,7 @@ var TreeNode = React.createClass({
   /* Rendering ----------------------*/
   
   render: function() {
-    console.log('TreeNode::render()', 'this.childElements:', this.childElements);
+    //console.log('TreeNode::render()', 'this.childElements:', this.childElements);
     
     var selected = this.props.treeView.state.selectedNode === this;
     
