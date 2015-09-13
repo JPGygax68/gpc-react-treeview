@@ -15,6 +15,11 @@ var TreeView = React.createClass({
   
   displayName: 'TreeView',
   
+  propTypes: {
+    rootNode: React.PropTypes.object.isRequired,
+    nodesHaveKeys: React.PropTypes.boolean
+  },
+  
   getInitialState: function() {
     return { 
       selected_node: null,
@@ -50,14 +55,13 @@ var TreeView = React.createClass({
     });
   },
   setSelectedNode: function(node) {
-    if (this.state.selected_node) {
-      this.state.selected_node.setState({ selected: false });
+    if (this.state.selectedNode) {
+      this.state.selectedNode.setState({ selected: false });
     }
-    this.setState({ selected_node: node });
+    this.setState({ selectedNode: node });
   },
   componentWillMount: function() {
     //console.log('TreeView::componentWillMount', 'props:', this.props);
-    this.props.root_node.init();
   },
   componentDidMount: function() {
     //console.log('TreeView::componentDidMount');
@@ -76,20 +80,25 @@ var TreeView = React.createClass({
       self.setState({ dragging: false });
     });
   },
+  
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
-    return ( <div className="gpc treeview">
-        <TreeNode label="ROOT" 
-          data={this.props.root_node} 
-          treeview={this}
+    // Note: the "dragging" attribute should probably be implemented 
+    return ( 
+      <div className="gpc treeview">
+        <TreeNode label="ROOT"
+          treeView={this}
+          data={this.props.rootNode}
           dragging={this.state.dragging}
         />
-      </div> );
+      </div> 
+    );
   }
 });
 
 // Class that represents nodes
 
+/*
 function NodeProxy(data) {
   
   console.assert(data.original_node);
@@ -102,6 +111,7 @@ function NodeProxy(data) {
   this.root = null;
   this.selected = false;
 }
+*/
 
 /* This class is the data model for a tree view, plus the "adaptation layer" allowing
   the treeview to access the data.
@@ -111,6 +121,8 @@ function NodeProxy(data) {
   could obtain a ref (the callback type) to the treeview component, and use keys to
   inform the view of updates without having to re-generate the whole view.
 */
+
+/*
 NodeProxy.prototype = {
   
   init: function() {
@@ -128,29 +140,7 @@ NodeProxy.prototype = {
     }
   }
 }
-
-// Class method that wrap existing tree structure
-
-TreeView.wrapExistingTree = function(root_node) {
-    
-  var key = 'ROOT';
-  
-  return root_node = wrap(root_node, key);
-  
-  //---
-  
-  function wrap(node, key) {
-    //console.log('wrap:', node, key);
-    return new NodeProxy({
-      original_node: node,
-      key: key,
-      label: node.label,
-      child_nodes: node.children && node.children.length > 0 ? 
-        node.children.map( (child, i) => wrap(child, key + '.' + (i + 1).toString() ) )
-        : null
-    });
-  }
-}
+*/
 
 module.exports = {
   

@@ -29045,6 +29045,140 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":31}],159:[function(require,module,exports){
+module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node.closed > .handle {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  display: none;\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 1;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > span.label-box > div:hover {\n  background-color: #f00;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.closed > ul {\n  display: none;\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark {\n  width: 100%;\n  height: 0;\n  position: relative;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark.active {\n  display: block;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div {\n  border: 0;\n  margin: 0;\n  padding: 0;\n  height: 0.5em;\n  position: absolute;\n  left: 0;\n  right: 0;\n  overflow: hidden;\n  transform: translateY(-50%);\n  z-index: 1;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div {\n  background-color: transparent;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace {\n  position: absolute;\n  width: 0.5em;\n  top: 0;\n  bottom: 0;\n  transform-origin: 50% 50%;\n  transform: rotate(45deg);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.left {\n  left: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.right {\n  right: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.bar {\n  position: absolute;\n  top: 50%;\n  height: 0.1em;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div:hover > div {\n  background-color: #000;\n}\n.gpc.treeview ul.child-nodes > li:last-child > div.insertion-mark {\n  height: 0.5em;\n}\n"
+},{}],160:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+
+var InsertionMark = React.createClass({
+  
+  displayName: 'InsertionMark',
+  
+  getInitialState: function() {
+    return {};
+  },
+  
+  render: function() {
+    var className = 'insertion-mark';
+    if (this.props.active) className += ' active';
+    return ( React.createElement("div", {className: className}, 
+        React.createElement("div", null, 
+          React.createElement("div", {className: "brace left"}), 
+          React.createElement("div", {className: "bar"}), 
+          React.createElement("div", {className: "brace right"})
+        )
+      )
+    );
+  }
+  
+});
+
+var TreeNode = React.createClass({
+  
+  displayName: 'TreeNode',
+  
+  propTypes: {
+    data: React.PropTypes.object.isRequired
+  },
+  
+  getInitialState: function() {
+    //console.log('TreeNode::getInitialState', 'this.props:', this.props);
+    return {
+      closed: false,
+      dragHover: false
+    }
+  },
+  
+  handleClickOnHandle: function(e) {
+    //console.log('handleClickOnHandle', this.state.closed);
+    e.preventDefault();
+    this.setState({ closed: !this.state.closed });
+  },
+  handleClickOnLabel: function(e) {
+    console.log('handleClickOnLabel');
+    e.preventDefault();
+    if (!this.props.treeView.state.selectedNode !== this) {
+      this.props.treeView.setSelectedNode(this);
+    }
+  },
+  handleDragEnter: function(e) {
+    console.log('handleDragEnter', e.clientX, e.clientY);
+    this.setState({ dragHover: true });
+    e.preventDefault();
+    e.stopPropagation();
+  },
+  handleDragLeave: function(e) {
+    console.log('handleDragLeave');
+    this.setState({ dragHover: false });
+    e.preventDefault();
+    e.stopPropagation();
+  },
+  handleDragOver: function(e) {
+    //console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    e.preventDefault();
+  },
+  handleMouseOver: function(e) {
+    //console.log('handleMouseOver', e.x, e.y);
+  },
+  handleMouseMove: function(e) {
+    //console.log('handleMouseMove', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+  },
+  handleKeyDown: function(e) {
+    if (e.which === 38) {
+      // TODO: tell parent to move to previous sibling
+    }
+  },
+  handleDragBefore: function(index, e) {
+    console.log('handleDragBefore:', index, e);
+  },
+  handleDragOnto: function(e) {
+  },
+  handleDragAfter: function(e) {
+  },
+  
+  render: function() {
+    //console.log('this.props.data.children:', this.props.data.children);
+    var children;
+    if (this.props.data.getChildren() && this.props.data.getChildren().length > 0) {
+      var self = this;
+      children = [];
+      children.push( React.createElement("li", null, React.createElement(InsertionMark, null)) );
+      this.props.data.getChildren().forEach( function(child, i) {
+          var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
+          children.push( ( React.createElement("li", null, React.createElement(TreeNode, {data: child, key: key, treeView: this.props.treeView})) ) );
+          children.push( ( React.createElement("li", null, React.createElement(InsertionMark, {active: this.state.dragHover})) ) );
+        }, this);
+    }
+    var selected = this.props.treeView.state.selectedNode === this;
+    var classes = 'node';
+    if (!children           ) classes += ' childless';
+    if (selected            ) classes += ' selected';
+    if (this.state.dragHover) classes += ' drag-hover';
+    if (this.state.closed   ) classes += ' closed';
+    return (
+      React.createElement("div", {tabIndex: "0", className: classes
+        // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
+      }, 
+        React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
+        React.createElement("span", {className: "label-box", 
+          onMouseOver: this.handleMouseOver, onMouseMove: this.handleMouseMove, 
+          onClick: this.handleClickOnLabel
+        }, 
+          React.createElement("span", {className: "label"}, this.props.data.getLabel()), 
+          React.createElement("div", {className: "top", onDragEnter: this.handleDragBefore.bind(this, this.props.parentIndex)}), 
+          React.createElement("div", {className: "center"}), 
+          React.createElement("div", {className: "bottom"})
+        ), 
+        React.createElement("ul", {className: "child-nodes"}, children)
+      ) 
+    );
+  }
+});
+
+module.exports = TreeNode;
+
+},{"react":158}],161:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -29061,6 +29195,11 @@ var TreeNode = require('./treenode.jsx');
 var TreeView = React.createClass({
   
   displayName: 'TreeView',
+  
+  propTypes: {
+    rootNode: React.PropTypes.object.isRequired,
+    nodesHaveKeys: React.PropTypes.boolean
+  },
   
   getInitialState: function() {
     return { 
@@ -29097,14 +29236,13 @@ var TreeView = React.createClass({
     });
   },
   setSelectedNode: function(node) {
-    if (this.state.selected_node) {
-      this.state.selected_node.setState({ selected: false });
+    if (this.state.selectedNode) {
+      this.state.selectedNode.setState({ selected: false });
     }
-    this.setState({ selected_node: node });
+    this.setState({ selectedNode: node });
   },
   componentWillMount: function() {
     //console.log('TreeView::componentWillMount', 'props:', this.props);
-    this.props.root_node.init();
   },
   componentDidMount: function() {
     //console.log('TreeView::componentDidMount');
@@ -29123,20 +29261,25 @@ var TreeView = React.createClass({
       self.setState({ dragging: false });
     });
   },
+  
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
-    return ( React.createElement("div", {className: "gpc treeview"}, 
+    // Note: the "dragging" attribute should probably be implemented 
+    return ( 
+      React.createElement("div", {className: "gpc treeview"}, 
         React.createElement(TreeNode, {label: "ROOT", 
-          data: this.props.root_node, 
-          treeview: this, 
+          treeView: this, 
+          data: this.props.rootNode, 
           dragging: this.state.dragging}
         )
-      ) );
+      ) 
+    );
   }
 });
 
 // Class that represents nodes
 
+/*
 function NodeProxy(data) {
   
   console.assert(data.original_node);
@@ -29149,6 +29292,7 @@ function NodeProxy(data) {
   this.root = null;
   this.selected = false;
 }
+*/
 
 /* This class is the data model for a tree view, plus the "adaptation layer" allowing
   the treeview to access the data.
@@ -29158,6 +29302,8 @@ function NodeProxy(data) {
   could obtain a ref (the callback type) to the treeview component, and use keys to
   inform the view of updates without having to re-generate the whole view.
 */
+
+/*
 NodeProxy.prototype = {
   
   init: function() {
@@ -29175,29 +29321,7 @@ NodeProxy.prototype = {
     }
   }
 }
-
-// Class method that wrap existing tree structure
-
-TreeView.wrapExistingTree = function(root_node) {
-    
-  var key = 'ROOT';
-  
-  return root_node = wrap(root_node, key);
-  
-  //---
-  
-  function wrap(node, key) {
-    //console.log('wrap:', node, key);
-    return new NodeProxy({
-      original_node: node,
-      key: key,
-      label: node.label,
-      child_nodes: node.children && node.children.length > 0 ? 
-        node.children.map( (child, i) => wrap(child, key + '.' + (i + 1).toString() ) )
-        : null
-    });
-  }
-}
+*/
 
 module.exports = {
   
@@ -29212,139 +29336,6 @@ module.exports = {
   //jQuery: require('jquery')
 }
 
-},{"./styles.styl":160,"./treenode.jsx":161,"insert-css":2,"jquery":3,"react":158}],160:[function(require,module,exports){
-module.exports=".gpc.treeview {\n  font-family: Arial;\n}\n.gpc.treeview .node {\n  padding: 0;\n  outline: 0;\n}\n.gpc.treeview .node > .handle {\n  display: inline-block;\n  width: 11px;\n  height: 11px;\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAPElEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0GAdopZkDnS0tIYCp4+fYpdMbIExc6gnWJGUmIQAIUZC/r1PP6dAAAAAElFTkSuQmCC\");\n  margin-right: 0.25em;\n  position: relative;\n}\n.gpc.treeview .node.closed > .handle {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node > span.label-box {\n  cursor: default;\n  display: inline-block;\n  position: relative;\n}\n.gpc.treeview .node > span.label-box > span.label {\n  display: inline-block;\n  border: solid 0.1em transparent;\n  padding: 0.15em;\n  border-radius: 0.15em;\n}\n.gpc.treeview .node > span.label-box:hover > span.label {\n  background-color: rgba(191,218,255,0.5);\n  border-color: rgba(0,106,255,0.5);\n}\n.gpc.treeview .node > span.label-box > div {\n  display: none;\n  position: absolute;\n  left: 0;\n  right: 0;\n  z-index: 1;\n}\n.gpc.treeview .node > span.label-box > div.top {\n  top: 0;\n  bottom: 80%;\n  background-color: rgba(255,0,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.center {\n  top: 20%;\n  bottom: 20%;\n  background-color: rgba(0,255,0,0.2);\n}\n.gpc.treeview .node > span.label-box > div.bottom {\n  top: 80%;\n  height: 20%;\n  background-color: rgba(0,0,255,0.2);\n}\n.gpc.treeview .node > span.label-box > div:hover {\n  background-color: #f00;\n}\n.gpc.treeview .node > ul {\n  list-style-type: none;\n  padding-left: 1em;\n  margin: 0;\n}\n.gpc.treeview .node.closed > .label {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAASUlEQVR4nGM0Njb+z0AkYAERmzZtIqjQz8+PgYlYU0EAq2JpaWniFeMCLLhMhLGfPn2KXTFMAqQQWRFZzsCqGJupJJvMSEoMAgDC/hJLi67V2AAAAABJRU5ErkJggg==\");\n}\n.gpc.treeview .node.closed > ul {\n  display: none;\n}\n.gpc.treeview .node.selected > span.label-box > span.label {\n  background-color: #bfdaff;\n  border-color: #006aff;\n}\n.gpc.treeview .node.drag-hover > span.label-box > span.label {\n  background-color: #faa;\n}\n.gpc.treeview .node.childless > .handle {\n  width: 0;\n  margin-right: 0;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark {\n  width: 100%;\n  height: 0;\n  position: relative;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark.active {\n  display: block;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div {\n  border: 0;\n  margin: 0;\n  padding: 0;\n  height: 0.5em;\n  position: absolute;\n  left: 0;\n  right: 0;\n  overflow: hidden;\n  transform: translateY(-50%);\n  z-index: 1;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div {\n  background-color: transparent;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace {\n  position: absolute;\n  width: 0.5em;\n  top: 0;\n  bottom: 0;\n  transform-origin: 50% 50%;\n  transform: rotate(45deg);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.left {\n  left: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.brace.right {\n  right: -0.25em;\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div > div.bar {\n  position: absolute;\n  top: 50%;\n  height: 0.1em;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n}\n.gpc.treeview ul.child-nodes > li div.insertion-mark > div:hover > div {\n  background-color: #000;\n}\n.gpc.treeview ul.child-nodes > li:last-child > div.insertion-mark {\n  height: 0.5em;\n}\n"
-},{}],161:[function(require,module,exports){
-"use strict";
-
-var React = require('react');
-
-var InsertionMark = React.createClass({
-  
-  displayName: 'InsertionMark',
-  
-  getInitialState: function() {
-    return {};
-  },
-  
-  render: function() {
-    var className = 'insertion-mark';
-    if (this.props.active) className += ' active';
-    return ( React.createElement("div", {className: className}, 
-        React.createElement("div", null, 
-          React.createElement("div", {className: "brace left"}), 
-          React.createElement("div", {className: "bar"}), 
-          React.createElement("div", {className: "brace right"})
-        )
-      )
-    );
-  }
-  
-});
-
-var TreeNode = React.createClass({
-  
-  displayName: 'TreeNode',
-  
-  propTypes: {
-    parent: React.PropTypes.object
-  },
-  
-  getInitialState: function() {
-    //console.log('TreeNode::getInitialState', 'this.props:', this.props);
-    return {
-      closed: false,
-      drag_hover: false
-    }
-  },
-  
-  handleClickOnHandle: function(e) {
-    //console.log('handleClickOnHandle', this.state.closed);
-    e.preventDefault();
-    this.setState({ closed: !this.state.closed });
-  },
-  handleClickOnLabel: function(e) {
-    //console.log('handleClickOnLabel');
-    e.preventDefault();
-    if (!this.props.treeview.state.selected_node !== this) {
-      this.props.treeview.setSelectedNode(this);
-    }
-  },
-  handleDragEnter: function(e) {
-    console.log('handleDragEnter', e.clientX, e.clientY);
-    this.setState({ drag_hover: true });
-    e.preventDefault();
-    e.stopPropagation();
-  },
-  handleDragLeave: function(e) {
-    console.log('handleDragLeave');
-    this.setState({ drag_hover: false });
-    e.preventDefault();
-    e.stopPropagation();
-  },
-  handleDragOver: function(e) {
-    //console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    e.preventDefault();
-  },
-  handleMouseOver: function(e) {
-    //console.log('handleMouseOver', e.x, e.y);
-  },
-  handleMouseMove: function(e) {
-    //console.log('handleMouseMove', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-  },
-  handleKeyDown: function(e) {
-    if (e.which === 38) {
-      // TODO: tell parent to move to previous sibling
-    }
-  },
-  handleDragBefore: function(index, e) {
-    console.log('handleDragBefore:', index, e);
-  },
-  handleDragOnto: function(e) {
-  },
-  handleDragAfter: function(e) {
-  },
-  render: function() {
-    //console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
-    var children;
-    if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
-      var self = this;
-      children = [];
-      children.push( React.createElement("li", null, React.createElement(InsertionMark, null)) );
-      this.props.data.child_nodes.forEach( function(child, i) {
-          // The following introduces tight coupling between the component and its "view-model":
-          //children.push( ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } parentIndex={i} /></li> ) );
-          children.push( ( React.createElement("li", null, React.createElement(TreeNode, {data: child, parent: this, treeview: this.props.treeview})) ) );
-          children.push( ( React.createElement("li", null, React.createElement(InsertionMark, {active: this.state.drag_hover}))) );
-        }, this);
-    }
-    var selected = this.props.treeview.state.selected_node === this;
-    var classes = 'node';
-    if (!children            ) classes += ' childless';
-    if (selected             ) classes += ' selected';
-    if (this.state.drag_hover) classes += ' drag-hover';
-    if (this.state.closed    ) classes += ' closed';
-    return (
-      React.createElement("div", {tabIndex: "0", className: classes
-        // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
-      }, 
-        React.createElement("span", {className: "handle", onClick: this.handleClickOnHandle}), 
-        React.createElement("span", {className: "label-box", 
-          onMouseOver: this.handleMouseOver, onMouseMove: this.handleMouseMove, 
-          onClick: this.handleClickOnLabel}, 
-            React.createElement("span", {className: "label"}, this.props.data.label), 
-            React.createElement("div", {className: "top", onDragEnter: this.handleDragBefore.bind(this, this.props.parentIndex)}), 
-            React.createElement("div", {className: "center"}), 
-            React.createElement("div", {className: "bottom"})
-        ), 
-        React.createElement("ul", {className: "child-nodes"}, children)
-      ) 
-    );
-  }
-});
-
-module.exports = TreeNode;
-
-},{"react":158}]},{},[159])(159)
+},{"./styles.styl":159,"./treenode.jsx":160,"insert-css":2,"jquery":3,"react":158}]},{},[161])(161)
 });
 //# sourceMappingURL=gpc-treeview.js.map

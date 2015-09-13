@@ -22,24 +22,6 @@
             <p draggable="true">P</p>
             <p draggable="true">DIV</div>
         </div>
-        <script type="text/javascript">
-        
-            var my_tree = {
-                label: 'ROOT',
-                children: [
-                    {   label: 'Child 1', children: [
-                            { label: 'Grandchild 1.1' },
-                            { label: 'Grandchild 1.2' }
-                        ]
-                    },
-                    { label: 'Child 2' }
-                ]
-            };
-            
-            React.render(
-                React.createElement(TreeView, { root_node: TreeView.wrapExistingTree(my_tree) }),
-                document.getElementById('myTreeview')
-            );
-        </script>
+        <script type="text/javascript" src="main.jsx"></script>
     </body>
 </html>

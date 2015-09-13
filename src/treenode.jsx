@@ -30,14 +30,14 @@ var TreeNode = React.createClass({
   displayName: 'TreeNode',
   
   propTypes: {
-    parent: React.PropTypes.object
+    data: React.PropTypes.object.isRequired
   },
   
   getInitialState: function() {
     //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
       closed: false,
-      drag_hover: false
+      dragHover: false
     }
   },
   
@@ -47,21 +47,21 @@ var TreeNode = React.createClass({
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
-    //console.log('handleClickOnLabel');
+    console.log('handleClickOnLabel');
     e.preventDefault();
-    if (!this.props.treeview.state.selected_node !== this) {
-      this.props.treeview.setSelectedNode(this);
+    if (!this.props.treeView.state.selectedNode !== this) {
+      this.props.treeView.setSelectedNode(this);
     }
   },
   handleDragEnter: function(e) {
     console.log('handleDragEnter', e.clientX, e.clientY);
-    this.setState({ drag_hover: true });
+    this.setState({ dragHover: true });
     e.preventDefault();
     e.stopPropagation();
   },
   handleDragLeave: function(e) {
     console.log('handleDragLeave');
-    this.setState({ drag_hover: false });
+    this.setState({ dragHover: false });
     e.preventDefault();
     e.stopPropagation();
   },
@@ -87,26 +87,26 @@ var TreeNode = React.createClass({
   },
   handleDragAfter: function(e) {
   },
+  
   render: function() {
-    //console.log('this.props.data.child_nodes:', this.props.data.child_nodes);
+    //console.log('this.props.data.children:', this.props.data.children);
     var children;
-    if (this.props.data.child_nodes && this.props.data.child_nodes.length > 0) {
+    if (this.props.data.getChildren() && this.props.data.getChildren().length > 0) {
       var self = this;
       children = [];
       children.push( <li><InsertionMark/></li> );
-      this.props.data.child_nodes.forEach( function(child, i) {
-          // The following introduces tight coupling between the component and its "view-model":
-          //children.push( ( <li><TreeNode data={child} ref={ (c) => child.setComponent(c) } parentIndex={i} /></li> ) );
-          children.push( ( <li><TreeNode data={child} parent={this} treeview={this.props.treeview} /></li> ) );
-          children.push( ( <li><InsertionMark active={this.state.drag_hover}/></li>) );
+      this.props.data.getChildren().forEach( function(child, i) {
+          var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
+          children.push( ( <li><TreeNode data={child} key={key} treeView={this.props.treeView} /></li> ) );
+          children.push( ( <li><InsertionMark active={this.state.dragHover}/></li> ) );
         }, this);
     }
-    var selected = this.props.treeview.state.selected_node === this;
+    var selected = this.props.treeView.state.selectedNode === this;
     var classes = 'node';
-    if (!children            ) classes += ' childless';
-    if (selected             ) classes += ' selected';
-    if (this.state.drag_hover) classes += ' drag-hover';
-    if (this.state.closed    ) classes += ' closed';
+    if (!children           ) classes += ' childless';
+    if (selected            ) classes += ' selected';
+    if (this.state.dragHover) classes += ' drag-hover';
+    if (this.state.closed   ) classes += ' closed';
     return (
       <div tabIndex="0" className={classes} 
         // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
@@ -114,11 +114,12 @@ var TreeNode = React.createClass({
         <span className="handle" onClick={this.handleClickOnHandle} />
         <span className="label-box" 
           onMouseOver={this.handleMouseOver} onMouseMove={this.handleMouseMove}
-          onClick={this.handleClickOnLabel}>
-            <span className="label">{this.props.data.label}</span>
-            <div className="top" onDragEnter={this.handleDragBefore.bind(this, this.props.parentIndex)}/>
-            <div className="center" />
-            <div className="bottom" />
+          onClick={this.handleClickOnLabel}
+        >
+          <span className="label">{this.props.data.getLabel()}</span>
+          <div className="top" onDragEnter={this.handleDragBefore.bind(this, this.props.parentIndex)}/>
+          <div className="center" />
+          <div className="bottom" />
         </span>
         <ul className="child-nodes">{children}</ul>
       </div> 
