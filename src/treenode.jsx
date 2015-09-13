@@ -117,6 +117,14 @@ var TreeNode = React.createClass({
   
   /* QUERIES ------------------------*/
   
+  isFirstChild: function() {
+    return this.state.firstChild;
+  },
+  
+  isLastChild: function() {
+    return this.state.lastChild;
+  },
+  
   isSelected: function() {
     return this.props.treeView.state.selectedNode === this;
   },
@@ -135,23 +143,34 @@ var TreeNode = React.createClass({
     this.setState({ closed: false });
   },
   
+  /* Rendering ----------------------*/
+  
   render: function() {
     //console.log('this.props.data.children:', this.props.data.children);
-    var children;
-    if (this.props.data.getChildren() && this.props.data.getChildren().length > 0) {
-      var self = this;
-      children = [];
-      children.push( <li><InsertionMark/></li> );
-      this.props.data.getChildren().forEach( function(child, i) {
-          var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
-          children.push( ( <li><TreeNode data={child} key={key} treeView={this.props.treeView} /></li> ) );
-          children.push( ( <li><InsertionMark active={this.state.dragHover}/></li> ) );
-        }, this);
+    var child_elts;
+    if (!this.props.leafOnly) {
+      var children = this.props.data.getChildren(); // TODO: asynchronous implementations
+      child_elts = [];
+      child_elts.push( <li><InsertionMark/></li> );
+      if (children) {
+        children.forEach( function(child, i) {
+            var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
+            child_elts.push( ( 
+              <li>
+                <TreeNode data={child} 
+                  firstChild={i === 0} lastChild={i === children.length -1}
+                  parent={this} key={key} index={i} treeView={this.props.treeView}
+                  leafOnly={child.isLeafOnly()}
+                />
+              </li> 
+            ) );
+            child_elts.push( ( <li><InsertionMark active={this.state.dragHover}/></li> ) );
+          }, this);
+      }
     }
     var selected = this.props.treeView.state.selectedNode === this;
     var classes = 'node';
     if (this.props.leafOnly ) classes += ' leaf-only'; // TODO: no CSS styling yet to reflect this
-    if (!children           ) classes += ' childless';
     if (selected            ) classes += ' selected';
     if (this.state.dragHover) classes += ' drag-hover';
     if (this.state.closed   ) classes += ' closed';
@@ -171,7 +190,7 @@ var TreeNode = React.createClass({
           <div className="center" />
           <div className="bottom" />
         </span>
-        <ul className="child-nodes">{children}</ul>
+        <ul className="child-nodes">{child_elts}</ul>
       </div> 
     );
   }
