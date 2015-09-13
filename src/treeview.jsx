@@ -55,6 +55,7 @@ var TreeView = React.createClass({
     });
   },
   setSelectedNode: function(node) {
+    console.log('TreeView::selSelectedNode:', node);
     if (this.state.selectedNode) {
       this.state.selectedNode.setState({ selected: false });
     }

@@ -51,6 +51,8 @@ var TreeNode = React.createClass({
     }
   },
   
+  /* EVENT HANDLERS -----------------*/
+  
   handleClickOnHandle: function(e) {
     //console.log('handleClickOnHandle', this.state.closed);
     e.preventDefault();
@@ -88,10 +90,14 @@ var TreeNode = React.createClass({
   },
   handleKeyDown: function(e) {
     if      (e.which === 38) /* UP */ {
-      // TODO: tell parent to move to previous sibling
+      console.log('UP');
+      this.selectPrevious();
+      stopEvent(e);
     }
     else if (e.which === 40) /* DOWN */ {
-      // TODO: tell parent to move to next sibling
+      console.log('DOWN');
+      this.selectNext();
+      stopEvent(e);
     }
     else if (e.which === 37) /* LEFT */ {
       if (!this.state.closed) { stopEvent(e); this.close(); }
@@ -131,8 +137,29 @@ var TreeNode = React.createClass({
   
   /* ACTIONS ------------------------*/
   
+  selectPreviousChild: function(child_index) {
+    if (child_index > 0) {
+      this.child_instances[child_index - 1].selectViaFocus();
+    }
+  },
+
+  selectNextChild: function(child_index) {
+    if (child_index < (this.child_instances.length - 1)) {
+      //console.log('next child_instance:', this.child_instances[child_index + 1]);
+      //console.log('all child_instances:', this.child_instances);
+      this.child_instances[child_index + 1].selectViaFocus();
+    }
+  },
+
   select: function() {
+    console.log('select:', this);
+    // TODO: do this via focus!
     this.props.treeView.setSelectedNode(this);
+  },
+  
+  selectViaFocus: function() {
+    console.log('selectViaFocus');
+    this.refs["label"].getDOMNode().focus();
   },
   
   close: function() {
@@ -143,6 +170,14 @@ var TreeNode = React.createClass({
     this.setState({ closed: false });
   },
   
+  selectPrevious: function() {
+    this.props.parent.selectPreviousChild(this.props.index);
+  },
+  
+  selectNext: function() {
+    this.props.parent.selectNextChild(this.props.index);
+  },
+  
   /* Rendering ----------------------*/
   
   render: function() {
@@ -151,15 +186,19 @@ var TreeNode = React.createClass({
     if (!this.props.leafOnly) {
       var children = this.props.data.getChildren(); // TODO: asynchronous implementations
       child_elts = [];
+      this.child_instances = [];
       child_elts.push( <li><InsertionMark/></li> );
       if (children) {
         children.forEach( function(child, i) {
+            console.log('child: ', i);
             var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
             child_elts.push( ( 
               <li>
                 <TreeNode data={child} 
+                  ref={(child_inst) => { this.child_instances[i] = child_inst; console.log('child_inst:', child_inst); } }
                   firstChild={i === 0} lastChild={i === children.length -1}
-                  parent={this} key={key} index={i} treeView={this.props.treeView}
+                  parent={this} index={i} treeView={this.props.treeView}
+                  key={key}
                   leafOnly={child.isLeafOnly()}
                 />
               </li> 
@@ -178,10 +217,9 @@ var TreeNode = React.createClass({
       <div className={classes} 
         // onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver= {this.handleDragOver}
         onKeyDown={this.handleKeyDown}
-        onFocus={this.handleFocus}
       >
         <span className="handle" onClick={this.handleClickOnHandle} />
-        <span tabIndex="0" className="label-box" 
+        <span tabIndex="0" className="label-box" ref="label"
           onMouseOver={this.handleMouseOver} onMouseMove={this.handleMouseMove}
           onClick={this.handleClickOnLabel} onFocus={this.handleFocusOnLabel}
         >
