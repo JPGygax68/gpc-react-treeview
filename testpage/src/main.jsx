@@ -41,5 +41,5 @@ class NodeProxy {
   }
 }
 
-React.render( ( <TreeView rootNode={new NodeProxy(my_tree)} key="$" nodesHaveKeys={true} /> ), 
+React.render( ( <TreeView rootNode={new NodeProxy(my_tree)} key="$" nodesHaveKeys={false} /> ), 
   document.getElementById('myTreeview') );
