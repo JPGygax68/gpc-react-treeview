@@ -20,47 +20,27 @@ var TreeView = React.createClass({
     nodesHaveKeys: React.PropTypes.bool
   },
   
+  /* CALLABLE FROM CONTAINED NODES ------------*/
+  
+  setSelectedNode: function(node) {
+    //console.log('TreeView::setSelectedNode:', node);
+    this.setState({ selectedNode: node });
+  },  
+  canDragNode: function(node) {
+    return true;
+  },
+  startingDrag: function(node) {
+    this.dragging_node = node;
+  },
+  
+  /* LIFECYCLE --------------------------------*/
+  
   getInitialState: function() {
     return { 
-      selected_node: null,
-      dragging: false 
+      selected_node: null
     };
   },
   
-  loadCommentsFromServer: function() {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({comments: data})
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-  handleCommentSubmit: function(comment) {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: comment,
-      success: function(data) {
-        this.setState({data: data});
-      },
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }
-    });
-  },
-  setSelectedNode: function(node) {
-    console.log('TreeView::selSelectedNode:', node);
-    if (this.state.selectedNode) {
-      this.state.selectedNode.setState({ selected: false });
-    }
-    this.setState({ selectedNode: node });
-  },
   componentWillMount: function() {
     //console.log('TreeView::componentWillMount', 'props:', this.props);
   },
@@ -94,54 +74,39 @@ var TreeView = React.createClass({
         />
       </div> 
     );
-  }
-});
-
-// Class that represents nodes
-
-/*
-function NodeProxy(data) {
-  
-  console.assert(data.original_node);
-  this.original_node = data.original_node;
-  this.key = data.key;
-  this.label = data.label || '(no label)';
-  this.child_nodes = data.child_nodes;
-  
-  this.parent = null;
-  this.root = null;
-  this.selected = false;
-}
-*/
-
-/* This class is the data model for a tree view, plus the "adaptation layer" allowing
-  the treeview to access the data.
-  In a mature implementation, event handlers could (should?) be used by the treeview
-  to access data indirectly.
-  For the other direction, i.e. updating the view when the data has changed, user code
-  could obtain a ref (the callback type) to the treeview component, and use keys to
-  inform the view of updates without having to re-generate the whole view.
-*/
-
-/*
-NodeProxy.prototype = {
-  
-  init: function() {
-    this.setParentAndRoot(this, this);
   },
   
-  setParentAndRoot: function(parent, root) {
-    this.parent = parent;
-    this.root = root;
-    if (this.child_nodes) {
-      this.child_nodes.forEach( function(child) { 
-          child.setParentAndRoot(this, root) 
-        }.bind(this) 
-      );
-    }
+  /* INTERNAL METHODS -------------------------*/
+  
+  loadCommentsFromServer: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({comments: data})
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  handleCommentSubmit: function(comment) {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: comment,
+      success: function(data) {
+        this.setState({data: data});
+      },
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }
+    });
   }
-}
-*/
+  
+});
 
 module.exports = {
   

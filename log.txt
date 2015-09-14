@@ -1,3 +1,10 @@
+2015-09-14
+==========
+
+The selected node is now tracked via a reference to the node object itself (which might be a proxy) instead of its component instance, which might change anytime a render occurs.
+
+I'm not sure whether this approach is superior or inferior to the previous one. The new way does not free me from the need to maintain, in each node, a list of child node instances, because those are needed for navigation.
+
 2015-09-11
 ==========
 
