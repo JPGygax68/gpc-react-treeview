@@ -21,20 +21,24 @@ var InsertionMark = React.createClass({
   },
   
   getInitialState: function() {
-    return {};
+    return {
+      validDropTarget: false
+    };
   },
   
   handleDragEnter: function(e) {
     console.log('InsertionMark::handleDragEnter', e, e.dataTransfer);
+    this.setState({ validDropTarget: true });
   },
-  handleDragExit: function(e) {
-    console.log('InsertionMark::handleDragExit', e);
+  handleDragLeave: function(e) {
+    console.log('InsertionMark::handleDragLeave', e);
+    this.setState({ validDropTarget: false });
   },
   handleDragOver: function(e) {
     console.assert(this.props.parent && this.props.index);
     // TODO: checking hooks
     // TODO: cache result
-    if (this.props.parent.props.treeView.dragging_node) {
+    if (this.state.validDropTarget) {
       console.log('ALLOWING DROP');
       e.preventDefault(); // will allow the drop
     }    
@@ -45,13 +49,14 @@ var InsertionMark = React.createClass({
   
   render: function() {
     var className = 'insertion-mark';
-    if (this.props.active) className += ' active';
+    if (this.props.active         ) className += ' active';
+    if (this.state.validDropTarget) className += ' valid-drop-target';
     return ( 
-      <div className={className} 
-        onDragEnter={this.handleDragEnter} onDragExit={this.handleDragExit} onDragOver={this.handleDragOver}
-        onDrop={this.handleDrop}
-      >
-        <div>
+      <div className={className} ref="container">
+        <div
+          onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}
+          onDrop={this.handleDrop}
+        >
           <div className="brace left" />
           <div className="bar" />
           <div className="brace right" />
@@ -280,9 +285,6 @@ var TreeNode = React.createClass({
           onDragStart={this.handleDragStart   }
         >
           <span className="label">{this.props.data.getLabel()}</span>
-          <div className="top" onDragEnter={this.handleDragBefore.bind(this, this.props.parentIndex)}/>
-          <div className="center" />
-          <div className="bottom" />
         </span>
         <ul className="child-nodes">{this.getChildElements()}</ul>
       </div> 
