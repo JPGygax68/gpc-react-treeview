@@ -29,15 +29,19 @@ var TreeView = React.createClass({
   canDragNode: function(node) {
     return true;
   },
-  startingDrag: function(node) {
-    this.dragging_node = node;
+  startingDrag: function(node_inst) {
+    this.dragging_node_inst = node_inst;;
+  },
+  dragHasEnded: function() {
+    this.dragging_node_inst.setState({dragging: false});
+    this.dragging_node_inst = null;
   },
   
   /* LIFECYCLE --------------------------------*/
   
   getInitialState: function() {
     return { 
-      selected_node: null
+      selected_node_inst: null
     };
   },
   
@@ -64,13 +68,14 @@ var TreeView = React.createClass({
   
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
-    // Note: the "dragging" attribute should probably be implemented 
+    // Note: the "dragging" attribute should probably be implemented
+    var className = "gpc treeview";
+    if (this.state.dragging) className += ' dragging';
     return ( 
-      <div className="gpc treeview">
+      <div className={className}>
         <TreeNode label="ROOT"
           treeView={this}
           data={this.props.rootNode}
-          dragging={this.state.dragging}
         />
       </div> 
     );

@@ -16,7 +16,7 @@ var InsertionMark = React.createClass({
   displayName: 'InsertionMark',
   
   propTypes: {
-    parent: React.PropTypes.object.isRequired, // TODO: rename to parentNode ?
+    containingNode: React.PropTypes.object.isRequired, // TODO: rename to parentNode ?
     index: React.PropTypes.number.isRequired
   },
   
@@ -29,13 +29,14 @@ var InsertionMark = React.createClass({
   handleDragEnter: function(e) {
     console.log('InsertionMark::handleDragEnter', e, e.dataTransfer);
     this.setState({ validDropTarget: true });
+    console.log('validDropTarget set');
   },
   handleDragLeave: function(e) {
     console.log('InsertionMark::handleDragLeave', e);
     this.setState({ validDropTarget: false });
   },
   handleDragOver: function(e) {
-    console.assert(this.props.parent && this.props.index);
+    console.assert(this.props.containingNode && typeof(this.props.index) !== 'undefined');
     // TODO: checking hooks
     // TODO: cache result
     if (this.state.validDropTarget) {
@@ -45,12 +46,15 @@ var InsertionMark = React.createClass({
   },
   handleDrop: function(e) {
     console.log('InsertionMark::handleDrop() TODO');
+    this.setState({ validDropTarget: false }); // TODO: move this to a method that ends a drag ?
+    this.props.containingNode.setState({ beingDragged: false });
   },
   
   render: function() {
     var className = 'insertion-mark';
     if (this.props.active         ) className += ' active';
     if (this.state.validDropTarget) className += ' valid-drop-target';
+    console.log('className:', className);
     return ( 
       <div className={className} ref="container">
         <div
@@ -188,10 +192,16 @@ var TreeNode = React.createClass({
   handleDragStart: function(e) {
     console.log('TreeNode::handleDragStart');
     if (this.props.treeView.canDragNode(this.props.data)) {
-      this.props.treeView.startingDrag(this.props.parent, this.props.index);
+      this.props.treeView.startingDrag(this);
+      this.setState({ beingDragged: true });
       e.stopPropagation();
     }
     else stopEvent(e);
+  },
+  handleDragEnd: function(e) {
+    console.log('TreeNode::handleDragEnd');
+    this.props.treeView.dragHasEnded();
+    this.setState({ beingDragged: false });
   },
   handleDragEnter: function(e) {
     //console.log('handleDragEnter', e.clientX, e.clientY);
@@ -265,26 +275,25 @@ var TreeNode = React.createClass({
     //console.log('TreeNode::render()', 'this.childElements:', this.childElements);
     
     var classes = 'node';
-    if ( this.props.leafOnly   ) classes += ' leaf-only' ; // TODO: no CSS styling yet to reflect this
-    if ( this.state.dragHover  ) classes += ' drag-hover';
-    if ( this.state.closed     ) classes += ' closed'    ;
-    if (!this.state.hasChildren) classes += ' childless' ;
-    if ( this.isSelected()     ) classes += ' selected'  ;
+    if ( this.props.leafOnly    ) classes += ' leaf-only'    ; // TODO: no CSS styling yet to reflect this
+    if ( this.state.dragHover   ) classes += ' drag-hover'   ;
+    if ( this.state.closed      ) classes += ' closed'       ;
+    if (!this.state.hasChildren ) classes += ' childless'    ;
+    if ( this.isSelected()      ) classes += ' selected'     ;
+    if ( this.state.beingDragged) classes += ' being-dragged';
 
     this.childInstances = []; // will be fill by child node ref callbacks
     
     return (
-      <div className={classes} 
-        onKeyDown={this.handleKeyDown}
-      >
+      <div className={classes} onKeyDown={this.handleKeyDown}>
         <span className="handle" onClick={this.handleClickOnHandle} />
-        <span tabIndex="0" className="label-box" ref="label"
+        <span tabIndex="0" className="label" ref="label"
           onMouseOver={this.handleMouseOver   } onMouseMove={this.handleMouseMove   }
           onClick    ={this.handleClickOnLabel} onFocus    ={this.handleFocusOnLabel}
           draggable  ={this.isDraggable()     }
-          onDragStart={this.handleDragStart   }
+          onDragStart={this.handleDragStart   } onDragEnd  ={this.handleDragEnd     }
         >
-          <span className="label">{this.props.data.getLabel()}</span>
+          {this.props.data.getLabel()}
         </span>
         <ul className="child-nodes">{this.getChildElements()}</ul>
       </div> 
@@ -302,7 +311,7 @@ var TreeNode = React.createClass({
       child_elements = [];
       child_elements.push( (
         <li>
-          <InsertionMark parent={this} index={0} 
+          <InsertionMark containingNode={this} index={0} 
             onCanDropHere={this.handleCanDropHere.bind(this, 0)}
             onDropHere   ={this.handleDropHere   .bind(this, 0)}            
           />
@@ -324,7 +333,7 @@ var TreeNode = React.createClass({
             ) );
             child_elements.push( ( 
               <li>
-                <InsertionMark parent={this} index={i + 1} 
+                <InsertionMark containingNode={this} index={i + 1} 
                   onCanDropHere={this.handleCanDropHere.bind(this, i + 1)}
                   onDropHere   ={this.handleDropHere   .bind(this, i + 1)}
                 />
