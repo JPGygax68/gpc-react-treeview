@@ -4,6 +4,8 @@ selection_background = lighten(selection_border, 75%);
 valid_drop_target_border = hsla(139, 100%, 50%, 1);
 valid_drop_target_background = lighten(selection_border, 75%);
 
+default_indent = 1.2em;
+
 .gpc.treeview {
 
   font-family: Arial; // TODO: remove/replace
@@ -16,13 +18,15 @@ valid_drop_target_background = lighten(selection_border, 75%);
     > .header {
       display: table-row;
       
-      > * { display: inline-block; }
+      > * { display: table-cell; }
       
       > .handle {
-        width: 11px;
-        height: 11px;
+        width : default_indent; //11px;
+        height: default_indent; //11px;
+        background-repeat: no-repeat;
         background-image: url(minus.png);
-        margin-right: 0.25em;
+        background-position: 0.2em 0.35em;
+        //margin-right: 0.25em;
         position: relative;
       }
       
@@ -69,7 +73,7 @@ valid_drop_target_background = lighten(selection_border, 75%);
     
     > ul.child-nodes {
       list-style-type: none;
-      padding-left: 1em;
+      padding-left: default_indent;
       margin: 0; //0.1em 0;
     }
 
