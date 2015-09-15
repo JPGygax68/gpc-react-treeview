@@ -50,6 +50,15 @@ var TreeNode = React.createClass({
     
   /* INTERNAL METHODS ---------------*/
   
+  getChildCount: function() {
+    
+    return this.state.children.length;
+  },
+  getChildAt: function(index) {
+    
+    console.assert(index < this.state.children.length);
+    return this.refs['child-'+index];
+  },
   selectPreviousChild: function() {
     
     console.assert(this.state.selectedChildIndex > 0);
@@ -59,11 +68,6 @@ var TreeNode = React.createClass({
 
     console.assert(this.state.selectedChildIndex < (this.state.children.length - 1));
     this.setState({ selectedChildIndex: this.state.selectedChildIndex - 1 });
-  },
-  selectFirstChild: function() {
-    
-    console.assert(this.state.children.length > 0);
-    this.setState({ selectedChildIndex: 0 });
   },
   selectLastChild: function() {
     
@@ -91,19 +95,22 @@ var TreeNode = React.createClass({
   hasChildren: function() {
     return this.state.children && this.state.children.length > 0;
   },
-  isFirstSibling: function() { return !!this.previousSibling(); },
-  isLastSibling: function() { return !!this.nextSibling(); },
-  previousSibling: function() {
-    
-    if (this.props.index > 0) {
-      return this.props.parent.getChildAt(this.props.index - 1);
-    }
+  isFirstSibling: function() { return this.props.index === 0; },
+  isLastSibling: function() { 
+    return this.isRoot() || this.props.index === (this.props.parent.getChildCount() -1); 
   },
-  nextSibling: function() {
+  getPreviousSibling: function() {
     
-    if (this.props.index < (this.props.parent.getChildCount() - 1)) {
-      return this.props.parent.getChildAt(this.props.index + 1);
-    }
+    console.assert(this.props.index > 0);
+    return this.props.parent.getChildAt(this.props.index - 1);
+  },
+  getNextSibling: function() {
+    
+    console.assert(this.props.index < (this.props.parent.getChildCount() - 1));
+    return this.props.parent.getChildAt(this.props.index + 1);
+  },
+  getLastChild: function() {
+    return this.getChildAt(this.state.children.length - 1);
   },
   isNodeDraggable: function() {
     
@@ -131,30 +138,38 @@ var TreeNode = React.createClass({
     this.refs["label"].getDOMNode().focus();
   },
   selectNext: function() {
+    console.log('selectNext', this.props.data.getLabel());
     
     if (!this.state.closed && this.hasChildren()) {
-      this.selectFirstChild();
-    }
-    else if (!this.isLastChild()) {
-      this.selectNextSibling();
+      this.getChildAt(0).select();
     }
     else {
-      this.props.parent.selectNextSibling();
+      if (!this.isLastSibling()) {
+        this.getNextSibling().select();
+      }
+      else if (this.props.parent) {
+        if (!this.props.parent.isLastSibling()) {
+          this.props.parent.getNextSibling().select();
+        }
+      }
     }
+    // TODO: other cases
   },
   selectPrevious: function() {
+    console.log('selectPrevious', this);
 
-    if (!this.isFirstChild()) {
-      var previous = this.previousSibling();
-      if (previous.hasChildren() && !previous.state.closed) {
-        previous.selectLastChild();
+    if (!this.isFirstSibling()) {
+      var previous = this.getPreviousSibling();
+      console.log('previous:', previous);
+      while (previous.hasChildren() && !previous.state.closed) {
+        previous = previous.getLastChild();
       }
-      else {
-        this.selectPreviousSibling();
-      }
+      previous.select();
     }
     else {
-      this.props.parent.select();
+      if (!this.isRoot()) {
+        this.props.parent.select();
+      }
     }
   },
   close: function() {
@@ -162,19 +177,6 @@ var TreeNode = React.createClass({
   },
   open: function() {
     this.setState({ closed: false });
-  },
-  selectPreviousSibling: function() {
-    
-    if (!this.isFirstSibling()) {
-      this.props.parent.selectPreviousChild();
-    }
-  },
-  selectNextSibling: function() {
-    //console.log('selectNextSibling:', 'index:', this.props.index, 'parent:', this.props.parent);
-    
-    if (!this.isLastSibling()) {
-      this.props.parent.selectNextChild();
-    }
   },
   
   /* EVENT HANDLERS -----------------*/
@@ -330,6 +332,7 @@ var TreeNode = React.createClass({
               <li>
                 <TreeNode data={child} key={key}
                   /* ref={(child_inst) => this.childInstances[i] = child_inst} */
+                  ref={'child-'+i}
                   firstChild={i === 0} lastChild={i === (children.length - 1)}
                   parent={this} index={i} treeView={this.props.treeView}
                   leaf={child.isLeafOnly()}
