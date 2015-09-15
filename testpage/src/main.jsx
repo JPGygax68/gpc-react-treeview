@@ -39,6 +39,10 @@ class NodeProxy {
   isLeafOnly() {
     return this.leafOnly;
   }
+  
+  canDrag() {
+    return true;
+  }
 }
 
 React.render( ( <TreeView rootNode={new NodeProxy(my_tree)} key="$" nodesHaveKeys={false} /> ), 

@@ -296,16 +296,18 @@ var TreeNode = React.createClass({
     
     return (
       <div className={classes} onKeyDown={this.handleKeyDown}>
-        <span className="handle" onClick={this.handleClickOnHandle} />
-        <span tabIndex="0" className="label" ref="label"
-          /* onMouseOver={this.handleMouseOver   } onMouseMove={this.handleMouseMove   } */
-          onClick    ={this.handleClickOnLabel} onFocus    ={this.handleFocusOnLabel}
-          draggable  ={this.isNodeDraggable() }
-          onDragEnter={this.handleDragEnter   } onDragLeave={this.handleDragLeave   }
-          onDragStart={this.handleDragStart   } onDragEnd  ={this.handleDragEnd     }
-        >
-          {this.props.data.getLabel()}
-        </span>
+        <div className="header">
+          <div className="handle" onClick={this.handleClickOnHandle} />
+          <div className="label" tabIndex="0" ref="label"
+            /* onMouseOver={this.handleMouseOver   } onMouseMove={this.handleMouseMove   } */
+            onClick    ={this.handleClickOnLabel} onFocus    ={this.handleFocusOnLabel}
+            draggable  ={this.isNodeDraggable() }
+            onDragEnter={this.handleDragEnter   } onDragLeave={this.handleDragLeave   }
+            onDragStart={this.handleDragStart   } onDragEnd  ={this.handleDragEnd     }
+          >
+            {this.props.data.getLabel()}
+          </div>
+        </div>
         <ul className="child-nodes">{this.renderChildren()}</ul>
       </div> 
     );
