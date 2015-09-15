@@ -44,7 +44,7 @@ gulp.task('build', ['browserify']);
 gulp.task('test-jsx', function () {
   
   return gulp.src('testpage/src/main.jsx')
-    .pipe(react())
+    .pipe(react({ harmony: true }))
     //.pipe(source('main.js'))
     .pipe(gulp.dest('testpage/stage/scripts'));
 });

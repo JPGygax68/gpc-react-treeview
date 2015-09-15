@@ -48,6 +48,8 @@ var InsertionMark = React.createClass({
     console.log('InsertionMark::handleDrop() TODO');
     this.setState({ validDropTarget: false }); // TODO: move this to a method that ends a drag ?
     this.props.containingNode.setState({ beingDragged: false });
+    stopEvent(e);
+    //e.stopPropagation();
   },
   
   render: function() {
@@ -85,8 +87,7 @@ var TreeNode = React.createClass({
   getInitialState: function() {
     //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
-      closed: false,
-      dragHover: false
+      closed: false
     }
   },
   
@@ -194,6 +195,7 @@ var TreeNode = React.createClass({
     if (this.props.treeView.canDragNode(this.props.data)) {
       this.props.treeView.startingDrag(this);
       this.setState({ beingDragged: true });
+      e.dataTransfer.setData('text/plain', 'dummy');
       e.stopPropagation();
     }
     else stopEvent(e);
@@ -276,7 +278,6 @@ var TreeNode = React.createClass({
     
     var classes = 'node';
     if ( this.props.leafOnly    ) classes += ' leaf-only'    ; // TODO: no CSS styling yet to reflect this
-    if ( this.state.dragHover   ) classes += ' drag-hover'   ;
     if ( this.state.closed      ) classes += ' closed'       ;
     if (!this.state.hasChildren ) classes += ' childless'    ;
     if ( this.isSelected()      ) classes += ' selected'     ;

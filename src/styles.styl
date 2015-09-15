@@ -9,7 +9,6 @@ selection_background = lighten(selection_border, 75%);
   
     //padding: 0.15em;
     padding: 0;
-    outline: 0;
     
     > .handle {
       display: inline-block;
@@ -23,6 +22,7 @@ selection_background = lighten(selection_border, 75%);
     > span.label {
       cursor: default;
       border-width: 3px;
+      outline: none;
       
       display: inline-block;
       border: solid 0.1em transparent;
@@ -71,12 +71,6 @@ selection_background = lighten(selection_border, 75%);
       > span.label {
         background-color: selection_background;
         border-color: selection_border;
-      }
-    }
-    
-    &.drag-hover {
-      > span.label {
-        background-color: #FAA;
       }
     }
     
@@ -163,7 +157,7 @@ selection_background = lighten(selection_border, 75%);
   &.dragging {
     div.node {
       ul.child-nodes > li {
-        div.insertion-mark.valid-drop-target > div > div { background-color: #02A; }
+        div.insertion-mark.valid-drop-target > div > div { background-color: #0C4; }
       }
     }
   }
