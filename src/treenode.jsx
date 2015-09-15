@@ -84,9 +84,9 @@ var TreeNode = React.createClass({
   },
   setSelected: function() {
     
-    console.assert(this.props.parent);
-  
-    this.props.parent.selectChildAt(this.props.index);
+    if (this.props.parent) {
+      this.props.parent.selectChildAt(this.props.index);
+    }
     this.setState({ selectedChildIndex: -1 });
   },
 
@@ -122,9 +122,10 @@ var TreeNode = React.createClass({
   isRoot: function() { return !this.props.parent; },
   isOnSelectionPath: function() {
     
-    return this.props.parent 
-      && (this.props.parent.isRoot() || this.props.parent.isOnSelectionPath())
-      && this.props.parent.state.selectedChildIndex === this.props.index;
+    return this.isRoot() 
+      || this.props.parent 
+        && (this.props.parent.isRoot() || this.props.parent.isOnSelectionPath())
+        && this.props.parent.state.selectedChildIndex === this.props.index;
   },
   isSelected: function() {
     
@@ -254,7 +255,7 @@ var TreeNode = React.createClass({
   handleFocusOnLabel: function(e) {
     console.log('handleFocusOnLabel', 'this.props.index:', this.props.index);
     
-    if (!this.isRoot() && !this.isSelected()) {
+    if (!this.isSelected()) {
       this.setSelected();
       e.preventDefault();
       //e.stopPropagation();
