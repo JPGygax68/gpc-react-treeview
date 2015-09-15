@@ -2,6 +2,8 @@
 
 var React = require('react');
 
+var InsertionMark = require('./insertionmark.jsx');
+
 /* HELPER FUNCTIONS -----------------*/
 
 function stopEvent(e) { 
@@ -9,127 +11,123 @@ function stopEvent(e) {
   e.stopPropagation(); 
 }
 
-/* HELPER ELEMENT -------------------*/
-
-var InsertionMark = React.createClass({
-  
-  displayName: 'InsertionMark',
-  
-  propTypes: {
-    containingNode: React.PropTypes.object.isRequired, // TODO: rename to parentNode ?
-    index: React.PropTypes.number.isRequired
-  },
-  
-  getInitialState: function() {
-    return {
-      validDropTarget: false
-    };
-  },
-  
-  handleDragEnter: function(e) {
-    console.log('InsertionMark::handleDragEnter', e, e.dataTransfer);
-    this.setState({ validDropTarget: true });
-    console.log('validDropTarget set');
-  },
-  handleDragLeave: function(e) {
-    console.log('InsertionMark::handleDragLeave', e);
-    this.setState({ validDropTarget: false });
-  },
-  handleDragOver: function(e) {
-    console.assert(this.props.containingNode && typeof(this.props.index) !== 'undefined');
-    // TODO: checking hooks
-    // TODO: cache result
-    if (this.state.validDropTarget) {
-      console.log('ALLOWING DROP');
-      e.preventDefault(); // will allow the drop
-    }    
-  },
-  handleDrop: function(e) {
-    console.log('InsertionMark::handleDrop() TODO');
-    this.setState({ validDropTarget: false }); // TODO: move this to a method that ends a drag ?
-    this.props.containingNode.setState({ beingDragged: false });
-    stopEvent(e);
-    //e.stopPropagation();
-  },
-  
-  render: function() {
-    var className = 'insertion-mark';
-    if (this.props.active         ) className += ' active';
-    if (this.state.validDropTarget) className += ' valid-drop-target';
-    console.log('className:', className);
-    return ( 
-      <div className={className} ref="container">
-        <div
-          onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}
-          onDrop={this.handleDrop}
-        >
-          <div className="brace left" />
-          <div className="bar" />
-          <div className="brace right" />
-        </div>
-      </div>
-    );
-  }
-  
-});
-
 var TreeNode = React.createClass({
   
   displayName: 'TreeNode',
   
   propTypes: {
     data: React.PropTypes.object.isRequired,
-    leafOnly: React.PropTypes.bool
+    leaf: React.PropTypes.bool
   },
   
   /* LIFECYCLE ----------------------*/
+  
+  getPropTypes: function() {
     
-  getInitialState: function() {
-    //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
-      closed: false,
-      validDropTarget: false
+      data: React.PropTypes.object.isRequired
     }
   },
-  
+  getDefaultProps: function() {
+    
+    return {
+      data: null
+    }
+  },
+  getInitialState: function() {
+    //console.log('TreeNode::getInitialState', 'this.props:', this.props);
+    
+    return {
+      children: this.props.data.getChildren(),
+      selectedChildIndex: -1,
+      beingDragged: false,
+      canDropHere: false
+    }
+  }, 
   componentWillMount: function() {
     //console.log('TreeNode::componentWillMount');
   },
     
+  /* INTERNAL METHODS ---------------*/
+  
+  selectPreviousChild: function() {
+    
+    console.assert(this.state.selectedChildIndex > 0);
+    this.setState({ selectedChildIndex: this.state.selectedChildIndex - 1 });
+  },
+  selectNextChild: function() {
+
+    console.assert(this.state.selectedChildIndex < (this.state.children.length - 1));
+    this.setState({ selectedChildIndex: this.state.selectedChildIndex - 1 });
+  },
+  selectFirstChild: function() {
+    
+    console.assert(this.state.children.length > 0);
+    this.setState({ selectedChildIndex: 0 });
+  },
+  selectLastChild: function() {
+    
+    console.assert(this.state.children.length > 0);
+    this.setState({ selectedChildIndex: this.state.children.length - 1});
+  },
+  selectChildAt: function(index) {
+    console.log('selectChildAt(', index, ')');
+    
+    this.setState({ selectedChildIndex: index });
+    if (this.props.parent) {
+      this.props.parent.selectChildAt(this.props.index);
+    }
+  },
+  setSelected: function() {
+    
+    console.assert(this.props.parent);
+  
+    this.props.parent.selectChildAt(this.props.index);
+    this.setState({ selectedChildIndex: -1 });
+  },
+
   /* QUERIES ------------------------*/
   
-  isFirstChild: function() {
-    return this.props.firstChild;
-  },
-  isLastChild: function() {
-    return this.props.lastChild;
-  },
-  isSelected: function() {
-    return this.props.treeView.state.selectedNode === this.props.data;
-  },
   hasChildren: function() {
-    return this.childInstances.length > 0;
+    return this.state.children && this.state.children.length > 0;
   },
+  isFirstSibling: function() { return !!this.previousSibling(); },
+  isLastSibling: function() { return !!this.nextSibling(); },
   previousSibling: function() {
     
     if (this.props.index > 0) {
-      return this.props.parent.childInstances[this.props.index - 1];
+      return this.props.parent.getChildAt(this.props.index - 1);
     }
   },
   nextSibling: function() {
     
-    if (this.props.index < (this.props.parent.childInstances.length - 1)) {
-      return this.parent.childInstances[this.props.index + 1];
+    if (this.props.index < (this.props.parent.getChildCount() - 1)) {
+      return this.props.parent.getChildAt(this.props.index + 1);
     }
   },
   isNodeDraggable: function() {
-    return this.props.treeView.canDragNode(this.props.data);
+    
+    if (typeof this.props.data.canDrag === 'function') {
+      return this.props.data.canDrag();
+    }
+    else return false;
+  },
+  isRoot: function() { return !this.props.parent; },
+  isOnSelectionPath: function() {
+    
+    return this.props.parent 
+      && (this.props.parent.isRoot() || this.props.parent.isOnSelectionPath())
+      && this.props.parent.state.selectedChildIndex === this.props.index;
+  },
+  isSelected: function() {
+    
+    return this.isOnSelectionPath() && this.state.selectedChildIndex < 0;
   },
   
   /* ACTIONS ------------------------*/
   
   select: function() {
-    //console.log('select');
+
     this.refs["label"].getDOMNode().focus();
   },
   selectNext: function() {
@@ -167,15 +165,15 @@ var TreeNode = React.createClass({
   },
   selectPreviousSibling: function() {
     
-    if (this.props.index > 0) {
-      this.props.parent.selectPreviousChild(this.props.index);
+    if (!this.isFirstSibling()) {
+      this.props.parent.selectPreviousChild();
     }
   },
   selectNextSibling: function() {
     //console.log('selectNextSibling:', 'index:', this.props.index, 'parent:', this.props.parent);
     
-    if (this.props.parent && this.props.index < (this.props.parent.childInstances.length - 1)) {
-      this.props.parent.selectNextChild(this.props.index);
+    if (!this.isLastSibling()) {
+      this.props.parent.selectNextChild();
     }
   },
   
@@ -183,49 +181,51 @@ var TreeNode = React.createClass({
   
   handleClickOnHandle: function(e) {
     //console.log('handleClickOnHandle', this.state.closed);
+    
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
   },
   handleClickOnLabel: function(e) {
     //console.log('handleClickOnLabel');
-    this.setSelected();
-    stopEvent(e);
+    
+    // NOTE: nothing to do, focus should take care of everything
+    //this.setSelected();
+    //stopEvent(e);
   },
   handleDragStart: function(e) {
     console.log('TreeNode::handleDragStart');
-    if (this.props.treeView.canDragNode(this.props.data)) {
-      this.props.treeView.startingDrag(this);
+    
+    if (this.isNodeDraggable()) {
       this.setState({ beingDragged: true });
       e.dataTransfer.setData('text/plain', 'dummy');
       e.stopPropagation();
     }
-    else stopEvent(e);
   },
   handleDragEnd: function(e) {
     console.log('TreeNode::handleDragEnd');
+    
     this.props.treeView.dragHasEnded();
     this.setState({ beingDragged: false });
   },
   handleDragEnter: function(e) {
     console.log('TreeNode::handleDragEnter', e.clientX, e.clientY);
-    if (true) { //this.props.treeView.canDropDraggedNodeIntoThis(this.props.data)) {
+    
+    if (true) { // TODO: ask node object (create query method)
       this.setState({ validDropTarget: true });
       stopEvent(e);
     }
   },
   handleDragLeave: function(e) {
     console.log('handleDragLeave');
+    
     stopEvent(e);
   },
   handleDragOver: function(e) {
     console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    stopEvent(e);
-  },
-  handleMouseOver: function(e) {
-    //console.log('handleMouseOver', e.x, e.y);
-  },
-  handleMouseMove: function(e) {
-    //console.log('handleMouseMove', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    
+    if (this.state.canDropHere) {
+      stopEvent(e);
+    }
   },
   handleKeyDown: function(e) {
     if      (e.which === 38) /* UP */ {
@@ -250,10 +250,12 @@ var TreeNode = React.createClass({
     }
   },
   handleFocusOnLabel: function(e) {
-    //console.log('handleFocusOnLabel');
-    if (!this.isSelected()) {
+    console.log('handleFocusOnLabel', 'this.props.index:', this.props.index);
+    
+    if (!this.isRoot() && !this.isSelected()) {
       this.setSelected();
-      e.stopPropagation();
+      e.preventDefault();
+      //e.stopPropagation();
     }
   },
   
@@ -277,12 +279,15 @@ var TreeNode = React.createClass({
     //console.log('TreeNode::render()', 'this.childElements:', this.childElements);
     
     var classes = 'node';
-    if ( this.props.leafOnly       ) classes += ' leaf-only'        ; // TODO: no CSS styling yet to reflect this
+    // Properties
+    if ( this.props.leaf           ) classes += ' leaf'             ; // TODO: no CSS styling yet to reflect this
+    // Transitory state
     if ( this.state.closed         ) classes += ' closed'           ;
-    if (!this.state.hasChildren    ) classes += ' childless'        ;
-    if ( this.isSelected()         ) classes += ' selected'         ;
     if ( this.state.beingDragged   ) classes += ' being-dragged'    ;
     if ( this.state.validDropTarget) classes += ' valid-drop-target';
+    // Queries
+    if ( this.isSelected()         ) classes += ' selected'         ;
+    if (!this.hasChildren()        ) classes += ' childless'        ;
 
     this.childInstances = []; // will be fill by child node ref callbacks
     
@@ -290,7 +295,7 @@ var TreeNode = React.createClass({
       <div className={classes} onKeyDown={this.handleKeyDown}>
         <span className="handle" onClick={this.handleClickOnHandle} />
         <span tabIndex="0" className="label" ref="label"
-          onMouseOver={this.handleMouseOver   } onMouseMove={this.handleMouseMove   }
+          /* onMouseOver={this.handleMouseOver   } onMouseMove={this.handleMouseMove   } */
           onClick    ={this.handleClickOnLabel} onFocus    ={this.handleFocusOnLabel}
           draggable  ={this.isNodeDraggable() }
           onDragEnter={this.handleDragEnter   } onDragLeave={this.handleDragLeave   }
@@ -298,18 +303,15 @@ var TreeNode = React.createClass({
         >
           {this.props.data.getLabel()}
         </span>
-        <ul className="child-nodes">{this.getChildElements()}</ul>
+        <ul className="child-nodes">{this.renderChildren()}</ul>
       </div> 
     );
   },
-  
-  /* INTERNAL METHODS ---------------*/
-  
-  getChildElements: function() {
+  renderChildren: function() {
     
     var children, child_elements;
     
-    if (!this.props.leafOnly) {
+    if (!this.props.leaf) {
       children = this.props.data.getChildren(); // TODO: asynchronous implementations
       child_elements = [];
       child_elements.push( (
@@ -327,10 +329,10 @@ var TreeNode = React.createClass({
             child_elements.push( ( 
               <li>
                 <TreeNode data={child} key={key}
-                  ref={(child_inst) => this.childInstances[i] = child_inst}
+                  /* ref={(child_inst) => this.childInstances[i] = child_inst} */
                   firstChild={i === 0} lastChild={i === (children.length - 1)}
                   parent={this} index={i} treeView={this.props.treeView}
-                  leafOnly={child.isLeafOnly()}
+                  leaf={child.isLeafOnly()}
                 />
               </li> 
             ) );
@@ -348,45 +350,7 @@ var TreeNode = React.createClass({
     
     return child_elements;
   },
-  setSelected: function() {
-    
-    this.props.treeView.setSelectedNode(this.props.data);
-  },
-  getPreviousSibling: function() {
-    
-    console.assert(this.props.parent.childInstances && this.props.parent.childInstances.length > 0 && this.props.index > 0);
-    return this.props.parent.childInstances[this.props.index - 1];
-  },
   
-  /* INTRA-COMPONENT METHODS --------*/
-  
-  selectPreviousChild: function(child_index) {
-    
-    if (child_index > 0) {
-      this.childInstances[child_index - 1].select();
-    }
-    else {
-    }
-  },
-  selectNextChild: function(child_index) {
-
-    if (child_index < (this.childInstances.length - 1)) {
-      this.childInstances[child_index + 1].select();
-    }
-    else {
-    }
-  },
-  selectFirstChild: function() {
-    
-    console.assert(this.childInstances.length > 0);
-    this.childInstances[0].select();
-  },
-  selectLastChild: function() {
-    
-    console.assert(this.childInstances.length > 0);
-    this.childInstances[this.childInstances.length-1].select();
-  },
-
 });
 
 module.exports = TreeNode;

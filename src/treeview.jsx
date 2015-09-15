@@ -22,21 +22,6 @@ var TreeView = React.createClass({
   
   /* CALLABLE FROM CONTAINED NODES ------------*/
   
-  setSelectedNode: function(node) {
-    //console.log('TreeView::setSelectedNode:', node);
-    this.setState({ selectedNode: node });
-  },  
-  canDragNode: function(node) {
-    return true;
-  },
-  startingDrag: function(node_inst) {
-    this.dragging_node_inst = node_inst;;
-  },
-  dragHasEnded: function() {
-    this.dragging_node_inst.setState({dragging: false});
-    this.dragging_node_inst = null;
-  },
-  
   /* LIFECYCLE --------------------------------*/
   
   getInitialState: function() {
