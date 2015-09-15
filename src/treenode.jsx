@@ -87,7 +87,8 @@ var TreeNode = React.createClass({
   getInitialState: function() {
     //console.log('TreeNode::getInitialState', 'this.props:', this.props);
     return {
-      closed: false
+      closed: false,
+      validDropTarget: false
     }
   },
   
@@ -121,7 +122,7 @@ var TreeNode = React.createClass({
       return this.parent.childInstances[this.props.index + 1];
     }
   },
-  isDraggable: function() {
+  isNodeDraggable: function() {
     return this.props.treeView.canDragNode(this.props.data);
   },
   
@@ -206,20 +207,19 @@ var TreeNode = React.createClass({
     this.setState({ beingDragged: false });
   },
   handleDragEnter: function(e) {
-    //console.log('handleDragEnter', e.clientX, e.clientY);
-    this.setState({ dragHover: true });
-    e.preventDefault();
-    e.stopPropagation();
+    console.log('TreeNode::handleDragEnter', e.clientX, e.clientY);
+    if (true) { //this.props.treeView.canDropDraggedNodeIntoThis(this.props.data)) {
+      this.setState({ validDropTarget: true });
+      stopEvent(e);
+    }
   },
   handleDragLeave: function(e) {
-    //console.log('handleDragLeave');
-    this.setState({ dragHover: false });
-    e.preventDefault();
-    e.stopPropagation();
+    console.log('handleDragLeave');
+    stopEvent(e);
   },
   handleDragOver: function(e) {
-    //console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    e.preventDefault();
+    console.log('handleDragOver', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    stopEvent(e);
   },
   handleMouseOver: function(e) {
     //console.log('handleMouseOver', e.x, e.y);
@@ -277,11 +277,12 @@ var TreeNode = React.createClass({
     //console.log('TreeNode::render()', 'this.childElements:', this.childElements);
     
     var classes = 'node';
-    if ( this.props.leafOnly    ) classes += ' leaf-only'    ; // TODO: no CSS styling yet to reflect this
-    if ( this.state.closed      ) classes += ' closed'       ;
-    if (!this.state.hasChildren ) classes += ' childless'    ;
-    if ( this.isSelected()      ) classes += ' selected'     ;
-    if ( this.state.beingDragged) classes += ' being-dragged';
+    if ( this.props.leafOnly       ) classes += ' leaf-only'        ; // TODO: no CSS styling yet to reflect this
+    if ( this.state.closed         ) classes += ' closed'           ;
+    if (!this.state.hasChildren    ) classes += ' childless'        ;
+    if ( this.isSelected()         ) classes += ' selected'         ;
+    if ( this.state.beingDragged   ) classes += ' being-dragged'    ;
+    if ( this.state.validDropTarget) classes += ' valid-drop-target';
 
     this.childInstances = []; // will be fill by child node ref callbacks
     
@@ -291,7 +292,8 @@ var TreeNode = React.createClass({
         <span tabIndex="0" className="label" ref="label"
           onMouseOver={this.handleMouseOver   } onMouseMove={this.handleMouseMove   }
           onClick    ={this.handleClickOnLabel} onFocus    ={this.handleFocusOnLabel}
-          draggable  ={this.isDraggable()     }
+          draggable  ={this.isNodeDraggable() }
+          onDragEnter={this.handleDragEnter   } onDragLeave={this.handleDragLeave   }
           onDragStart={this.handleDragStart   } onDragEnd  ={this.handleDragEnd     }
         >
           {this.props.data.getLabel()}

@@ -1,3 +1,32 @@
+2015-09-15
+==========
+
+Reading the article at http://reactjsnews.com/complex-drag-and-drop-lists-using-react/, taking notes:
+
+- The example handles selection via indexes. This might actually be a good idea: keep a "selected" index at every level. Should be simple.
+
+- Minor point: to render sub-elements, use methods that begin with "render"
+
+- Need to handle special case ? search for "onDragLeaveContainer"
+
+- Use inline styles ? Would probably make things simpler. Also have look at https://speakerdeck.com/vjeux/react-css-in-js
+
+- WOW! The CSS "transition" property seems powerful and elegant at the same time.
+
+- Webkit :hover does not work on Mac while dragging. Will have to revert to using a class.
+
+- Apparently, the "proper way" to maintain state is to access the state object, then passing it as the parameter to setState() (but doesn't that force an unnecessary diff'ing ?)
+
+- Lesson learned: html data-X attributes are available to JS via the "dataset" object.
+
+----------
+
+Planning an attempt to get rid of references to component instances.
+
+- TreeNode has a "selectedChildIndex" state member (for all nodes on the "selection path" down from the root node), plus a "selected" boolean that is only set on the node that is actually selected
+- TreeNode has an event "onSelected" that its container node listens to to learn when selection has changed, so it can update its selectedChildIndex state property
+- TreeNode takes a reference to the Node object in its "data" property (as before)
+
 2015-09-14
 ==========
 
