@@ -1,3 +1,11 @@
+2015-09-16
+==========
+
+Ok, learned an inconvenient truth. I should not use any methods within my components, everything should be data-driven. Case in point: when I tried to use React DnD today, which works by wrapping components, my internal methods were trying to call methods in child components - which were unavailable because the child components were no longer those I had created but their wrappers and "inherit" (by pass-through) all props and state, but no methods.
+
+I'll need to think about how exactly to translate this to a state-driven approach. There goes my idea of having "actions" on my components - the good part is that the "queries" won't be needed any longer either.
+
+
 2015-09-15
 ==========
 

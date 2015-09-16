@@ -4,6 +4,8 @@ var React = require('react');
 var HTML5Backend = require('react-dnd/modules/backends/HTML5');
 var DragDropContext = require('react-dnd').DragDropContext;
 
+var TreeView = require('treeview.jsx')(HTML5Backend);
+
 var my_tree = {
   label: 'ROOT',
   key: '$',

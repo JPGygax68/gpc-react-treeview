@@ -1,9 +1,8 @@
 "use strict";
 
 var React = require('react');
-var HTML5Backend = require('react-dnd/modules/backends/HTML5');
-var DragDropContext = require('react-dnd').DragDropContext;
 var DragSource = require('react-dnd').DragSource;
+//var DragDropContext = require('react-dnd').DragDropContext;
 
 var InsertionMark = require('./insertionmark.jsx');
 
@@ -43,7 +42,8 @@ var TreeNode = React.createClass({
     data: React.PropTypes.object.isRequired,
     leaf: React.PropTypes.bool,
     connectDragSource: React.PropTypes.func.isRequired,
-    isDragging: React.PropTypes.bool.isRequired
+    isDragging: React.PropTypes.bool.isRequired,
+    onSelectionPath: React.PropTypes.bool // actually means: "on the selection path"
   },
   
   /* LIFECYCLE ----------------------*/
@@ -53,7 +53,8 @@ var TreeNode = React.createClass({
     return {
       data: React.PropTypes.object.isRequired,
       connectDragSource: React.PropTypes.func.isRequired,
-      isDragging: React.PropTypes.bool.isRequired
+      isDragging: React.PropTypes.bool.isRequired,
+      onSelectionPath: React.PropTypes.bool
     }
   },
   getDefaultProps: function() {
@@ -75,7 +76,26 @@ var TreeNode = React.createClass({
   componentWillMount: function() {
     //console.log('TreeNode::componentWillMount');
   },
+  componentDidMount: function() {
+    console.log('componentDidMount');
     
+  },
+  componentWillUpdate: function(nextProps, nextState) {
+  },
+  componentDidUpdate: function() {
+
+    if (this.isSelected()) {
+      console.log('setting focus on label');
+      this.refs["label"].getDOMNode().focus();
+    }
+  },
+  componentWillReceiveProps: function(nextProps) {
+    
+    if (!nextProps.onSelectionPath) {
+      this.setState({ selectedChildIndex: -1 });
+    }
+  },
+  
   /* INTERNAL METHODS ---------------*/
   
   getChildCount: function() {
@@ -85,6 +105,7 @@ var TreeNode = React.createClass({
   getChildAt: function(index) {
     
     console.assert(index < this.state.children.length);
+    console.log('getChildAt('+index+'):', this.refs['child-'+index]);
     return this.refs['child-'+index];
   },
   selectPreviousChild: function() {
@@ -95,31 +116,42 @@ var TreeNode = React.createClass({
   selectNextChild: function() {
 
     console.assert(this.state.selectedChildIndex < (this.state.children.length - 1));
-    this.setState({ selectedChildIndex: this.state.selectedChildIndex - 1 });
+    this.setState({ selectedChildIndex: this.state.selectedChildIndex + 1 });
   },
   selectLastChild: function() {
     
     console.assert(this.state.children.length > 0);
     this.setState({ selectedChildIndex: this.state.children.length - 1});
   },
-  selectChildAt: function(index) {
+  /* selectChildAt: function(index) {
     console.log('selectChildAt(', index, ')');
     
     this.setState({ selectedChildIndex: index });
     if (this.props.parent) {
       this.props.parent.selectChildAt(this.props.index);
     }
-  },
-  setSelected: function() {
+  }, */
+  descendantWasSelected: function(child_index) {
+    console.log('descendantWasSelected(', child_index, ')');
     
+    this.setState({ selectedChildIndex: child_index });
     if (this.props.parent) {
-      this.props.parent.selectChildAt(this.props.index);
+      this.props.parent.descendantWasSelected(this.props.index);
     }
-    this.setState({ selectedChildIndex: -1 });
   },
-
+  selectNextSibling: function() {
+    
+    console.assert(this.isSelected());
+    this.props.parent.selectNextChild();
+  },
+  
   /* QUERIES ------------------------*/
   
+  isSelected: function() {
+    
+    return (this.isRoot() || this.props.parent.state.selectedChildIndex == this.props.index)
+      && this.state.selectedChildIndex < 0;
+  },
   hasChildren: function() {
     return this.state.children && this.state.children.length > 0;
   },
@@ -155,30 +187,40 @@ var TreeNode = React.createClass({
         && (this.props.parent.isRoot() || this.props.parent.isOnSelectionPath())
         && this.props.parent.state.selectedChildIndex === this.props.index;
   },
-  isSelected: function() {
-    
-    return this.isOnSelectionPath() && this.state.selectedChildIndex < 0;
-  },
   
   /* ACTIONS ------------------------*/
   
   select: function() {
+    
+    if (!this.isSelected()) {
+      this.setState({ selectedChildIndex: -1 });
+      // Must update up the ancestor chain
+      for (var current = this, ancestor; !current.isRoot(); current = ancestor) {
+        ancestor = current.props.parent;
+        ancestor.setState({ selectedChildIndex: current.props.index });
+      }
+    }
+  },
+  setFocus: function() {
 
     this.refs["label"].getDOMNode().focus();
   },
   selectNext: function() {
     console.log('selectNext', this.props.data.getLabel());
     
-    if (!this.state.closed && this.hasChildren()) {
-      this.getChildAt(0).select();
+    console.assert(!this.props.parent || !!this.props.onSelectionPath);
+    
+    if (!this.state.closed && this.hasChildren() && this.state.selectedChildIndex < 0) {
+      console.log('selecting first child');
+      this.setState({ selectedChildIndex : 0 });
     }
     else {
       if (!this.isLastSibling()) {
-        this.getNextSibling().select();
+        this.selectNextSibling();
       }
       else if (this.props.parent) {
         if (!this.props.parent.isLastSibling()) {
-          this.props.parent.getNextSibling().select();
+          this.props.parent.getNextSibling().setFocus();
         }
       }
     }
@@ -193,11 +235,11 @@ var TreeNode = React.createClass({
       while (previous.hasChildren() && !previous.state.closed) {
         previous = previous.getLastChild();
       }
-      previous.select();
+      previous.setFocus();
     }
     else {
       if (!this.isRoot()) {
-        this.props.parent.select();
+        this.props.parent.setFocus();
       }
     }
   },
@@ -287,31 +329,29 @@ var TreeNode = React.createClass({
     console.log('handleFocusOnLabel', 'this.props.index:', this.props.index);
     
     if (!this.isSelected()) {
-      this.setSelected();
+      this.select();
       e.preventDefault();
-      //e.stopPropagation();
+      e.stopPropagation();
     }
   },
   
   /* Rendering ----------------------*/
   
   render: function() {
-    //console.log('TreeNode::render()', 'this.childElements:', this.childElements);
+    console.log('TreeNode::render()');
     
     var classes = 'node';
     // Properties
     if ( this.props.leaf           ) classes += ' leaf'             ; // TODO: no CSS styling yet to reflect this
+    if ( this.isSelected()         ) classes += ' selected'         ; // TODO: set focus (delayed?)
     // Transitory state
     if ( this.state.closed         ) classes += ' closed'           ;
     if ( this.state.beingDragged   ) classes += ' being-dragged'    ;
     if ( this.state.validDropTarget) classes += ' valid-drop-target';
     // Queries
-    if ( this.isSelected()         ) classes += ' selected'         ;
     if (!this.hasChildren()        ) classes += ' childless'        ;
 
     this.childInstances = []; // will be fill by child node ref callbacks
-    
-    console.log('this.props.connectDragSource', this.props.connectDragSource);
     
     return this.props.connectDragSource(
       <div className={classes} onKeyDown={this.handleKeyDown}>
@@ -345,7 +385,7 @@ var TreeNode = React.createClass({
       child_elements = [];
       child_elements.push( (
         <li>
-          <InsertionMark containingNode={this} index={0} 
+          <InsertionMark containingNode={this} index={0}
             /* onCanDropHere={this.handleCanDropHere.bind(this, 0)}
             onDropHere   ={this.handleDropHere   .bind(this, 0)} */        
           />
@@ -362,6 +402,7 @@ var TreeNode = React.createClass({
                   ref={'child-'+i}
                   firstChild={i === 0} lastChild={i === (children.length - 1)}
                   parent={this} index={i} treeView={this.props.treeView}
+                  onSelectionPath={this.state.selectedChildIndex === i}
                   leaf={child.isLeafOnly()}
                 />
               </li> 

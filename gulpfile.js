@@ -45,7 +45,7 @@ gulp.task('build', ['browserify']);
 
 gulp.task('test-jsx', function () {
   
-  var b = browserify();
+  var b = browserify({ paths: [ './src' ] });
   b.add('./testpage/src/main.jsx');
 
   return b

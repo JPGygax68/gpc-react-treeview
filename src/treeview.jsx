@@ -3,7 +3,6 @@
 var React = require('react');
 
 // TODO: remove once better understood
-var HTML5Backend = require('react-dnd/modules/backends/HTML5');
 var DragDropContext = require('react-dnd').DragDropContext;
 
 //var $ = require('jquery');
@@ -109,10 +108,4 @@ var TreeView = React.createClass({
   
 });
 
-module.exports = {
-  
-  TreeView: DragDropContext(HTML5Backend)(TreeView),
-  TreeNode: TreeNode,
-  
-  React: React
-}
+module.exports = function(backend) { return DragDropContext(backend)(TreeView); };
