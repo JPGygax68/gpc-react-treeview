@@ -149,8 +149,8 @@ var TreeNode = React.createClass({
   
   isSelected: function() {
     
-    return (this.isRoot() || this.props.parent.state.selectedChildIndex == this.props.index)
-      && this.state.selectedChildIndex < 0;
+    return (this.isRoot()|| this.isOnSelectionPath())
+       && this.props.treeView.state.selection.length === this.props.depth;
   },
   hasChildren: function() {
     return this.state.children && this.state.children.length > 0;
@@ -185,7 +185,7 @@ var TreeNode = React.createClass({
     return this.isRoot() 
       || this.props.parent 
         && (this.props.parent.isRoot() || this.props.parent.isOnSelectionPath())
-        && this.props.parent.state.selectedChildIndex === this.props.index;
+        && this.props.index === this.props.treeView.state.selection[this.props.depth - 1];
   },
   
   /* ACTIONS ------------------------*/
@@ -193,12 +193,12 @@ var TreeNode = React.createClass({
   select: function() {
     
     if (!this.isSelected()) {
-      this.setState({ selectedChildIndex: -1 });
-      // Must update up the ancestor chain
-      for (var current = this, ancestor; !current.isRoot(); current = ancestor) {
-        ancestor = current.props.parent;
-        ancestor.setState({ selectedChildIndex: current.props.index });
+      var newSel = [];
+      for (var current = this; current.props.parent; current = current.props.parent) {
+        newSel.unshift(current.props.index);
       }
+      //console.log('new selection path:', newSel);
+      this.props.treeView.setState({ selection: newSel });
     }
   },
   setFocus: function() {
@@ -402,8 +402,8 @@ var TreeNode = React.createClass({
                   ref={'child-'+i}
                   firstChild={i === 0} lastChild={i === (children.length - 1)}
                   parent={this} index={i} treeView={this.props.treeView}
-                  onSelectionPath={this.state.selectedChildIndex === i}
-                  leaf={child.isLeafOnly()}
+                  depth={this.props.depth + 1}
+                  leaf={child.isLeafOnly()} /* TODO: wrap to support fallback */
                 />
               </li> 
             ) );

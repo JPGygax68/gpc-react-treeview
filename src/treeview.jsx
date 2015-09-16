@@ -28,9 +28,8 @@ var TreeView = React.createClass({
   /* LIFECYCLE --------------------------------*/
   
   getInitialState: function() {
-    return { 
-      selected_node_inst: null,
-      dragging_node_inst: null
+    return {
+      selection: []
     };
   },
   
@@ -67,16 +66,13 @@ var TreeView = React.createClass({
         <TreeNode label="ROOT"
           treeView={this}
           data={this.props.rootNode}
+          depth={0}
         />
       </div> 
     );
   },
   
   /* INTERNAL METHODS -------------------------*/
-  
-  startedDragging: function(node_inst) {
-    this.setState({ dragging_node_inst: node_inst });
-  },
   
   loadCommentsFromServer: function() {
     $.ajax({

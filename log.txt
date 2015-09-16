@@ -5,6 +5,29 @@ Ok, learned an inconvenient truth. I should not use any methods within my compon
 
 I'll need to think about how exactly to translate this to a state-driven approach. There goes my idea of having "actions" on my components - the good part is that the "queries" won't be needed any longer either.
 
+----------
+
+New approach for selection:
+
+- Selection is an array of 0-based indices
+- Every node knows its depth, which it gets from its parent node (or the treeview)
+- That depth is used to index the selection key chain
+- To set the selection on a node, splice() is used:
+  - cut off the chain at the parent's depth
+  - append the index of the node (relative to its immediate parent)
+- By using setState() on the treeview (which is passed down to every node component), updates won't require any logic at all
+
+- For the special case of moving up and selecting the last preceding descendant, refs must be reintroduced:
+  - "child-<index>"
+  - obtain the previous sibling via: this.props.parent.refs["child-"+(this.props.index-1)] -> current (node instance)
+  - repeat:
+    - check if the current node instance is open
+    - if not, stop here
+    - obtain the children count via the proxy object: current.props.data.getChildren().length
+    - append that count - 1 as the next link in the selection chain
+    - make that child the current node instance
+    - repeat
+  
 
 2015-09-15
 ==========
