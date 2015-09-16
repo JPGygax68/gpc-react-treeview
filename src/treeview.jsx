@@ -1,10 +1,12 @@
 "use strict";
 
 var React = require('react');
-//var DragDropContext = require('react-dnd').DragDropContext;
 
-//require('react/dist/JSXTransformer');
-var $ = require('jquery');
+// TODO: remove once better understood
+var HTML5Backend = require('react-dnd/modules/backends/HTML5');
+var DragDropContext = require('react-dnd').DragDropContext;
+
+//var $ = require('jquery');
 var insertCss = require('insert-css');
 
 // TODO: CSS injection should not be set in stone like this, provide variety of bundler modules ?
@@ -56,9 +58,11 @@ var TreeView = React.createClass({
   
   render: function() {
     //console.log('this.props.top_nodes:', this.props.top_nodes);
+    
     // Note: the "dragging" attribute should probably be implemented
     var className = "gpc treeview";
     if (this.state.dragging) className += ' dragging';
+    
     return ( 
       <div className={className}>
         <TreeNode label="ROOT"
@@ -107,13 +111,8 @@ var TreeView = React.createClass({
 
 module.exports = {
   
-  TreeView: TreeView,
+  TreeView: DragDropContext(HTML5Backend)(TreeView),
   TreeNode: TreeNode,
   
   React: React
-  
-  // Examples of convenience exports
-  //ko: ko,
-  //knockout: ko,
-  //jQuery: require('jquery')
 }

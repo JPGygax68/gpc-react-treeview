@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var HTML5Backend = require('react-dnd/modules/backends/HTML5');
 var DragDropContext = require('react-dnd').DragDropContext;
 var DragSource = require('react-dnd').DragSource;
 
@@ -51,7 +52,7 @@ var TreeNode = React.createClass({
     
     return {
       data: React.PropTypes.object.isRequired,
-      dragSource: React.PropTypes.func.isRequired,
+      connectDragSource: React.PropTypes.func.isRequired,
       isDragging: React.PropTypes.bool.isRequired
     }
   },
@@ -382,4 +383,6 @@ var TreeNode = React.createClass({
   
 });
 
-module.exports = DragSource("NODE", dndNodeSource, dndCollect)(TreeNode);
+TreeNode = DragSource("NODE", dndNodeSource, dndCollect)(TreeNode);
+
+module.exports = TreeNode;
