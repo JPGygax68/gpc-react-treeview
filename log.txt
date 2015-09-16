@@ -27,6 +27,33 @@ Planning an attempt to get rid of references to component instances.
 - TreeNode has an event "onSelected" that its container node listens to to learn when selection has changed, so it can update its selectedChildIndex state property
 - TreeNode takes a reference to the Node object in its "data" property (as before)
 
+----------
+
+Ok, I have gotten rid of the childInstances array and improved structure and CSS styling (hopefully), though I'm still using CSS rule injection.
+
+My next step should be to finally get "internal" drag & drop working. This means:
+
+- Insertion marks should turn green when drag-hovered over and insertion is possible at that location. The two siblings and the parent node should be consulted and given veto rights. If insertion is not possible at that location, the insertion mark should turn red and the pointer image should display a stop sign (the latter is automatic, just need to allow the default handling of the dragover event).
+- DnD should support both moving and copying.
+- When a node is moved around but stays inside the same parent, the node proxy of the parent must do the move. If successful (indicate by returning true ?), the parent of the node *component* can then do the same for its two children.
+- In order to avoid unnecessary operations, a Node::moveTo() and Node::copyTo() should be given a means to cancel the default view updates, for those rare cases when a change in a node must be reflected on an ancestor. In such cases, moveTo() and copyTo() can trigger re-renders via the callback function they are given. (How about: returning false means (unspecified) failure, true = success, and not returning anything means "wait for the callback" ?)
+  - The tree view should put timeouts on asynchronous operations
+  - Asynchronous operations should give feedback about their progress (second callback ?) - for example, a triple dot with a highlight cycling through the dots.
+- As long as a move operation is not completed, the original node component stays visible (with its visual feedback, typically strongly reduced opacity).
+- Nodes cannot be moved to their descendants.
+- Copying must be done by the node data object, via the copyTo() method. The signature should be as similar as possible to moveTo().
+
+....
+
+I believe it would be a good idea to try and use the React DnD library.
+
+----------
+
+Reading about React DnD. 
+
+- PropTypes.arrayOf() !!
+- Idea/opinion: instead of keeping the index as a property of child nodes, wrap the child nodes inside div's and give *those* an index - better decoupling. Drawback: those div's need to connect to child node events and "pass them up" after attaching the index.
+
 2015-09-14
 ==========
 

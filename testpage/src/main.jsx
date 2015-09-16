@@ -1,5 +1,7 @@
 "use strict";
 
+var App = require('./app.jsx');
+
 var my_tree = {
   label: 'ROOT',
   key: '$',
@@ -43,7 +45,14 @@ class NodeProxy {
   canDrag() {
     return true;
   }
+  
+  canDropAsChild(node, index) {
+    return false;
+  }
 }
 
-React.render( ( <TreeView rootNode={new NodeProxy(my_tree)} key="$" nodesHaveKeys={false} /> ), 
-  document.getElementById('myTreeview') );
+// new NodeProxy(my_tree)
+
+React.render( <TreeView rootNode={new NodeProxy(my_tree)} />,
+  document.body // getElementById('myTreeview')
+);

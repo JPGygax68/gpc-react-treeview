@@ -5,6 +5,7 @@ var gutil = require("gulp-util");
 //var plumber = require("gulp-plumber");
 var sourcemaps = require('gulp-sourcemaps');
 var browserify = require('browserify');
+var streamify = require('gulp-streamify');
 var watchify = require('watchify');
 var transform = require("vinyl-transform");
 var source = require("vinyl-source-stream");
@@ -23,13 +24,14 @@ gulp.task("browserify", function() {
   //b.transform('reactify', { extension: 'jsx' });
   b.add('./src/treeview.jsx');
 
-  return b.bundle()
-    .on( 'error', notify.onError('Error: <%= error.message %>') )
-    .pipe( source('gpc-treeview.js') ) // TODO: define at top of gulpfile ?
-    .pipe( buffer() )
+  return b
+    .on('error', notify.onError('Error: <%= error.message %>'))
+    //.pipe( sourcemaps.init({ loadMaps: true }) )
+    .bundle()
+    //.pipe( sourcemaps.write('./') )
+    //.pipe( buffer() )
     //.pipe(babel() )
-    .pipe( sourcemaps.init({loadMaps: true}) )
-    .pipe( sourcemaps.write('./') )
+    .pipe( source('gpc-treeview.js') ) // TODO: define at top of gulpfile ?
     .pipe( gulp.dest('./dist') )
     .pipe( notify({ message: 'Browserify bundling completed', onLast: true }) )
     .on('log', gutil.log)
@@ -43,10 +45,18 @@ gulp.task('build', ['browserify']);
 
 gulp.task('test-jsx', function () {
   
-  return gulp.src('testpage/src/main.jsx')
-    .pipe(react({ harmony: true }))
-    //.pipe(source('main.js'))
-    .pipe(gulp.dest('testpage/stage/scripts'));
+  var b = browserify();
+  b.add('./testpage/src/main.jsx');
+
+  return b
+    .on( 'error', notify.onError('Error: <%= error.message %>') )
+    //.pipe( sourcemaps.init({ loadMaps: true }) )
+    .bundle()
+    //.pipe( sourcemaps.write('./') )
+    .pipe( source('main.js') )
+    .pipe( gulp.dest('./testpage/stage/scripts') )
+    .pipe( notify({ message: 'Test script bundling completed', onLast: true }) )
+    .on('log', gutil.log)
 });
 
 gulp.task("test", ['build', 'test-jsx']);

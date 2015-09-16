@@ -1,6 +1,8 @@
 "use strict";
 
 var React = require('react');
+//var DragDropContext = require('react-dnd').DragDropContext;
+
 //require('react/dist/JSXTransformer');
 var $ = require('jquery');
 var insertCss = require('insert-css');
@@ -26,7 +28,8 @@ var TreeView = React.createClass({
   
   getInitialState: function() {
     return { 
-      selected_node_inst: null
+      selected_node_inst: null,
+      dragging_node_inst: null
     };
   },
   
@@ -67,6 +70,10 @@ var TreeView = React.createClass({
   },
   
   /* INTERNAL METHODS -------------------------*/
+  
+  startedDragging: function(node_inst) {
+    this.setState({ dragging_node_inst: node_inst });
+  },
   
   loadCommentsFromServer: function() {
     $.ajax({
