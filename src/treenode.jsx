@@ -144,6 +144,7 @@ var TreeNode = React.createClass({
     console.assert(this.isSelected());
     this.props.parent.selectNextChild();
   },
+  selection: function() { return this.props.treeView.state.selection; },
   
   /* QUERIES ------------------------*/
   
@@ -157,7 +158,10 @@ var TreeNode = React.createClass({
   },
   isFirstSibling: function() { return this.props.index === 0; },
   isLastSibling: function() { 
-    return this.isRoot() || this.props.index === (this.props.parent.getChildCount() -1); 
+    // TODO: get this as a property from the parent instead ?
+    var result = this.isRoot() || this.props.index === (this.props.parent.getChildCount() -1); 
+    //console.log('isLastSibling? ->', result);
+    return result;
   },
   getPreviousSibling: function() {
     
@@ -208,19 +212,37 @@ var TreeNode = React.createClass({
   selectNext: function() {
     console.log('selectNext', this.props.data.getLabel());
     
-    console.assert(!this.props.parent || !!this.props.onSelectionPath);
+    console.assert(this.isOnSelectionPath());
     
-    if (!this.state.closed && this.hasChildren() && this.state.selectedChildIndex < 0) {
-      console.log('selecting first child');
-      this.setState({ selectedChildIndex : 0 });
+    if (!this.state.closed && this.hasChildren()) {
+      var sel = this.selection();
+      sel.unshift(0);
+      this.props.treeView.setState({ selection: sel });
     }
     else {
       if (!this.isLastSibling()) {
-        this.selectNextSibling();
+        var sel = this.selection();
+        sel.splice(sel.length - 1, 1, this.props.index + 1);
+        this.props.treeView.setState({ selection: sel });
       }
       else if (this.props.parent) {
-        if (!this.props.parent.isLastSibling()) {
-          this.props.parent.getNextSibling().setFocus();
+        console.log('climbing up before forward');
+        // Check how many levels we have to climb up before moving forward
+        var index = this.selection().length - 1; // could also use depth property
+        //console.log('initial index:', index);
+        var current = this.props.parent;
+        while (current && current.isLastSibling()) {
+          index --;          
+          current = current.props.parent;
+          //console.log('index:', index, 'current:', current);
+        }
+        // If we arrive at the root node, there's nowhere left to move
+        if (index > 0) {
+          //console.log('index after climb:', index);
+          var sel = this.selection();
+          sel.splice(index - 1, 1000, current.props.index + 1);
+          //console.log('new selection:', sel);
+          this.props.treeView.setState({ selection: sel });
         }
       }
     }
