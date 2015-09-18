@@ -5,7 +5,8 @@ var DropTarget = require('react-dnd').DropTarget;
 
 /* HELPER FUNCTIONS -----------------*/
 
-function stopEvent(e) { 
+function stopEvent(e) {
+  
   e.preventDefault(); 
   e.stopPropagation(); 
 }
@@ -15,7 +16,7 @@ function stopEvent(e) {
 var dropTarget = {
   
   drop: function(props) {
-    console.log('InsertionMark dropTarget::drop(',props,'): TODO!');
+    console.log('InsertionMark dropTarget::drop(', props, '): TODO!');
   }
 };
 
@@ -48,8 +49,8 @@ var InsertionMark = React.createClass({
   render: function() {
     
     var className = 'insertion-mark';
-    //if (this.props.dragOver       ) className += ' drag-over';
-    //if (this.state.validDropTarget) className += ' valid-drop-target';
+
+    if (this.props.isOver) className += ' drag-over';
     
     return this.props.connectDropTarget( 
       <div className={className} ref={(c) => this.container = c}>

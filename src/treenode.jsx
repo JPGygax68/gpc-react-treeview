@@ -6,9 +6,12 @@ var DropTarget = require('react-dnd').DropTarget;
 
 var InsertionMark = require('./insertionmark.jsx');
 
+var DEBUG = false;
+
 /* HELPER FUNCTIONS -----------------*/
 
 function stopEvent(e) { 
+
   e.preventDefault(); 
   e.stopPropagation(); 
 }
@@ -38,7 +41,7 @@ function dragCollect(connect, monitor) {
 var nodeLabelTarget = {
   
   drop: function (props) {
-    console.log('nodeLabelTarget::drop()');
+    if (DEBUG) console.debug('nodeLabelTarget::drop()');
   }
 };
 
@@ -64,29 +67,29 @@ var TreeNodeLabel = React.createClass({
   },
   
   componentDidMount: function() {
-    console.log('TreeNodeLabel::componentDidMount()');
+    if (DEBUG) console.debug('TreeNodeLabel::componentDidMount()');
   },
   
   componentDidUpdate: function(prevProps, prevState) {
-    console.log('TreeNodeLabel::componentDidUpdate');
+    if (DEBUG) console.debug('TreeNodeLabel::componentDidUpdate');
 
     if (this.props.selected) {
       // We do this here but not in componentDidMount, because the initial 
       // rendering should not grab the focus - leave that to the user.
-      console.log('setting focus on label');
+      if (DEBUG) console.debug('setting focus on label');
       this.refs["label"].getDOMNode().focus();
     }  
   },
   
   handleClickOnLabel: function(e) {
-    //console.log('TreeNodeLabel::handleClickOnLabel');
+    if (DEBUG) console.debug('TreeNodeLabel::handleClickOnLabel');
     
     this.props.onSelected.call(this.props.node);
     e.stopPropagation();
   },
   
   handleFocusOnLabel: function(e) {
-    console.log('TreeNodeLabel::handleFocusOnLabel', 'this.props.node:', this.props.node);
+    if (DEBUG) console.debug('TreeNodeLabel::handleFocusOnLabel', 'this.props.node:', this.props.node);
     
     this.props.onObtainedFocus.call(this.props.node);
     e.stopPropagation();
@@ -139,7 +142,7 @@ var TreeNode = React.createClass({
     }
   },
   getInitialState: function() {
-    console.log('TreeNode::getInitialState', 'this.props:', this.props);
+    if (DEBUG) console.debug('TreeNode::getInitialState', 'this.props:', this.props);
     
     return {
       closed: false,
@@ -147,19 +150,19 @@ var TreeNode = React.createClass({
     }
   }, 
   componentWillMount: function() {
-    console.log('TreeNode::componentWillMount');
+    if (DEBUG) console.debug('TreeNode::componentWillMount');
   },
   componentDidMount: function() {
-    console.log('componentDidMount');
+    if (DEBUG) console.debug('componentDidMount');
     
   },
   componentWillUpdate: function(nextProps, nextState) {
   },
   componentDidUpdate: function() {
-    console.log('TreeNode::componentDidUpdate');
+    if (DEBUG) console.debug('TreeNode::componentDidUpdate');
   },
   componentWillReceiveProps: function(nextProps) {
-    console.log('componentWillReceiveProps');
+    if (DEBUG) console.debug('componentWillReceiveProps');
   },
   
   /* INTERNAL METHODS ---------------*/
@@ -171,7 +174,7 @@ var TreeNode = React.createClass({
   getChildAt: function(index) {
     
     console.assert(index < this.props.data.getChildren().length);
-    console.log('getChildAt('+index+'):', this.refs['child-'+index]);
+    if (DEBUG) console.debug('getChildAt('+index+'):', this.refs['child-'+index]);
     return this.refs['child-'+index];
   },
   selectPreviousChild: function() {
@@ -190,7 +193,7 @@ var TreeNode = React.createClass({
     this.setState({ selectedChildIndex: this.props.data.getChildren().length - 1});
   },
   descendantWasSelected: function(child_index) {
-    console.log('descendantWasSelected(', child_index, ')');
+    if (DEBUG) console.debug('descendantWasSelected(', child_index, ')');
     
     this.setState({ selectedChildIndex: child_index });
     if (this.props.parent) {
@@ -219,7 +222,6 @@ var TreeNode = React.createClass({
   isLastSibling: function() { 
     // TODO: get this as a property from the parent instead ?
     var result = this.isRoot() || this.props.index === (this.props.parent.getChildCount() -1); 
-    //console.log('isLastSibling? ->', result);
     return result;
   },
   getPreviousSibling: function() {
@@ -260,12 +262,11 @@ var TreeNode = React.createClass({
       for (var current = this; current.props.parent; current = current.props.parent) {
         newSel.unshift(current.props.index);
       }
-      //console.log('new selection path:', newSel);
       this.props.treeView.setState({ selection: newSel });
     }
   },
   selectNext: function() {
-    console.log('selectNext', this.props.data.getLabel());
+    if (DEBUG) console.debug('selectNext', this.props.data.getLabel());
     
     console.assert(this.isOnSelectionPath());
     
@@ -281,22 +282,22 @@ var TreeNode = React.createClass({
         this.props.treeView.setState({ selection: sel });
       }
       else if (this.props.parent) {
-        console.log('climbing up before forward');
+        if (DEBUG) console.debug('climbing up before forward');
         // Check how many levels we have to climb up before moving forward
         var index = this.selection().length - 1; // could also use depth property
-        //console.log('initial index:', index);
+        //console.debug('initial index:', index);
         var current = this.props.parent;
         while (current && current.isLastSibling()) {
           index --;          
           current = current.props.parent;
-          //console.log('index:', index, 'current:', current);
+          //console.debug('index:', index, 'current:', current);
         }
         // If we arrive at the root node, there's nowhere left to move
         if (index > 0) {
-          //console.log('index after climb:', index);
+          //console.debug('index after climb:', index);
           var sel = this.selection();
           sel.splice(index - 1, 1000, current.props.index + 1);
-          //console.log('new selection:', sel);
+          //console.debug('new selection:', sel);
           this.props.treeView.setState({ selection: sel });
         }
       }
@@ -304,13 +305,12 @@ var TreeNode = React.createClass({
     // TODO: other cases
   },
   selectPrevious: function() {
-    console.log('selectPrevious', this);
+    if (DEBUG) console.debug('selectPrevious', this);
 
     console.assert(this.isOnSelectionPath());
 
     if (!this.isRoot()) {
       if (!this.isFirstSibling()) {
-        console.log('is not first sibling');
         // Set selection to previous sibling
         var sel = this.selection();
         var index = this.props.index - 1;
@@ -325,7 +325,6 @@ var TreeNode = React.createClass({
           // Add the index of the last child to the selection
           var index = current.props.data.getChildren().length - 1;
           sel.push( index );
-          console.log('added', index, 'to selection path ->', sel);
         }
         // Update the view
         this.props.treeView.setState({ selection: sel });
@@ -345,7 +344,7 @@ var TreeNode = React.createClass({
   /* EVENT HANDLERS -----------------*/
   
   handleClickOnHandle: function(e) {
-    //console.log('handleClickOnHandle', this.state.closed);
+    if (DEBUG) console.debug('handleClickOnHandle', this.state.closed);
     
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
@@ -354,7 +353,7 @@ var TreeNode = React.createClass({
   },
   /*
   handleDragStart: function(e) {
-    console.log('TreeNode::handleDragStart');
+    console.('TreeNode::handleDragStart');
     
     if (this.isNodeDraggable()) {
       this.setState({ beingDragged: true });
@@ -391,31 +390,27 @@ var TreeNode = React.createClass({
   },
   */
   handleKeyDown: function(e) {
-    console.log('TreeNode::handleKeyDown');
+    if (DEBUG) console.debug('TreeNode::handleKeyDown');
     
     if      (e.which === 38) /* UP */ {
-      //console.log('UP');
       this.selectPrevious();
       stopEvent(e);
     }
     else if (e.which === 40) /* DOWN */ {
-      //console.log('DOWN');
       this.selectNext();
       stopEvent(e);
     }
     else if (e.which === 37) /* LEFT */ {
-      //console.log('LEFT');
       stopEvent(e);
       if (!this.state.closed) { this.close(); }
     }
     else if (e.which === 39) /* RIGHT */ {
-      //console.log('RIGHT');
       stopEvent(e);
       if (this.state.closed) { this.open(); }
     }
   },
   handleObtainedFocus: function() {
-    console.log('TreeNode::handleObtainedFocus', 'this.props.index:', this.props.index);
+    if (DEBUG) console.debug('TreeNode::handleObtainedFocus', 'this.props.index:', this.props.index);
     
     if (!this.isSelected()) {
       this.select();
@@ -425,7 +420,7 @@ var TreeNode = React.createClass({
   /* Rendering ----------------------*/
   
   render: function() {
-    console.log('TreeNode::render()');
+    if (DEBUG) console.debug('TreeNode::render()');
     
     var classes = 'node';
     // Properties
@@ -473,7 +468,6 @@ var TreeNode = React.createClass({
       ) );
       if (children && children.length > 0) {
         children.forEach( function(child, i) {
-            //console.log('child: ', i);
             var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
             child_elements.push( ( 
               <li>

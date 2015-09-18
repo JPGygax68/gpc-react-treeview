@@ -152,15 +152,15 @@ default_indent = 1.2em;
   &.dragging {
     div.node {
       ul.child-nodes > li {
-        div.insertion-mark.valid-drop-target > div > div { background-color: #0C4; }
+        div.insertion-mark.drag-over > div > div { background-color: #0C4; }
       }
       
-      > label.valid-drop-target {
+      /* > label.valid-drop-target {
         &:hover {
           background-color: alpha(selection_background, 0.5);
           border-color: alpha(selection_border, 0.5);
         }
-      }
+      } */
     }
   }
 }
