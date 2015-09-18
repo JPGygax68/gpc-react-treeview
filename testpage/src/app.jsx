@@ -10,7 +10,7 @@ var my_tree = {
   label: 'ROOT',
   key: '$',
   children: [ {   
-      label: 'Child 1', key: '1', children: [
+      label: 'Child 1 - bla bla bla bla', key: '1', children: [
         { label: 'Grandchild 1.1', key: '1', leafOnly: true },
         { label: 'Grandchild 1.2', key: '2', leafOnly: true }
       ]

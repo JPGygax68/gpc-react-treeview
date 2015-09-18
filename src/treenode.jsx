@@ -2,7 +2,7 @@
 
 var React = require('react');
 var DragSource = require('react-dnd').DragSource;
-//var DragDropContext = require('react-dnd').DragDropContext;
+var DropTarget = require('react-dnd').DropTarget;
 
 var InsertionMark = require('./insertionmark.jsx');
 
@@ -15,7 +15,10 @@ function stopEvent(e) {
 
 /* Drag and Drop (React DnD) --------*/
 
-var dndNodeSource = {
+/* Note: the dragSource is applied to a TreeNode as a whole,
+  while the dropTarget is applied to the label only.
+ */
+var dragSource = {
   
   beginDrag: function(props) {
     return {
@@ -24,13 +27,92 @@ var dndNodeSource = {
   }
 };
 
-function dndCollect(connect, monitor) {
+function dragCollect(connect, monitor) {
   
   return {
     connectDragSource: connect.dragSource(), // function that will be used to wrap the component
     isDragging: monitor.isDragging()
   }
 }
+
+var nodeLabelTarget = {
+  
+  drop: function (props) {
+    console.log('nodeLabelTarget::drop()');
+  }
+};
+
+function dropCollect(connect, monitor) {
+  
+  return {
+    connectDropTarget: connect.dropTarget(), // function that will be used to wrap the component
+    isOver: monitor.isOver()
+  }
+}
+
+/* SUB-COMPONENT --------------------*/
+
+var TreeNodeLabel = React.createClass({
+  
+  propTypes: {
+    text: React.PropTypes.string.isRequired,
+    node: React.PropTypes.object.isRequired,
+    selected: React.PropTypes.bool.isRequired,
+    onSelected: React.PropTypes.func.isRequired,
+    onObtainedFocus: React.PropTypes.func.isRequired,
+    onKeyDown: React.PropTypes.func.isRequired
+  },
+  
+  componentDidMount: function() {
+    console.log('TreeNodeLabel::componentDidMount()');
+  },
+  
+  componentDidUpdate: function(prevProps, prevState) {
+    console.log('TreeNodeLabel::componentDidUpdate');
+
+    if (this.props.selected) {
+      // We do this here but not in componentDidMount, because the initial 
+      // rendering should not grab the focus - leave that to the user.
+      console.log('setting focus on label');
+      this.refs["label"].getDOMNode().focus();
+    }  
+  },
+  
+  handleClickOnLabel: function(e) {
+    //console.log('TreeNodeLabel::handleClickOnLabel');
+    
+    this.props.onSelected.call(this.props.node);
+    e.stopPropagation();
+  },
+  
+  handleFocusOnLabel: function(e) {
+    console.log('TreeNodeLabel::handleFocusOnLabel', 'this.props.node:', this.props.node);
+    
+    this.props.onObtainedFocus.call(this.props.node);
+    e.stopPropagation();
+  },
+  
+  handleKeyDown: function(e) {
+    
+    this.props.handleKeyDown.call(this.props.node, e);
+    e.stopPropagation();
+  },
+  
+  render: function() {
+    
+    return (
+      <div className="label" tabIndex="0" ref="label"
+        onClick={this.handleClickOnLabel} onFocus={this.handleFocusOnLabel}
+        onKeydown={this.handleKeyDown}
+        /* draggable={this.props.node.isNodeDraggable() } /* TODO: probably not needed with ReactDnd */
+      >
+        { this.props.text }
+      </div>
+    );
+  }
+});
+
+TreeNodeLabel = DropTarget("NODE", nodeLabelTarget, dropCollect)(TreeNodeLabel);
 
 /* MAIN CLASS -----------------------*/
 
@@ -39,6 +121,7 @@ var TreeNode = React.createClass({
   displayName: 'TreeNode',
   
   propTypes: {
+    parent: React.PropTypes.object.isRequired,
     data: React.PropTypes.object.isRequired,
     leaf: React.PropTypes.bool,
     connectDragSource: React.PropTypes.func.isRequired,
@@ -49,6 +132,7 @@ var TreeNode = React.createClass({
   /* LIFECYCLE ----------------------*/
   
   getPropTypes: function() {
+    console.log('TreeNode::getPropTypes');
     
     return {
       data: React.PropTypes.object.isRequired,
@@ -64,7 +148,7 @@ var TreeNode = React.createClass({
     }
   },
   getInitialState: function() {
-    //console.log('TreeNode::getInitialState', 'this.props:', this.props);
+    console.log('TreeNode::getInitialState', 'this.props:', this.props);
     
     return {
       closed: false,
@@ -72,7 +156,7 @@ var TreeNode = React.createClass({
     }
   }, 
   componentWillMount: function() {
-    //console.log('TreeNode::componentWillMount');
+    console.log('TreeNode::componentWillMount');
   },
   componentDidMount: function() {
     console.log('componentDidMount');
@@ -81,11 +165,7 @@ var TreeNode = React.createClass({
   componentWillUpdate: function(nextProps, nextState) {
   },
   componentDidUpdate: function() {
-
-    if (this.isSelected()) {
-      console.log('setting focus on label');
-      this.refs["label"].getDOMNode().focus();
-    }
+    console.log('TreeNode::componentDidUpdate');
   },
   componentWillReceiveProps: function(nextProps) {
     console.log('componentWillReceiveProps');
@@ -118,14 +198,6 @@ var TreeNode = React.createClass({
     console.assert(this.props.data.getChildren().length > 0);
     this.setState({ selectedChildIndex: this.props.data.getChildren().length - 1});
   },
-  /* selectChildAt: function(index) {
-    console.log('selectChildAt(', index, ')');
-    
-    this.setState({ selectedChildIndex: index });
-    if (this.props.parent) {
-      this.props.parent.selectChildAt(this.props.index);
-    }
-  }, */
   descendantWasSelected: function(child_index) {
     console.log('descendantWasSelected(', child_index, ')');
     
@@ -201,10 +273,6 @@ var TreeNode = React.createClass({
       this.props.treeView.setState({ selection: newSel });
     }
   },
-  setFocus: function() {
-
-    this.refs["label"].getDOMNode().focus();
-  },
   selectNext: function() {
     console.log('selectNext', this.props.data.getLabel());
     
@@ -248,7 +316,7 @@ var TreeNode = React.createClass({
     console.log('selectPrevious', this);
 
     console.assert(this.isOnSelectionPath());
-    
+
     if (!this.isRoot()) {
       if (!this.isFirstSibling()) {
         console.log('is not first sibling');
@@ -291,12 +359,7 @@ var TreeNode = React.createClass({
     e.preventDefault();
     this.setState({ closed: !this.state.closed });
   },
-  handleClickOnLabel: function(e) {
-    //console.log('handleClickOnLabel');
-    
-    // NOTE: nothing to do, focus should take care of everything
-    //this.setSelected();
-    //stopEvent(e);
+  handleLabelSelected: function() {
   },
   /*
   handleDragStart: function(e) {
@@ -360,13 +423,11 @@ var TreeNode = React.createClass({
       if (this.state.closed) { this.open(); }
     }
   },
-  handleFocusOnLabel: function(e) {
-    console.log('handleFocusOnLabel', 'this.props.index:', this.props.index);
+  handleObtainedFocus: function() {
+    console.log('TreeNode::handleObtainedFocus', 'this.props.index:', this.props.index);
     
     if (!this.isSelected()) {
       this.select();
-      e.preventDefault();
-      e.stopPropagation();
     }
   },
   
@@ -390,21 +451,18 @@ var TreeNode = React.createClass({
       <div className={classes} onKeyDown={this.handleKeyDown}>
         <div className= "header">
           <div className="handle" onClick={this.handleClickOnHandle} />
-          { this.renderLabel() }
+          { React.createElement(TreeNodeLabel, { 
+              node: this, 
+              text: this.props.data.getLabel(),
+              onSelected: this.handleLabelSelected,
+              onObtainedFocus: this.handleObtainedFocus,
+              onKeyDown: this.handleKeyDown,
+              selected: this.isSelected() 
+            }) 
+          }
         </div>
         <ul className="child-nodes">{this.renderChildren()}</ul>
       </div> 
-    );
-  },
-  renderLabel: function() {
-
-    return (
-      <div className="label" tabIndex="0" ref="label"
-        onClick    ={this.handleClickOnLabel} onFocus    ={this.handleFocusOnLabel}
-        draggable  ={this.isNodeDraggable() } /* TODO: probably not needed with ReactDnd */
-      >
-        {this.props.data.getLabel()}
-      </div>
     );
   },
   renderChildren: function() {
@@ -454,6 +512,6 @@ var TreeNode = React.createClass({
   
 });
 
-TreeNode = DragSource("NODE", dndNodeSource, dndCollect)(TreeNode);
+TreeNode = DragSource("NODE", dragSource, dragCollect)(TreeNode);
 
 module.exports = TreeNode;

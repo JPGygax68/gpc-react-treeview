@@ -1,3 +1,11 @@
+2015-09-18
+==========
+
+Important lesson about React: you should not set the focus from within componentDidMount(), because that is only called after the initial rendering. At that point, many other components have also mounted, so they shouldn't compete for the focus. The proper place where to set the focus (if dictated by a prop or a state) is componentDidUpdate().
+
+This is matter of opinion though. A property like "initiallySelected" might be set on any component in the hierarchy if an exception needs to be made.
+
+
 2015-09-16
 ==========
 
