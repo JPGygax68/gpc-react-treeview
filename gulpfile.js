@@ -14,6 +14,7 @@ var notify = require("gulp-notify");
 var babel = require("gulp-babel");
 var nib = require("nib");
 var react = require("gulp-react");
+var assign = require("lodash").assign;
 
 // Browserify ---------------------------------------------
 
@@ -43,23 +44,29 @@ gulp.task('build', ['browserify']);
 
 // Test ---------------------------------------------------
 
-gulp.task('test-jsx', function () {
+gulp.task('test-browserify', function () {
   
-  var b = browserify({ paths: [ './src' ] });
+  var opts = assign({}, watchify.args, { paths: ['./src'], debug: true });
+  var b = watchify( browserify(opts) );
+
   b.add('./testpage/src/main.jsx');
 
-  return b
-    .on( 'error', notify.onError('Error: <%= error.message %>') )
-    //.pipe( sourcemaps.init({ loadMaps: true }) )
-    .bundle()
-    //.pipe( sourcemaps.write('./') )
-    .pipe( source('main.js') )
-    .pipe( gulp.dest('./testpage/stage/scripts') )
-    .pipe( notify({ message: 'Test script bundling completed', onLast: true }) )
-    .on('log', gutil.log)
+  return bundle();
+  
+  function bundle() {
+    return b.bundle()
+      .on('error', gutil.log.bind(gutil, 'Browserify error on test script') )
+      .pipe( source('main.js') )
+      .pipe( buffer() )
+      .pipe( sourcemaps.init({ loadMaps: true }) ) // loads maps from browserify file
+      .pipe( sourcemaps.write('./') )
+      .pipe( gulp.dest('./testpage/stage/scripts') )
+      .pipe( notify({ message: 'Test script bundling completed', onLast: true }) )
+      .on('log', gutil.log);
+  }
 });
 
-gulp.task("test", ['build', 'test-jsx']);
+gulp.task("test", ['test-browserify']);
 
 /*, function() {
   // Copy stuff to test directory
@@ -71,9 +78,11 @@ gulp.task("test", ['build', 'test-jsx']);
 
 // Watch and default --------------------------------------
 
+// NOT IN USE
 gulp.task('watch', function() {
  
   gulp.watch(['src/**/*.*', 'testpage/src/**/*.*'], ['test']);  
 });
 
-gulp.task("default", ['test', 'watch']);
+
+gulp.task("default", ['test']);
