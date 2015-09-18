@@ -8,6 +8,7 @@ var browserify = require('browserify');
 var streamify = require('gulp-streamify');
 var watchify = require('watchify');
 var transform = require("vinyl-transform");
+var babelify = require("babelify");
 var source = require("vinyl-source-stream");
 var buffer = require('vinyl-buffer');
 var notify = require("gulp-notify");

@@ -65,7 +65,8 @@
         {
           "inline-images": true
         }
-      ]
+      ],
+      "babelify"
     ]
   },
   "browserify-shim": {}

@@ -24,8 +24,11 @@ function stopEvent(e) {
 var dragSource = {
   
   beginDrag: function(props) {
+    console.debug('beginDrag:', props.parent, props.index);
+
     return {
-      data: props.data
+      parent: props.parent && props.parent.props.data,
+      index: props.index
     };
   }
 };
@@ -350,6 +353,7 @@ var TreeNode = React.createClass({
     this.setState({ closed: !this.state.closed });
   },
   handleLabelSelected: function() {
+    if (DEBUG) console.debug('TreeNode::handleLabelSelected');
   },
   /*
   handleDragStart: function(e) {
@@ -460,10 +464,7 @@ var TreeNode = React.createClass({
       child_elements = [];
       child_elements.push( (
         <li>
-          <InsertionMark containingNode={this} index={0}
-            /* onCanDropHere={this.handleCanDropHere.bind(this, 0)}
-            onDropHere   ={this.handleDropHere   .bind(this, 0)} */        
-          />
+          <InsertionMark parent={this} index={0} />
         </li>
       ) );
       if (children && children.length > 0) {
@@ -482,10 +483,7 @@ var TreeNode = React.createClass({
             ) );
             child_elements.push( ( 
               <li>
-                <InsertionMark containingNode={this} index={i + 1} 
-                  /* onCanDropHere={this.handleCanDropHere.bind(this, i + 1)}
-                  onDropHere   ={this.handleDropHere   .bind(this, i + 1)} */
-                />
+                <InsertionMark parent={this} index={i + 1} />
               </li> 
             ) );
           }, this);

@@ -15,7 +15,20 @@ function stopEvent(e) {
 
 var dropTarget = {
   
-  drop: function(props) {
+  canDrop: function(props, monitor) {
+    //console.debug('canDrop(): props:', props, 'monitor:', monitor);
+
+    // Drag source: node being dragged
+    var src = monitor.getItem();
+
+    // Target (us)
+    var parent = props.parent.props.data,
+        index = props.index;
+        
+    return src.parent === parent;
+  },
+  
+  drop: function(props, monitor) {
     console.log('InsertionMark dropTarget::drop(', props, '): TODO!');
   }
 };
@@ -35,14 +48,16 @@ var InsertionMark = React.createClass({
   displayName: 'InsertionMark',
   
   propTypes: {
+    parent: React.PropTypes.object.isRequired,
     connectDropTarget: React.PropTypes.func.isRequired,
     isOver: React.PropTypes.bool.isRequired
   },
   
+  getDefaultProps: function() {
+  },
+  
   getInitialState: function() {
     return {
-      //dragOver: false, 
-      //validDropTarget: false
     };
   },
   
@@ -55,8 +70,8 @@ var InsertionMark = React.createClass({
     return this.props.connectDropTarget( 
       <div className={className} ref={(c) => this.container = c}>
         <div
-          onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}
-          onDrop={this.handleDrop}
+          onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} 
+          onDragOver={this.handleDragOver} onDrop={this.handleDrop}
         >
           <div className="brace left" />
           <div className="bar" />
