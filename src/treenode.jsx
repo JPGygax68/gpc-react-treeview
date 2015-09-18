@@ -272,7 +272,7 @@ var TreeNode = React.createClass({
         this.props.treeView.setState({ selection: sel });
       }
       else {
-        this.props.parent.setFocus(); // TODO: do not use focus
+        this.props.parent.select();
       }
     }
   },

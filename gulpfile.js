@@ -47,12 +47,8 @@ gulp.task('build', ['browserify']);
 
 gulp.task('test-browserify', function () {
   
-// We need to find all our test files to pass to our test bundler
-  var files = glob.sync('{./testpage/src/*.js,./testpage/src/*.jsx,./src/**/*.js,./src/**/*.jsx}');
-
   var opts = assign({}, watchify.args, { 
     src: './testpage/src/main.jsx',
-    //entries: files, 
     paths: ['./src'], 
     debug: true 
   });
