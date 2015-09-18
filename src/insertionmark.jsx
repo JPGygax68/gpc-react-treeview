@@ -37,7 +37,8 @@ function collect(connect, monitor) {
   
   return {
     connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver()
+    isOver: monitor.isOver(),
+    canDrop: monitor.canDrop()
   };
 }
 
@@ -65,7 +66,8 @@ var InsertionMark = React.createClass({
     
     var className = 'insertion-mark';
 
-    if (this.props.isOver) className += ' drag-over';
+    if (this.props.isOver ) className += ' drag-over';
+    if (this.props.canDrop) className += ' can-drop' ;
     
     return this.props.connectDropTarget( 
       <div className={className} ref={(c) => this.container = c}>
