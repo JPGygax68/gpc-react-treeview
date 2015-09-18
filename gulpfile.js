@@ -15,6 +15,7 @@ var babel = require("gulp-babel");
 var nib = require("nib");
 var react = require("gulp-react");
 var assign = require("lodash").assign;
+var glob = require("glob");
 
 // Browserify ---------------------------------------------
 
@@ -46,8 +47,18 @@ gulp.task('build', ['browserify']);
 
 gulp.task('test-browserify', function () {
   
-  var opts = assign({}, watchify.args, { paths: ['./src'], debug: true });
+// We need to find all our test files to pass to our test bundler
+  var files = glob.sync('{./testpage/src/*.js,./testpage/src/*.jsx,./src/**/*.js,./src/**/*.jsx}');
+
+  var opts = assign({}, watchify.args, { 
+    src: './testpage/src/main.jsx',
+    //entries: files, 
+    paths: ['./src'], 
+    debug: true 
+  });
   var b = watchify( browserify(opts) );
+  b.on('update', bundle);
+  b.on('log', gutil.log);
 
   b.add('./testpage/src/main.jsx');
 
@@ -62,7 +73,6 @@ gulp.task('test-browserify', function () {
       .pipe( sourcemaps.write('./') )
       .pipe( gulp.dest('./testpage/stage/scripts') )
       .pipe( notify({ message: 'Test script bundling completed', onLast: true }) )
-      .on('log', gutil.log);
   }
 });
 

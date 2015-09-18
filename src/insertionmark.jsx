@@ -18,7 +18,7 @@ var InsertionMark = React.createClass({
   
   getInitialState: function() {
     return {
-      dragOver: false,
+      dragOver: false, 
       validDropTarget: false
     };
   },
