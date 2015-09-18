@@ -121,7 +121,7 @@ var TreeNode = React.createClass({
   displayName: 'TreeNode',
   
   propTypes: {
-    parent: React.PropTypes.object.isRequired,
+    parent: React.PropTypes.object,
     data: React.PropTypes.object.isRequired,
     leaf: React.PropTypes.bool,
     connectDragSource: React.PropTypes.func.isRequired,
@@ -131,19 +131,10 @@ var TreeNode = React.createClass({
   
   /* LIFECYCLE ----------------------*/
   
-  getPropTypes: function() {
-    console.log('TreeNode::getPropTypes');
-    
-    return {
-      data: React.PropTypes.object.isRequired,
-      connectDragSource: React.PropTypes.func.isRequired,
-      isDragging: React.PropTypes.bool.isRequired,
-      onSelectionPath: React.PropTypes.bool
-    }
-  },
   getDefaultProps: function() {
     
     return {
+      parent: null,
       data: null
     }
   },

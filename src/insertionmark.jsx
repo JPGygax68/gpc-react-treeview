@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var DropTarget = require('react-dnd').DropTarget;
 
 /* HELPER FUNCTIONS -----------------*/
 
@@ -9,61 +10,49 @@ function stopEvent(e) {
   e.stopPropagation(); 
 }
 
+/* Drag&Drop ------------------------*/
+
+var dropTarget = {
+  
+  drop: function(props) {
+    console.log('InsertionMark dropTarget::drop(',props,'): TODO!');
+  }
+};
+
+function collect(connect, monitor) {
+  
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  };
+}
+
+/* MAIN CLASS -----------------------*/
+
 var InsertionMark = React.createClass({
   
   displayName: 'InsertionMark',
   
   propTypes: {
+    connectDropTarget: React.PropTypes.func.isRequired,
+    isOver: React.PropTypes.bool.isRequired
   },
   
   getInitialState: function() {
     return {
-      dragOver: false, 
-      validDropTarget: false
+      //dragOver: false, 
+      //validDropTarget: false
     };
-  },
-  
-  handleDragEnter: function(e) {
-    console.log('InsertionMark::handleDragEnter', e, e.dataTransfer);
-    
-    // TODO: check via callbacks
-    if (true) {
-      console.log('InsertionMark: ALLOWING DROP');
-      this.setState({ validDropTarget: true });
-    }
-  },
-  handleDragLeave: function(e) {
-    console.log('InsertionMark::handleDragLeave', e);
-    
-    this.setState({ validDropTarget: false });
-  },
-  handleDragOver: function(e) {
-    
-    // TODO: checking hooks
-    // TODO: cache result
-    if (this.state.validDropTarget) {
-      e.preventDefault(); // will allow the drop
-    }    
-  },
-  handleDrop: function(e) {
-    console.log('InsertionMark::handleDrop() TODO');
-    
-    this.setState({ validDropTarget: false }); // TODO: move this to a method that ends a drag ?
-    //this.props.containingNode.setState({ dragOver: false, validDropTarget: false });
-    //stopEvent(e);
-    e.preventDefault();
-    //e.stopPropagation();
   },
   
   render: function() {
     
     var className = 'insertion-mark';
-    if (this.props.dragOver       ) className += ' drag-over';
-    if (this.state.validDropTarget) className += ' valid-drop-target';
-    //console.log('className:', className);
+    //if (this.props.dragOver       ) className += ' drag-over';
+    //if (this.state.validDropTarget) className += ' valid-drop-target';
     
-    return ( 
-      <div className={className} ref="container">
+    return this.props.connectDropTarget( 
+      <div className={className} ref={(c) => this.container = c}>
         <div
           onDragEnter={this.handleDragEnter} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver}
           onDrop={this.handleDrop}
@@ -78,5 +67,5 @@ var InsertionMark = React.createClass({
   
 });
 
-module.exports = InsertionMark;
+module.exports = DropTarget("NODE", dropTarget, collect)(InsertionMark);
 
