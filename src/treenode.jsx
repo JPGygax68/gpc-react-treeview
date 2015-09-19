@@ -180,34 +180,6 @@ var TreeNode = React.createClass({
     if (DEBUG) console.debug('getChildAt('+index+'):', this.refs['child-'+index]);
     return this.refs['child-'+index];
   },
-  selectPreviousChild: function() {
-    
-    console.assert(this.state.selectedChildIndex > 0);
-    this.setState({ selectedChildIndex: this.state.selectedChildIndex - 1 });
-  },
-  selectNextChild: function() {
-
-    console.assert(this.state.selectedChildIndex < (this.props.data.getChildren().length - 1));
-    this.setState({ selectedChildIndex: this.state.selectedChildIndex + 1 });
-  },
-  selectLastChild: function() {
-    
-    console.assert(this.props.data.getChildren().length > 0);
-    this.setState({ selectedChildIndex: this.props.data.getChildren().length - 1});
-  },
-  descendantWasSelected: function(child_index) {
-    if (DEBUG) console.debug('descendantWasSelected(', child_index, ')');
-    
-    this.setState({ selectedChildIndex: child_index });
-    if (this.props.parent) {
-      this.props.parent.descendantWasSelected(this.props.index);
-    }
-  },
-  selectNextSibling: function() {
-    
-    console.assert(this.isSelected());
-    this.props.parent.selectNextChild();
-  },
   selection: function() { return this.props.treeView.state.selection; },
   
   /* QUERIES ------------------------*/
@@ -319,6 +291,7 @@ var TreeNode = React.createClass({
         var index = this.props.index - 1;
         sel.splice(sel.length - 1, 1, index); // -1 is special
         // Select the last visible descendant:
+        debugger;
         // Get a ref to the previous sibling
         var sibling = this.props.parent.refs['child-'+index];
         for (var current = sibling; current; current = current.refs['child-'+index]) {
