@@ -78,74 +78,9 @@ default_indent = 1.2em;
     }
 
     > ul.child-nodes > li {
-    
-      div.insertion-mark {
-        width: 100%;
-        height: 0; // does not take up vertical space
-        position: relative;
-        
-        &.active {
-          display: block;
-        }
-        
-        // Visual insertion mark
-        > div {
-          border: 0;
-          margin: 0;
-          padding: 0;
-          height: 1em;
-          position: absolute; //relative;
-          left: 0; right: 0;
-          overflow: hidden;      
-          transform: translateY(-50%);
-          z-index: 1;
-          //background-color: rgba(0, 0, 0, 0.25);
           
-          // Visual elements of the insertion mark:
-          > div {
-            background-color: transparent; // normally invisible
-            pointer-events: none;
-            
-            &.brace {
-              position: absolute;
-              width: 0.5em;
-              top: 0.25em;
-              bottom: 0.25em;
-              &.left {
-                left: -0.25em;
-              }
-              &.right {
-                right: -0.25em;
-              }
-              transform-origin: 50% 50%;
-              transform: rotate(45deg);
-            }
-            
-            &.bar {
-              position: absolute;
-              top: 50%;
-              height: 0.1em;
-              left: 0;
-              right: 0;
-              transform: translateY(-50%);
-            }
-            
-          } // visual elements of insertion marker
-          
-          &:hover {
-            > div { background-color: #888; }
-          }
-
-        }
-
-      }  
-      
-      &:last-child {
-        > div.insertion-mark {
-          height: 0.5em;
-        }
-      }
-    } // child-nodes
+      &:last-child { height: 0.5em; }
+    }
   }  
   
   // Dragging is ongoing somewhere on the page (TreeView will set .dragging on top div)

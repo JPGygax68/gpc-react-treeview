@@ -2,6 +2,12 @@
 
 var React = require('react');
 var DropTarget = require('react-dnd').DropTarget;
+var insertCss = require('insert-css');
+
+// TODO: CSS injection should not be set in stone like this, provide variety of bundler modules ?
+var css = require('./insertionmark.styl');
+insertCss(css);
+
 
 /* HELPER FUNCTIONS -----------------*/
 

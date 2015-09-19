@@ -1,0 +1,70 @@
+/* The insertion mark itself is a wrapper that has no height, intended
+  to be overlayed (at Z=1) between vertically stacked items.
+  The exception is when an insertion mark is placed at the end of such
+  a stack, so that the user can *append* there instead of inserting. In
+  such a case, the class "for-appending" can be applied to the top DIV,
+  which will cause it to occupy a height of 0.5em.
+ */
+div.insertion-mark {
+
+  width: 100%;
+  height: 0; // does not take up vertical space
+  position: relative;
+  
+  &.active {
+    display: block;
+  }
+  
+  // Visual insertion mark
+  > div {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    height: 1em;
+    position: absolute; //relative;
+    left: 0; right: 0;
+    overflow: hidden;      
+    transform: translateY(-50%);
+    z-index: 1;
+    //background-color: rgba(0, 0, 0, 0.25);
+    
+    // Visual elements of the insertion mark:
+    > div {
+      background-color: transparent; // normally invisible
+      pointer-events: none;
+      
+      &.brace {
+        position: absolute;
+        width: 0.5em;
+        top: 0.25em;
+        bottom: 0.25em;
+        &.left {
+          left: -0.25em;
+        }
+        &.right {
+          right: -0.25em;
+        }
+        transform-origin: 50% 50%;
+        transform: rotate(45deg);
+      }
+      
+      &.bar {
+        position: absolute;
+        top: 50%;
+        height: 0.1em;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+      }
+      
+    } // visual elements of insertion marker
+    
+    &:hover {
+      > div { background-color: #888; }
+    }
+
+  }
+  
+  // &.for-appending { height: 0.5em; }
+
+}  
