@@ -291,10 +291,10 @@ var TreeNode = React.createClass({
         var index = this.props.index - 1;
         sel.splice(sel.length - 1, 1, index); // -1 is special
         // Select the last visible descendant:
-        debugger;
         // Get a ref to the previous sibling
         var sibling = this.props.parent.refs['child-'+index];
         for (var current = sibling; current; current = current.refs['child-'+index]) {
+          console.debug('current:', current);
           // Check if the node has children and is not closed -> abort if otherwise
           var children = current.props.data.getChildren();
           if (current.state.closed || !children || children.length === 0) break;
@@ -431,6 +431,8 @@ var TreeNode = React.createClass({
   renderChildren: function() {
     
     var children, child_elements;
+
+    //this.childInstances = [];
     
     if (!this.props.leaf) {
       children = this.props.data.getChildren(); // TODO: asynchronous implementations

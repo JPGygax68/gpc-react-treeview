@@ -1,3 +1,68 @@
+2015-09-19
+==========
+
+- Interesting article: http://firstdoit.com/react-1/
+
+-------------------
+
+React DnD makes it nigh on impossible to access the state of child components and thereby also of siblings. This turns out to be a problem when handling the arrow up key, which is supposed to select the last visible descendant of the previous sibling.
+
+React seems definitely averse to imperative programming. So, I'm going to try and limit "actions" to changing the state of either the instance itself or its direct parent.
+
+Regarding the problem at hand - moving to the last previous visible node -, that means:
+
+- changing the selectedChildIndex state of the parent
+- setting a "selectLastVisibleDescendant" flag on the state of the parent
+
+The latter flag state will cause the parent to render the selected child with a boolean property of the same name - IF that node has children and is not closed. If it IS closed, or has no children, then the parent node must set its "selected" property instead.
+
+--> correction:
+
+- the state "selectedChildIndex" says which child is on the "selection path"
+- the *property* "selected" tells the child it is on the selection path and *might* be selected
+- the child sets its own "selected" *state* ONLY if the "selected" property is set AND its own selectedChildIndex state is < 0 (which it *must* be if the node is closed or has no children)
+- the state flag "selectLastVisibleDescendant" works as described above:
+  - the parent receives it and processes it in renderChildren(), passing it to the selected child as a property
+  - that child will receive it, also in componentWillUpdate(), but this time as a property, and process it by setting its "selected" state flag, provided it has no children or is closed. If it does have visible children, the renderChildren() method will pass it on to the selected child (if any).
+  
+Remaining open question: how to clear the "selectLastVisibleDescendant" flag ? 
+
+This whole idea is unsatisfactory. It smells of an attempt to achieve imperative programming via flags: "selectLastVisibleDescendant" is a command, not a state.
+What is the root of the problem ? I'm trying to do something that is not supported by the data structure I'm using, which actually belongs to React. And React apparently does not really want programmers to navigate "its" component tree.
+
+----------
+
+Scrap all the above. That's not gonna fly.
+
+I've had an interesting read just now about Flux, the pattern that's supposed to be used as the architecture where React components can live and thrive. But reading that has only reinforce my belief that selection is something that belongs to the view itself; it's certainly not supposed to be handled by Flux Stores.
+
+Or is it? Googling.. there's something here: http://www.thomasboyt.com/2014/09/15/no-fit-state.html ...
+
+Ok. That post is not *exactly* about the issue I'm facing. So, back to some engineering. Let's try top-down.
+
+What I need
+-----------
+
+I need my TreeView component to handle selection. I'm not yet talking about multiple selection or any sophisticated feature. I want my TreeView component to be flexible, so that it adapts to most any kind of tree-structured data.
+
+However, I don't have to start with all the features, I just need to be careful not to build any show-stoppers into my first implementation.
+
+Features I need, at minimum:
+
+1) Every node must have a label
+2) Every node must be able to have a sequence of child nodes
+3) It must be possible to insert or delete nodes anywhere, without losing track of the selected node
+4) Nodes must be navigatable via the keyboard (the arrow keys)
+
+(3) requires a way to identify nodes independently of their position within a given parent, OR updating position state whenever an insertion or deletion happens.
+(4) requires the treeview to keep track of the position of every node within its parent.
+
+What I'm trying to build is actually a view-model. That view-model must be able to update itself in response to changes "flowing down" from "upstream" (i.e. a Store, if using Flux), in addition to carrying state solely relevant to the view (such as selection - though selection might be communicated upwards to cause another view to display a different data record).
+
+Updating the view without losing selection might actually be quite a bit of a challenge in some cases. If, for example, the treeview displays the content of a networked file system, folders and files can get added and removed arbitrarly and at any time, make it non-trivial to correctly keep the view-model up-to-date. (However, helpful generic algorithms can be written for that purpose, if a callback can be provided that returns a dependable constant and unique key for every node.)
+
+For now, I'm going to limit myself to creating a view-model with fairly minimal functionality. There will be two classes: TreeVM and NodeVM. If a TreeNode instance wants to select the "next" node (in response to a KeyDown event), it simply calls the corresponding method on its NodeVM (which it gets as a property), which has all the information to carry out that request - unlike the TreeNode instance itself, which struggles with such tasks owing to React's strictly top-down data flow.
+
 2015-09-18
 ==========
 
