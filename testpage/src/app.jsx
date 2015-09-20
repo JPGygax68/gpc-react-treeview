@@ -42,46 +42,6 @@ var rootNodeProxy = function() {
   }
 }();
 
-console.log('rootNodeProxy:', rootNodeProxy);
-
-/*
-class NodeProxy {
-  
-  constructor(node, parent_proxy) {
-    this.parent = parent_proxy;
-    this.label = node.label || '(no label)';
-    this.key = node.key;
-    this.children = node.children ? node.children.map( (child) => new NodeProxy(child) ) : undefined;
-    this.leafOnly = node.leafOnly;
-  }
-  
-  getLabel() { return this.label; }
-  
-  // getType() { return this.type; }
-  
-  getKey() {
-    return this.key;
-  }
-  
-  getChildren() {
-    // TODO: async and one-at-a-time variants (two optional parameters, or separate methods?)
-    return this.children; 
-  }
-  
-  isLeafOnly() {
-    return this.leafOnly;
-  }
-  
-  canDrag() {
-    return true;
-  }
-  
-  canDropAsChild(node, index) {
-    return false;
-  }
-}
-*/
-
 /* Controller-View ("app") */
 
 var App = React.createClass({
@@ -102,6 +62,7 @@ var App = React.createClass({
         getLabel={ (proxy) => proxy.node ? proxy.node.label : 'ROOT' }
         getChildren={ (proxy) => proxy.childNodes }
         getKey={ (proxy) => proxy.key }
+        checkIfLeaf={ (proxy) => proxy.node && proxy.node.leaf }
       />
     );
   }

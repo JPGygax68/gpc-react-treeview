@@ -1,11 +1,9 @@
 "use strict";
 
 var React = require('react');
-
-// TODO: remove once better understood
+var PropTypes = React.PropTypes;
 var DragDropContext = require('react-dnd').DragDropContext;
 
-//var $ = require('jquery');
 var insertCss = require('insert-css');
 
 // TODO: CSS injection should not be set in stone like this, provide variety of bundler modules ?
@@ -20,7 +18,11 @@ var TreeView = React.createClass({
   displayName: 'TreeView',
   
   propTypes: {
-    rootNode: React.PropTypes.any.isRequired
+    rootNode: PropTypes.any.isRequired,
+    getLabel: PropTypes.func.isRequired,
+    getChildren: PropTypes.func.isRequired,
+    getKey: PropTypes.func,
+    isLeaf: PropTypes.func
   },
   
   /* CALLABLE FROM CONTAINED NODES ------------*/

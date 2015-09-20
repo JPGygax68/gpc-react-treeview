@@ -129,7 +129,6 @@ var TreeNode = React.createClass({
   propTypes: {
     parent: React.PropTypes.object,
     data: React.PropTypes.object.isRequired,
-    leaf: React.PropTypes.bool,
     connectDragSource: React.PropTypes.func.isRequired,
     isDragging: React.PropTypes.bool.isRequired,
     onSelectionPath: React.PropTypes.bool // actually means: "on the selection path"
@@ -182,8 +181,11 @@ var TreeNode = React.createClass({
   },
   selection: function() { return this.props.treeView.state.selection; },
   
+  tvProps: function() { return this.props.treeView.props; },
+  
   /* QUERIES ------------------------*/
   
+  isLeaf: function() { return this.tvProps().checkIfLeaf && this.tvProps().checkIfLeaf(this.props.data); },
   isSelected: function() {
     
     return false; // TODO
@@ -366,13 +368,13 @@ var TreeNode = React.createClass({
     
     var classes = 'node';
     // Properties
-    if ( this.props.leaf           ) classes += ' leaf'             ; // TODO: no CSS styling yet to reflect this
     if ( this.isSelected()         ) classes += ' selected'         ; // TODO: set focus (delayed?)
     // Transitory state
     if ( this.state.closed         ) classes += ' closed'           ;
     if ( this.state.beingDragged   ) classes += ' being-dragged'    ;
     if ( this.state.validDropTarget) classes += ' valid-drop-target';
     // Queries
+    if ( this.isLeaf()             ) classes += ' leaf'             ; // TODO: no CSS styling yet to reflect this
     if (!this.hasChildren()        ) classes += ' childless'        ;
 
     return this.props.connectDragSource(
@@ -399,7 +401,7 @@ var TreeNode = React.createClass({
 
     //this.childInstances = [];
     
-    if (!this.props.leaf) {
+    if (!this.isLeaf()) {
       children = this.props.data.childNodes;
       child_elements = [];
       child_elements.push( (
@@ -417,7 +419,6 @@ var TreeNode = React.createClass({
                   firstChild={i === 0} lastChild={i === (children.length - 1)}
                   parent={this} index={i} treeView={this.props.treeView}
                   depth={this.props.depth + 1}
-                  leaf={child.leaf}
                 />
               </li> 
             ) );
