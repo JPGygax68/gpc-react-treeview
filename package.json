@@ -52,6 +52,7 @@
     "flux": "^2.1.1",
     "insert-css": "^0.2.0",
     "jquery": "^2.1.4",
+    "lodash": "^3.10.1",
     "marked": "^0.3.5",
     "object-assign": "^4.0.1",
     "react": "^0.13.3",

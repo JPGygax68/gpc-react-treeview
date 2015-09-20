@@ -13,6 +13,8 @@ insertCss(css);
 var ViewModel = require('./viewmodel.js');
 var TreeNode = require('./treenode.jsx');
 
+const DEBUG = true;
+
 var TreeView = React.createClass({
   
   displayName: 'TreeView',
@@ -23,6 +25,12 @@ var TreeView = React.createClass({
   },
   
   /* CALLABLE FROM CONTAINED NODES ------------*/
+  
+  selectionChanged: function(selection) {
+    if (DEBUG) console.debug('TreeView::selectionChanged(', selection, ')');
+    
+    this.setState({ selection: selection });
+  },
   
   /* LIFECYCLE --------------------------------*/
   

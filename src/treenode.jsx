@@ -3,6 +3,7 @@
 var React = require('react');
 var DragSource = require('react-dnd').DragSource;
 var DropTarget = require('react-dnd').DropTarget;
+var _ = require ('lodash');
 
 var InsertionMark = require('./insertionmark.jsx');
 
@@ -172,7 +173,11 @@ var TreeNode = React.createClass({
   
   /* INTERNAL METHODS ---------------*/
   
-  //selection: function() { return this.props.treeView.state.selection; },
+  getIndexChain: function () {
+    var chain = [];
+    for (var node = this; node; node = node.props.parent) chain.unshift(node.props.index);
+    return chain;
+  },
   
   /* QUERIES ------------------------*/
   
@@ -180,7 +185,9 @@ var TreeNode = React.createClass({
   getChildCount: function() { return this.state.nodeProps.childNodes && this.state.nodeProps.childNodes.length; },
   isSelected: function() {
     
-    return false; // TODO
+    return this.props.treeView.props.nodesHaveUniqueKeys ?
+      this.state.nodeProps.key === this.props.treeView.state.selection :
+      _.isEqual(this.getIndexChain(), this.props.treeView.state.selection);
   },
   hasChildren: function() { return this.getChildCount() > 0; },
   isFirstSibling: function() { return this.props.index === 0; },
@@ -209,9 +216,6 @@ var TreeNode = React.createClass({
       return this.props.data.canDrag();
     }
     else return false;
-  },
-  isOnSelectionPath: function() {
-    return false; // TODO!
   },
   
   /* ACTIONS ------------------------*/
@@ -321,6 +325,12 @@ var TreeNode = React.createClass({
   },
   handleLabelSelected: function() {
     if (DEBUG) console.debug('TreeNode::handleLabelSelected');
+
+    var selection = this.props.treeView.props.nodesHaveUniqueKeys ?
+      this.state.nodeProps.key :
+      this.getIndexChain([]);
+      
+    this.props.treeView.selectionChanged( selection );
   },
   handleKeyDown: function(e) {
     if (DEBUG) console.debug('TreeNode::handleKeyDown');
@@ -400,11 +410,9 @@ var TreeNode = React.createClass({
       ) );
       if (nodeProps.childNodes && nodeProps.childNodes.length > 0) {
         nodeProps.childNodes.forEach( function(child, i) {
-          console.log('childNode', i);
-          var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
           child_elements.push( ( 
             <li>
-              <TreeNode data={child} key={key}
+              <TreeNode data={child} key={this.state.nodeProps.key}
                 ref={'child-'+i}
                 firstChild={i === 0} lastChild={i === (nodeProps.childNodes.length - 1)}
                 parent={this} index={i} treeView={this.props.treeView}

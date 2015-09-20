@@ -26,6 +26,17 @@ To support interaction, more callbacks are likely needed:
 - canAddNode(data, { parentNode, previousSibling, nextSibling}) and addNode() with same parameters
 - canRemoveNode(node) and removeNode(node)
 
+----------
+
+Well begun the work described above, though of course details have changed. I'm now using a single callback on the tree view, called "getNodeProps()", that does exactly that. Those props become, very naturally, state in the TreeNode component instances. I have mouse-click selection working using both tree-wide unique keys or index chains. 
+
+Next tasks:
+- make the selection system more robust:
+  - find a way to keep index-based selection valid when nodes are removed from outside the tree view - if that is even possible
+  - print out a warning if selection cannot be preserved due to incorrect configuration of the tree view
+- re-enable keyboard navigation, making use of the getNodeProps() callback to gain full knowledge of the tree structure
+
+
 2015-09-19
 ==========
 

@@ -64,13 +64,12 @@ var App = React.createClass({
     return ( 
       <TreeView 
         rootNodeProxy={this.state.rootNodeProxy}
+        nodesHaveUniqueKeys={true}
         getNodeProps={ function(proxy) {
-          if (!proxy) debugger;
-          console.log('getNodeProps(', proxy, ')');
           return {
             label: proxy.node ? proxy.node.label : 'ROOT',
             parent: proxy.node && proxy.parent,
-            //key: proxy.node && proxy.node.key,
+            key: proxy.node && proxy.node.key,
             childNodes: proxy.childNodes,
             leaf: proxy.node && proxy.node.leaf
           } 
