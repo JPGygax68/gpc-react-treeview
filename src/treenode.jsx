@@ -172,11 +172,11 @@ var TreeNode = React.createClass({
   
   getChildCount: function() {
     
-    return this.props.data.getChildren().length;
+    return this.props.data.childNodes.length;
   },
   getChildAt: function(index) {
     
-    console.assert(index < this.props.data.getChildren().length);
+    console.assert(index < this.props.data.childNodes.length);
     if (DEBUG) console.debug('getChildAt('+index+'):', this.refs['child-'+index]);
     return this.refs['child-'+index];
   },
@@ -190,8 +190,7 @@ var TreeNode = React.createClass({
        && this.props.treeView.state.selection.length === this.props.depth;
   },
   hasChildren: function() {
-    var children = this.props.data.getChildren();
-    return children && children.length > 0;
+    return this.props.data.childNodes && this.props.data.childNodes.length > 0;
   },
   isFirstSibling: function() { return this.props.index === 0; },
   isLastSibling: function() { 
@@ -296,10 +295,10 @@ var TreeNode = React.createClass({
         for (var current = sibling; current; current = current.refs['child-'+index]) {
           console.debug('current:', current);
           // Check if the node has children and is not closed -> abort if otherwise
-          var children = current.props.data.getChildren();
+          var children = current.props.data.childNodes;
           if (current.state.closed || !children || children.length === 0) break;
           // Add the index of the last child to the selection
-          var index = current.props.data.getChildren().length - 1;
+          var index = children.length - 1;
           sel.push( index );
         }
         // Update the view
@@ -416,7 +415,7 @@ var TreeNode = React.createClass({
           <div className="handle" onClick={this.handleClickOnHandle} />
           { React.createElement(TreeNodeLabel, { 
               node: this, 
-              text: this.props.data.getLabel(),
+              text: this.props.data.label,
               onSelected: this.handleLabelSelected,
               onObtainedFocus: this.handleObtainedFocus,
               onKeyDown: this.handleKeyDown,
@@ -435,7 +434,7 @@ var TreeNode = React.createClass({
     //this.childInstances = [];
     
     if (!this.props.leaf) {
-      children = this.props.data.getChildren(); // TODO: asynchronous implementations
+      children = this.props.data.childNodes;
       child_elements = [];
       child_elements.push( (
         <li>
@@ -452,7 +451,7 @@ var TreeNode = React.createClass({
                   firstChild={i === 0} lastChild={i === (children.length - 1)}
                   parent={this} index={i} treeView={this.props.treeView}
                   depth={this.props.depth + 1}
-                  leaf={child.isLeafOnly()} /* TODO: wrap to support fallback */
+                  leaf={child.leaf}
                 />
               </li> 
             ) );

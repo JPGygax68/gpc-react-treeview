@@ -7,19 +7,20 @@ var DragDropContext = require('react-dnd').DragDropContext;
 
 var TreeView = require('treeview.jsx')(HTML5Backend);
 
-var my_tree = {
-  label: 'ROOT',
-  key: '$',
-  children: [ {   
-      label: 'Child 1 - bla bla bla bla', key: '1', children: [
-        { label: 'Grandchild 1.1', key: '1', leafOnly: true },
-        { label: 'Grandchild 1.2', key: '2', leafOnly: true }
-      ]
-    },
-    { label: 'Child 2', key: '2' }
-  ]
-};
+var myStore = require('./mystore.js');
 
+/* Prepare our data store */
+
+var nodes = [
+  { key: 'child1', label: 'Child 1' },
+  { key: 'child2', label: 'Child 2' },
+  { key: 'grandchild1.1', label: 'Grandchild 1.1', parentKey: 'child1', leaf: true },
+  { key: 'grandchild1.2', label: 'Grandchild 1.2', parentKey: 'child1', leaf: true },
+];
+
+myStore.load(nodes);
+
+/*
 class NodeProxy {
   
   constructor(node, parent_proxy) {
@@ -55,14 +56,27 @@ class NodeProxy {
     return false;
   }
 }
+*/
+
+/* Controller-View ("app") */
+
+function getTreeState() {
+  
+  return myStore.getRootProxy()
+}
 
 var App = React.createClass({
   
   displayName: 'App',
   
+  getInitialState: function() {
+    
+    return { rootNode: getTreeState() };
+  },
+  
   render: function() {
     return ( 
-      <TreeView rootNode={new NodeProxy(my_tree)} key="$" nodesHaveKeys={false} />
+      <TreeView rootNode={this.state.rootNode} nodesHaveKeys={false} />
     );
   }
 });

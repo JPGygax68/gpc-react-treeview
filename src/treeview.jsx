@@ -63,9 +63,9 @@ var TreeView = React.createClass({
     
     return ( 
       <div className={className}>
-        <TreeNode label="ROOT"
+        <TreeNode
           treeView={this}
-          data={this.props.rootNode}
+          data={ { label: 'ROOT', childNodes: this.props.rootNode.childNodes } }
           depth={0}
         />
       </div> 
