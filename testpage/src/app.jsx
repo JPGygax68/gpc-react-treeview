@@ -22,6 +22,11 @@ var nodes = [
 // TODO: keep the index up-to-date when changes occur
 // TODO: make this into a utility function/class ?
 
+/* A Proxy has the following properties:
+  node: reference to the original node (not in the root node proxy)
+  parent: a reference to the parent proxy
+  childNodes: an array of child proxies
+ */
 var rootNodeProxy = function() {
   
   var index = {};
@@ -30,15 +35,15 @@ var rootNodeProxy = function() {
   nodes.forEach( (node) => {
     var proxy = getNodeProxy(node.key);
     proxy.node = node;
-    var parent = getNodeProxy(node.parentKey);
-    if (!parent.childNodes) parent.childNodes = [];
-    parent.childNodes.push(proxy);
+    proxy.parent = getNodeProxy(node.parentKey);
+    if (!proxy.parent.childNodes) proxy.parent.childNodes = [];
+    proxy.parent.childNodes.push(proxy);
   });
   
   return rootProxy;
   
   function getNodeProxy(key) { 
-    return typeof key === 'undefined' ? rootProxy: (index[key] || (index[key] = { key: key }));
+    return typeof key === 'undefined' ? rootProxy: (index[key] || (index[key] = {}));
   }
 }();
 
@@ -58,11 +63,18 @@ var App = React.createClass({
   render: function() {
     return ( 
       <TreeView 
-        rootNode={this.state.rootNodeProxy}
-        getLabel={ (proxy) => proxy.node ? proxy.node.label : 'ROOT' }
-        getChildren={ (proxy) => proxy.childNodes }
-        getKey={ (proxy) => proxy.key }
-        checkIfLeaf={ (proxy) => proxy.node && proxy.node.leaf }
+        rootNodeProxy={this.state.rootNodeProxy}
+        getNodeProps={ function(proxy) {
+          if (!proxy) debugger;
+          console.log('getNodeProps(', proxy, ')');
+          return {
+            label: proxy.node ? proxy.node.label : 'ROOT',
+            parent: proxy.node && proxy.parent,
+            //key: proxy.node && proxy.node.key,
+            childNodes: proxy.childNodes,
+            leaf: proxy.node && proxy.node.leaf
+          } 
+        } }
       />
     );
   }

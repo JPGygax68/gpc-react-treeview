@@ -147,6 +147,7 @@ var TreeNode = React.createClass({
     if (DEBUG) console.debug('TreeNode::getInitialState', 'this.props:', this.props);
     
     return {
+      nodeProps: this.props.treeView.props.getNodeProps(this.props.data),
       closed: false,
       canDropHere: false
     }
@@ -165,44 +166,29 @@ var TreeNode = React.createClass({
   },
   componentWillReceiveProps: function(nextProps) {
     if (DEBUG) console.debug('componentWillReceiveProps');
+    
+    this.setState( { nodeProps: this.props.treeView.props.getNodeProps(this.props.data) } );
   },
   
   /* INTERNAL METHODS ---------------*/
   
-  getChildCount: function() {
-    
-    return this.props.data.childNodes.length;
-  },
-  getChildAt: function(index) {
-    
-    console.assert(index < this.props.data.childNodes.length);
-    if (DEBUG) console.debug('getChildAt('+index+'):', this.refs['child-'+index]);
-    return this.refs['child-'+index];
-  },
-  selection: function() { return this.props.treeView.state.selection; },
-  
-  tvProps: function() { return this.props.treeView.props; },
+  //selection: function() { return this.props.treeView.state.selection; },
   
   /* QUERIES ------------------------*/
   
-  isLeaf: function() { return this.tvProps().checkIfLeaf && this.tvProps().checkIfLeaf(this.props.data); },
+  isRoot: function() { return !this.state.nodeProps.parent; },
+  getChildCount: function() { return this.state.nodeProps.childNodes && this.state.nodeProps.childNodes.length; },
   isSelected: function() {
     
     return false; // TODO
-    
-    /* return (this.isRoot()|| this.isOnSelectionPath())
-       && this.props.treeView.state.selection.length === this.props.depth; */
   },
-  hasChildren: function() {
-    
-    return this.props.data.childNodes && this.props.data.childNodes.length > 0;
-  },
+  hasChildren: function() { return this.getChildCount() > 0; },
   isFirstSibling: function() { return this.props.index === 0; },
-  isLastSibling: function() {
-    
-    // TODO: get this as a property from the parent instead ?
-    var result = this.isRoot() || this.props.index === (this.props.parent.getChildCount() -1); 
-    return result;
+  isLastSibling: function() {   
+    if (this.isRoot()) return true;
+    var parentProps = this.props.treeView.props.getNodeProps(this.state.nodeProps.parent);
+    console.assert(parentProps.childNodes);
+    return this.props.index === parentProps.childNodes.length - 1;
   },
   getPreviousSibling: function() {
     
@@ -215,7 +201,7 @@ var TreeNode = React.createClass({
     return this.props.parent.getChildAt(this.props.index + 1);
   },
   getLastChild: function() {
-    return this.getChildAt(this.props.treeView.props.getChildren(data).length - 1);
+    return this.getChildAt(this.props.treeView.props.getNodeProps(data).childNodes.length - 1);
   },
   isNodeDraggable: function() {
     
@@ -224,19 +210,15 @@ var TreeNode = React.createClass({
     }
     else return false;
   },
-  isRoot: function() { return !this.props.parent; },
   isOnSelectionPath: function() {
-    
-    return this.isRoot() 
-      || this.props.parent 
-        && (this.props.parent.isRoot() || this.props.parent.isOnSelectionPath())
-        && this.props.index === this.props.treeView.state.selection[this.props.depth - 1];
+    return false; // TODO!
   },
   
   /* ACTIONS ------------------------*/
   
   select: function() {
     
+    /*
     if (!this.isSelected()) {
       var newSel = [];
       for (var current = this; current.props.parent; current = current.props.parent) {
@@ -244,10 +226,13 @@ var TreeNode = React.createClass({
       }
       this.props.treeView.setState({ selection: newSel });
     }
+    */
   },
   selectNext: function() {
+    throw new Error('selectNext: TODO');
     if (DEBUG) console.debug('selectNext', this.props.data.getLabel());
     
+    /*
     console.assert(this.isOnSelectionPath());
     
     if (!this.state.closed && this.hasChildren()) {
@@ -283,10 +268,13 @@ var TreeNode = React.createClass({
       }
     }
     // TODO: other cases
+    */
   },
   selectPrevious: function() {
+    throw new Error('selectPrevious: TODO');
     if (DEBUG) console.debug('selectPrevious', this);
 
+    /*
     console.assert(this.isOnSelectionPath());
 
     if (!this.isRoot()) {
@@ -314,6 +302,7 @@ var TreeNode = React.createClass({
         this.props.parent.select();
       }
     }
+    */
   },
   close: function() {
     this.setState({ closed: true });
@@ -366,15 +355,18 @@ var TreeNode = React.createClass({
   render: function() {
     if (DEBUG) console.debug('TreeNode::render()');
     
+    var nodeProps = this.props.treeView.props.getNodeProps(this.props.data);
+    console.log('nodeProps:', nodeProps);
+    
     var classes = 'node';
-    // Properties
-    if ( this.isSelected()         ) classes += ' selected'         ; // TODO: set focus (delayed?)
     // Transitory state
     if ( this.state.closed         ) classes += ' closed'           ;
     if ( this.state.beingDragged   ) classes += ' being-dragged'    ;
     if ( this.state.validDropTarget) classes += ' valid-drop-target';
+    // Node properties
+    if ( nodeProps.leaf            ) classes += ' leaf'             ;
     // Queries
-    if ( this.isLeaf()             ) classes += ' leaf'             ; // TODO: no CSS styling yet to reflect this
+    if ( this.isSelected()         ) classes += ' selected'         ; // TODO: set focus (delayed?)
     if (!this.hasChildren()        ) classes += ' childless'        ;
 
     return this.props.connectDragSource(
@@ -383,7 +375,7 @@ var TreeNode = React.createClass({
           <div className="handle" onClick={this.handleClickOnHandle} />
           { React.createElement(TreeNodeLabel, { 
               node: this, 
-              text: this.props.treeView.props.getLabel(this.props.data),
+              text: nodeProps.label,
               onSelected: this.handleLabelSelected,
               onObtainedFocus: this.handleObtainedFocus,
               onKeyDown: this.handleKeyDown,
@@ -391,43 +383,41 @@ var TreeNode = React.createClass({
             }) 
           }
         </div>
-        <ul className="child-nodes">{this.renderChildren()}</ul>
+        <ul className="child-nodes">{this.renderChildren(nodeProps)}</ul>
       </div> 
     );
   },
-  renderChildren: function() {
+  renderChildren: function(nodeProps) {
     
-    var children, child_elements;
+    var child_elements;
 
-    //this.childInstances = [];
-    
-    if (!this.isLeaf()) {
-      children = this.props.data.childNodes;
+    if (!nodeProps.leaf) {
       child_elements = [];
       child_elements.push( (
         <li>
           <InsertionMark parent={this} index={0} />
         </li>
       ) );
-      if (children && children.length > 0) {
-        children.forEach( function(child, i) {
-            var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
-            child_elements.push( ( 
-              <li>
-                <TreeNode data={child} key={key}
-                  ref={'child-'+i}
-                  firstChild={i === 0} lastChild={i === (children.length - 1)}
-                  parent={this} index={i} treeView={this.props.treeView}
-                  depth={this.props.depth + 1}
-                />
-              </li> 
-            ) );
-            child_elements.push( ( 
-              <li>
-                <InsertionMark parent={this} index={i + 1} />
-              </li> 
-            ) );
-          }, this);
+      if (nodeProps.childNodes && nodeProps.childNodes.length > 0) {
+        nodeProps.childNodes.forEach( function(child, i) {
+          console.log('childNode', i);
+          var key = this.props.treeView.props.nodesHaveKeys ? child.getKey() : undefined;
+          child_elements.push( ( 
+            <li>
+              <TreeNode data={child} key={key}
+                ref={'child-'+i}
+                firstChild={i === 0} lastChild={i === (nodeProps.childNodes.length - 1)}
+                parent={this} index={i} treeView={this.props.treeView}
+                depth={this.props.depth + 1}
+              />
+            </li> 
+          ) );
+          child_elements.push( ( 
+            <li>
+              <InsertionMark parent={this} index={i + 1} />
+            </li> 
+          ) );
+        }, this);
       }
     }
     

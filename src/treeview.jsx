@@ -18,11 +18,8 @@ var TreeView = React.createClass({
   displayName: 'TreeView',
   
   propTypes: {
-    rootNode: PropTypes.any.isRequired,
-    getLabel: PropTypes.func.isRequired,
-    getChildren: PropTypes.func.isRequired,
-    getKey: PropTypes.func,
-    isLeaf: PropTypes.func
+    rootNodeProxy: PropTypes.any.isRequired,
+    getNodeProps: PropTypes.func.isRequired,
   },
   
   /* CALLABLE FROM CONTAINED NODES ------------*/
@@ -66,7 +63,7 @@ var TreeView = React.createClass({
       <div className={className}>
         <TreeNode
           treeView={this}
-          data={ { label: 'ROOT', childNodes: this.props.getChildren(this.props.rootNode) } }
+          data={this.props.rootNodeProxy}
           depth={0}
         />
       </div> 
