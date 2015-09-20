@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var Dispatcher = require('flux').Dispatcher;
 var HTML5Backend = require('react-dnd/modules/backends/HTML5');
 var DragDropContext = require('react-dnd').DragDropContext;
 
