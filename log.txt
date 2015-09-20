@@ -1,3 +1,31 @@
+2015-09-20
+==========
+
+I have begun implementing a Store-like singleton object to replace my ad-hoc tree, but I'm finding now that this is not going to solve the problem at all.
+
+There's nothing for it. I'll have to bite the bullet and implement a full view-model WITHIN THE TREEVIEW COMPONENT if I want to entertain any hope of having a fully navigatable tree view.
+
+The real question is how to connect that view-model to a store; or, more accurately, how to support all the data formats that the component may be called upon to handle:
+
+- There may be "flat" formats, where the parent-child relationship is established via a "parent key" (like I just did in my last iteration).
+- The data may already be in a tree-like structure, such as what you might obtain when recursively traversing a directory tree.
+- The nodes may be persistent, i.e. have persistent keys by which to access them - or they may not (in which case a call to componentWillUpdate() must clear the selection and all other view-only state); both cases must be supported.
+
+I think the key to this is callbacks:
+
+- getKey(node)
+- getLabel(node)
+- getChildren(node)
+- canHaveChildren(node)
+- getType(node)
+
+where `node` is a completely arbitrary piece of data that a callback must use to retrieve the request information.
+
+To support interaction, more callbacks are likely needed:
+
+- canAddNode(data, { parentNode, previousSibling, nextSibling}) and addNode() with same parameters
+- canRemoveNode(node) and removeNode(node)
+
 2015-09-19
 ==========
 

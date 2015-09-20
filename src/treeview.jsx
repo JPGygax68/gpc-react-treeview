@@ -12,6 +12,7 @@ var insertCss = require('insert-css');
 var css = require('./styles.styl');
 insertCss(css);
 
+var ViewModel = require('./viewmodel.js');
 var TreeNode = require('./treenode.jsx');
 
 var TreeView = React.createClass({
@@ -19,8 +20,7 @@ var TreeView = React.createClass({
   displayName: 'TreeView',
   
   propTypes: {
-    rootNode: React.PropTypes.object.isRequired,
-    nodesHaveKeys: React.PropTypes.bool
+    rootNode: React.PropTypes.any.isRequired
   },
   
   /* CALLABLE FROM CONTAINED NODES ------------*/
@@ -28,9 +28,8 @@ var TreeView = React.createClass({
   /* LIFECYCLE --------------------------------*/
   
   getInitialState: function() {
-    return {
-      selection: []
-    };
+    
+    return {};  // TODO: selection
   },
   
   componentWillMount: function() {
@@ -65,7 +64,7 @@ var TreeView = React.createClass({
       <div className={className}>
         <TreeNode
           treeView={this}
-          data={ { label: 'ROOT', childNodes: this.props.rootNode.childNodes } }
+          data={ { label: 'ROOT', childNodes: this.props.getChildren(this.props.rootNode) } }
           depth={0}
         />
       </div> 

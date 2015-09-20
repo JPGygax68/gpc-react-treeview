@@ -7,9 +7,7 @@ var DragDropContext = require('react-dnd').DragDropContext;
 
 var TreeView = require('treeview.jsx')(HTML5Backend);
 
-var myStore = require('./mystore.js');
-
-/* Prepare our data store */
+/* The test data, in "flat" form */
 
 var nodes = [
   { key: 'child1', label: 'Child 1' },
@@ -18,7 +16,33 @@ var nodes = [
   { key: 'grandchild1.2', label: 'Grandchild 1.2', parentKey: 'child1', leaf: true },
 ];
 
-myStore.load(nodes);
+/* An "index" is needed to put the data (back) into a tree-like structure
+ */
+ 
+// TODO: keep the index up-to-date when changes occur
+// TODO: make this into a utility function/class ?
+
+var rootNodeProxy = function() {
+  
+  var index = {};
+  var rootProxy = {};
+
+  nodes.forEach( (node) => {
+    var proxy = getNodeProxy(node.key);
+    proxy.node = node;
+    var parent = getNodeProxy(node.parentKey);
+    if (!parent.childNodes) parent.childNodes = [];
+    parent.childNodes.push(proxy);
+  });
+  
+  return rootProxy;
+  
+  function getNodeProxy(key) { 
+    return typeof key === 'undefined' ? rootProxy: (index[key] || (index[key] = { key: key }));
+  }
+}();
+
+console.log('rootNodeProxy:', rootNodeProxy);
 
 /*
 class NodeProxy {
@@ -60,23 +84,25 @@ class NodeProxy {
 
 /* Controller-View ("app") */
 
-function getTreeState() {
-  
-  return myStore.getRootProxy()
-}
-
 var App = React.createClass({
   
   displayName: 'App',
   
   getInitialState: function() {
     
-    return { rootNode: getTreeState() };
+    return { 
+      rootNodeProxy: rootNodeProxy
+    };
   },
   
   render: function() {
     return ( 
-      <TreeView rootNode={this.state.rootNode} nodesHaveKeys={false} />
+      <TreeView 
+        rootNode={this.state.rootNodeProxy}
+        getLabel={ (proxy) => proxy.node ? proxy.node.label : 'ROOT' }
+        getChildren={ (proxy) => proxy.childNodes }
+        getKey={ (proxy) => proxy.key }
+      />
     );
   }
 });
