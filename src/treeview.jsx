@@ -3,6 +3,7 @@
 var React = require('react');
 var PropTypes = React.PropTypes;
 var DragDropContext = require('react-dnd').DragDropContext;
+var _ = require('lodash');
 
 var insertCss = require('insert-css');
 
@@ -20,7 +21,7 @@ var TreeView = React.createClass({
   displayName: 'TreeView',
   
   propTypes: {
-    rootNodeProxy: PropTypes.any.isRequired,
+    rep: PropTypes.any.isRequired,
     getNodeProps: PropTypes.func.isRequired,
   },
   
@@ -28,59 +29,44 @@ var TreeView = React.createClass({
   
   getSelectionProps: function() {
     
-    return this.state.selection.map( (rep) => this.props.getNodeProps(rep) );
+    var propChain = this.state.selection.map( (rep) => this.props.getNodeProps(rep) );
+    propChain.unshift( this.props.getNodeProps() ); // root nodeName
+    return propChain;
   },
   
   /* CALLABLE FROM CONTAINED NODES ------------*/
   
+  getSelectionLineage: function() {
+    
+    // TODO: pluck
+    return this.state.selection;
+  },
   selectionChanged: function(selection) {
     if (DEBUG) console.debug('TreeView::selectionChanged(', selection, ')');
     
-    this.setState({ selection: selection });
+    this.setState({ selection });
   },
-
   selectNextNode: function() {
     if (DEBUG) console.debug('TreeView::selectNextNode');
     
     var propsChain = this.getSelectionProps();
     var depth = this.state.selection.length;
+    var currentProps = propsChain[depth];
+    var newSel = this.state.selection;
     while (depth > 0) {
-      
-    }
-    
-    
-    
-    if (!this.state.closed && this.hasChildren()) {
-      var sel = this.selection();
-      sel.unshift(0);
-      this.props.treeView.setState({ selection: sel });
-    }
-    else {
-      if (!this.isLastSibling()) {
-        var sel = this.selection();
-        sel.splice(sel.length - 1, 1, this.props.index + 1);
-        this.props.treeView.setState({ selection: sel });
+      var currentRep = this.state.selection[depth - 1];
+      var parentProps = propsChain[depth - 1];
+      var index = _.indexOf(parentProps.childNodes, currentRep); // TODO: what if rep's are of a type that cannot be simply compared?
+      if (parentProps.childNodes && index < parentProps.childNodes.length - 1) {
+        var succRep = parentProps.childNodes[index + 1];
+        newSel.splice(depth - 1, 1, succRep)
+        this.setState({ selection: newSel });
+        break;
       }
-      else if (this.props.parent) {
-        if (DEBUG) console.debug('climbing up before forward');
-        // Check how many levels we have to climb up before moving forward
-        var index = this.selection().length - 1; // could also use depth property
-        //console.debug('initial index:', index);
-        var current = this.props.parent;
-        while (current && current.isLastSibling()) {
-          index --;          
-          current = current.props.parent;
-          //console.debug('index:', index, 'current:', current);
-        }
-        // If we arrive at the root node, there's nowhere left to move
-        if (index > 0) {
-          //console.debug('index after climb:', index);
-          var sel = this.selection();
-          sel.splice(index - 1, 1000, current.props.index + 1);
-          //console.debug('new selection:', sel);
-          this.props.treeView.setState({ selection: sel });
-        }
-      }
+      //debugger;
+      currentProps = parentProps;
+      newSel.pop();
+      depth --;
     }
   },
   
@@ -121,11 +107,7 @@ var TreeView = React.createClass({
     
     return ( 
       <div className={className}>
-        <TreeNode
-          treeView={this}
-          rep={this.props.rootNodeProxy}
-          depth={0}
-        />
+        <TreeNode treeView={this} depth={0} />
       </div> 
     );
   },

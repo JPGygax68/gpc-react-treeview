@@ -129,7 +129,7 @@ var TreeNode = React.createClass({
   
   propTypes: {
     parent: React.PropTypes.object,
-    rep: React.PropTypes.object.isRequired,
+    rep: React.PropTypes.any.isRequired,
     connectDragSource: React.PropTypes.func.isRequired,
     isDragging: React.PropTypes.bool.isRequired,
     onSelectionPath: React.PropTypes.bool // actually means: "on the selection path"
@@ -175,7 +175,7 @@ var TreeNode = React.createClass({
   
   getLineage: function () {
     var chain = [];
-    for (var node = this; node; node = node.props.parent) chain.unshift(node.state.nodeProps.rep);
+    for (var node = this; !!node.props.parent; node = node.props.parent) chain.unshift(node.props.rep);
     return chain;
   },  
   
@@ -189,7 +189,7 @@ var TreeNode = React.createClass({
   },
   isSelected: function() {
     
-    return _.isEqual(this.getLineage(), this.props.treeView.state.selection);
+    return _.isEqual(this.getLineage(), this.props.treeView.getSelectionLineage());
   },
   hasChildren: function() { return this.getChildCount() > 0; },
   isFirstSibling: function() { return this.isRoot() || this.props.index === 0; },
@@ -315,7 +315,6 @@ var TreeNode = React.createClass({
     if (DEBUG) console.debug('TreeNode::render()');
     
     var nodeProps = this.props.treeView.props.getNodeProps(this.props.rep);
-    console.log('nodeProps:', nodeProps);
     
     var classes = 'node';
     // Transitory state
@@ -353,9 +352,7 @@ var TreeNode = React.createClass({
       childElements.push( <li><InsertionMark parent={this} index={0} /></li> );
       if (nodeProps.childNodes && nodeProps.childNodes.length > 0) {
         nodeProps.childNodes.forEach( (child, i) => {
-          // Child node
           childElements.push( <li>{this.renderChildNode(child, i)}</li> );
-          // Insertion mark
           childElements.push( <li><InsertionMark parent={this} index={i + 1} /></li> );
         } );
       }
@@ -366,7 +363,7 @@ var TreeNode = React.createClass({
   renderChildNode: function(rep, index) {
 
     return (
-      <TreeNode rep={rep} ref={'child-'+index}
+      <TreeNode rep={rep}
         firstChild={index === 0} lastChild={index === (this.state.nodeProps.childNodes.length - 1)}
         parent={this} index={index} treeView={this.props.treeView}
         depth={this.props.depth + 1}

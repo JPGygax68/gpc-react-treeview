@@ -25,8 +25,8 @@ var nodes = [
 // TODO: make this into a utility function/class ?
 
 /* A Proxy has the following properties:
-  node: reference to the original node (not in the root node proxy)
-  parent: a reference to the parent proxy
+  node: reference to the original node (not in the root node rep)
+  parent: a reference to the parent rep
   childNodes: an array of child proxies
  */
 var rootNodeProxy = function() {
@@ -35,11 +35,11 @@ var rootNodeProxy = function() {
   var rootProxy = {};
 
   nodes.forEach( (node) => {
-    var proxy = getNodeProxy(node.key);
-    proxy.node = node;
-    proxy.parent = getNodeProxy(node.parentKey);
-    if (!proxy.parent.childNodes) proxy.parent.childNodes = [];
-    proxy.parent.childNodes.push(proxy);
+    var rep = getNodeProxy(node.key);
+    rep.node = node;
+    rep.parent = getNodeProxy(node.parentKey);
+    if (!rep.parent.childNodes) rep.parent.childNodes = [];
+    rep.parent.childNodes.push(rep);
   });
   
   return rootProxy;
@@ -55,25 +55,23 @@ var App = React.createClass({
   
   displayName: 'App',
   
-  getInitialState: function() {
-    
-    return { 
-      rootNodeProxy: rootNodeProxy
-    };
-  },
-  
   render: function() {
     return ( 
       <TreeView 
-        rootNodeProxy={this.state.rootNodeProxy}
-        getNodeProps={ function(proxy) {
-          return {
-            label: proxy.node ? proxy.node.label : 'ROOT',
-            parent: proxy.node && proxy.parent,
-            rep: proxy.node && proxy.node.key,
-            childNodes: proxy.childNodes,
-            leaf: proxy.node && proxy.node.leaf
-          } 
+        getNodeProps={ function(rep) {
+          console.assert(!(rep && !rep.node));
+          var props = (!rep) ? {
+            // Root node
+            label: 'ROOT!',
+            childNodes: rootNodeProxy.childNodes
+          }
+          : {
+            label: rep.node.label,
+            parent: rep.node && rep.parent,
+            childNodes: rep.childNodes,
+            leaf: rep.node && rep.node.leaf
+          };
+          return props;
         } }
       />
     );
