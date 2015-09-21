@@ -1,3 +1,9 @@
+2015-09-21
+==========
+
+I have at last though of a term to designate the opaque items of data that represent a node vis-à-vis the TreeView: "rep"s, short for "representatives". Halleluia.
+
+
 2015-09-20
 ==========
 

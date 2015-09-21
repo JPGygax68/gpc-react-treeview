@@ -17,6 +17,8 @@ var nodes = [
 ];
 
 /* An "index" is needed to put the data (back) into a tree-like structure
+  Note: this is just one possible implementation. Two flat indices, on the key
+    and on the parentKey, would have served the same purpose.
  */
  
 // TODO: keep the index up-to-date when changes occur
@@ -64,12 +66,11 @@ var App = React.createClass({
     return ( 
       <TreeView 
         rootNodeProxy={this.state.rootNodeProxy}
-        nodesHaveUniqueKeys={true}
         getNodeProps={ function(proxy) {
           return {
             label: proxy.node ? proxy.node.label : 'ROOT',
             parent: proxy.node && proxy.parent,
-            key: proxy.node && proxy.node.key,
+            rep: proxy.node && proxy.node.key,
             childNodes: proxy.childNodes,
             leaf: proxy.node && proxy.node.leaf
           } 
