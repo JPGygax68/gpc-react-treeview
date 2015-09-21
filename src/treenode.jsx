@@ -225,7 +225,7 @@ var TreeNode = React.createClass({
   selectNext: function() {
     if (DEBUG) console.debug('selectNext');
 
-    this.props.treeView.selectNextNode();
+    this.props.treeView.selectNextNode(this);
   },
   selectPrevious: function() {
     throw new Error('selectPrevious: TODO');

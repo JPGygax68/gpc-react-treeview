@@ -27,18 +27,18 @@ var TreeView = React.createClass({
   
   /* INTERNAL METHODS -------------------------*/
   
-  getSelectionProps: function() {
+  getSelectionPathProps: function() {
     
     var propChain = this.state.selection.map( (rep) => this.props.getNodeProps(rep) );
-    propChain.unshift( this.props.getNodeProps() ); // root nodeName
+    propChain.unshift( this.props.getNodeProps() ); // root node
     return propChain;
   },
   
   /* CALLABLE FROM CONTAINED NODES ------------*/
-  
+
+  // TODO: may not be needed
   getSelectionLineage: function() {
     
-    // TODO: pluck
     return this.state.selection;
   },
   selectionChanged: function(selection) {
@@ -46,27 +46,36 @@ var TreeView = React.createClass({
     
     this.setState({ selection });
   },
-  selectNextNode: function() {
+  selectNextNode: function(nodeInst) {
     if (DEBUG) console.debug('TreeView::selectNextNode');
     
-    var propsChain = this.getSelectionProps();
-    var depth = this.state.selection.length;
-    var currentProps = propsChain[depth];
-    var newSel = this.state.selection;
-    while (depth > 0) {
-      var currentRep = this.state.selection[depth - 1];
-      var parentProps = propsChain[depth - 1];
-      var index = _.indexOf(parentProps.childNodes, currentRep); // TODO: what if rep's are of a type that cannot be simply compared?
-      if (parentProps.childNodes && index < parentProps.childNodes.length - 1) {
-        var succRep = parentProps.childNodes[index + 1];
-        newSel.splice(depth - 1, 1, succRep)
-        this.setState({ selection: newSel });
-        break;
+    var propsChain = this.getSelectionPathProps(); // 1 element longer than selection!
+    var depth = this.state.selection.length; // 0 = root is selected
+    var curNodeProps = propsChain[depth];
+    
+    // Is node open, and does it have a child ?
+    if (!nodeInst.state.closed && curNodeProps.childNodes && curNodeProps.childNodes.length > 0) {
+      this.state.selection.push( curNodeProps.childNodes[0] );
+      this.setState({ selection: this.state.selection });
+    }
+    else {
+      var curNodeInst = nodeInst;
+      while (depth > 0) {
+        var parNodeInst = curNodeInst.props.parent;        
+        var parNodeProps = parNodeInst.state.nodeProps;
+        var index = _.indexOf(parNodeProps.childNodes, curNodeInst.props.rep); 
+          // => TODO: what if rep's are of a type that cannot be simply compared?
+        if (parNodeProps.childNodes && index < parNodeProps.childNodes.length - 1) {
+          var succRep = parNodeProps.childNodes[index + 1];
+          this.state.selection.splice(depth - 1, 1000, succRep)
+          this.setState({ selection: this.state.selection });
+          break;
+        }
+        // Climb up a level
+        curNodeProps = parNodeProps; // no need to re-fetch
+        curNodeInst = parNodeInst;
+        depth --;
       }
-      //debugger;
-      currentProps = parentProps;
-      newSel.pop();
-      depth --;
     }
   },
   
